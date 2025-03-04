@@ -18,9 +18,11 @@ def plot_heat_solution(sol:np.ndarray,x:np.ndarray,y:np.ndarray,t:np.ndarray,ind
     plt.close()
     
 if __name__ == "__main__":
-    for mu in range(40):
-        sol = np.load(f"data/test_data/example_data/heat2d/mu_{mu}.npy")
-        x = np.load(f"data/test_data/example_data/heat2d/xs_{mu}.npy")
-        y = np.load(f"data/test_data/example_data/heat2d/ys_{mu}.npy")
+    for index in range(40):
+        sol = np.load(f"data/test_data/example_data/heat2d/sol_{index}.npy")
+        matrix = np.load(f"data/test_data/example_data/heat2d/mu_{index}.npy")
+        
+        x = np.linspace(0, 1, matrix[0].shape[0])
+        y = np.linspace(0, 1, matrix[1].shape[0])
         t = np.linspace(0, 1, sol.shape[0])
-        plot_heat_solution(sol,x,y,t,mu)
+        plot_heat_solution(sol,x,y,t,index)
