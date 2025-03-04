@@ -23,7 +23,7 @@ def solve_heat_square(boundary_conditions:np.ndarray, initial_conditions:np.ndar
     for n in tqdm(range(1, nt), desc="Solving heat equation"):
         dt = t[n] - t[n-1]
         
-        solution[n] = solution[n-1].copy()
+        solution[n] = solution[n-1].copy() # copy to not interfere
         
         for i in range(1, nx-1):
             for j in range(1, ny-1):
@@ -40,17 +40,17 @@ def solve_heat_square(boundary_conditions:np.ndarray, initial_conditions:np.ndar
     return solution
 
 def create_heat_data(n_mu:int,nt:int,nx:int,ny:int,alpha:float=1.0)->tuple[np.ndarray,np.ndarray,np.ndarray]:
-    mus = np.linspace(0.5,1,n_mu)
+    freqs = np.linspace(0.5,1,n_mu)
     
-    for i,mu in tqdm(enumerate(mus),desc="Creating heat data"):
+    for i,freq in tqdm(enumerate(freqs),desc="Creating heat data"):
         boundary_conditions = np.array([
-            np.cos(np.linspace(0,1,nx)*2*np.pi*mu),
-            np.cos(np.linspace(0,1,ny)*2*np.pi*mu),
-            np.cos(np.linspace(0,1,nx)*2*np.pi*mu),
-            np.cos(np.linspace(0,1,ny)*2*np.pi*mu)
+            np.cos(np.linspace(0,1,nx)*2*np.pi*freq),
+            np.cos(np.linspace(0,1,ny)*2*np.pi*freq),
+            np.cos(np.linspace(0,1,nx)*2*np.pi*freq),
+            np.cos(np.linspace(0,1,ny)*2*np.pi*freq)
         ])
-        
-        initial_conditions = np.exp(-(np.linspace(0,1,nx)**2 + np.linspace(0,1,ny)**2))
+
+        initial_conditions = np.exp(-(np.linspace(0,1,nx)**2 + np.linspace(0,1,ny)**2)) # we keep always the same for now
         
         t = np.linspace(0,1,nt)
         x = np.linspace(0,1,nx)
@@ -60,12 +60,15 @@ def create_heat_data(n_mu:int,nt:int,nx:int,ny:int,alpha:float=1.0)->tuple[np.nd
         xs = np.linspace(0,1,nx)
         ys = np.linspace(0,1,ny)
         
-        np.save(f"data/test_data/example_data/heat2d/mu_{i}.npy",sol)
-        np.save(f"data/test_data/example_data/heat2d/xs_{i}.npy",xs)
-        np.save(f"data/test_data/example_data/heat2d/ys_{i}.npy",ys)
+        np.save(f"data/test_data/example_data/heat2d/mu_{i}.npy",boundary_conditions)
+        
+        X, Y = np.meshgrid(xs, ys)
+        points = np.column_stack((X.ravel(), Y.ravel()))
+        np.save(f"data/test_data/example_data/heat2d/xs_{i}.npy",points)
+        np.save(f"data/test_data/example_data/heat2d/sol_{i}.npy",sol)
         with open(f"data/test_data/example_data/heat2d/params.json", "w") as f:
-            json.dump({"mu": mu, "nt": nt, "nx": nx, "ny": ny, "alpha": alpha}, f)
+            json.dump({"freq": freq,"initial_conditions": "np.exp(-(np.linspace(0,1,nx)**2 + np.linspace(0,1,ny)**2))", "nt": nt, "nx": nx, "ny": ny, "alpha": alpha}, f)
 
 if __name__ == "__main__":
     create_heat_data(n_mu =40,nt=20,nx = 20,ny = 20,alpha=0.01)
-    # be careful for the stability condition of the scheme
+    # be careful for the stability condition of the scheme : dt < dx^2/(4*alpha)
