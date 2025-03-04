@@ -3,13 +3,11 @@ import pytest
 
 
 
-
-def test_models():
+def test_deeponet():
     try:
-        from model.deeponet.deeponet import DeepONet
+        from sciml.model.deeponet import DeepONet
     except ImportError:
         pytest.fail("DeepONet is not installed")
-    
     
     
     

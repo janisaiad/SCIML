@@ -76,10 +76,11 @@ class DeepONet(tf.keras.Model):
     
     
     
-    def fit(self,device:str='cpu')->None:
+    def fit(self,device:str='cpu')->np.ndarray:
         
         # Get the functions and pointwise evaluation points
         mus, xs, ys = self.get_data()
+        loss_history = []
         if device != 'cpu': # not the best way to do it, but it works
             mus = tf.convert_to_tensor(mus,dtype=tf.float32)
             xs = tf.convert_to_tensor(xs,dtype=tf.float32)
@@ -93,8 +94,12 @@ class DeepONet(tf.keras.Model):
         # Training loop
         for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
             for batch in dataset:
-                self.optimizer.train_step(batch)
+                loss = self.optimizer.train_step(batch)
+                loss_history.append(loss)
             logger.info(f"Epoch {epoch} completed")
+            
+        return 
+        
             
         
     def train_step(self,batch:tuple[tf.Tensor,tf.Tensor,tf.Tensor])->None:
@@ -108,7 +113,7 @@ class DeepONet(tf.keras.Model):
         gradients = tape.gradient(loss,self.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients,self.trainable_variables)) # apply the gradients to the model, which means updating the weights
         
-        
+        return loss
             
             
     def save(self,save_path:str):
