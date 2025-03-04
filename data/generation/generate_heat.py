@@ -60,10 +60,10 @@ def create_heat_data(n_mu:int,nt:int,nx:int,ny:int,alpha:float=1.0)->tuple[np.nd
         xs = np.linspace(0,1,nx)
         ys = np.linspace(0,1,ny)
         
-        np.save(f"data/test_data/example_data/heat/mu_{i}.npy",sol)
-        np.save(f"data/test_data/example_data/heat/xs_{i}.npy",xs)
-        np.save(f"data/test_data/example_data/heat/ys_{i}.npy",ys)
-        with open(f"data/test_data/example_data/heat/params.json", "w") as f:
+        np.save(f"data/test_data/example_data/heat2d/mu_{i}.npy",sol)
+        np.save(f"data/test_data/example_data/heat2d/xs_{i}.npy",xs)
+        np.save(f"data/test_data/example_data/heat2d/ys_{i}.npy",ys)
+        with open(f"data/test_data/example_data/heat2d/params.json", "w") as f:
             json.dump({"mu": mu, "nt": nt, "nx": nx, "ny": ny, "alpha": alpha}, f)
 
 if __name__ == "__main__":
