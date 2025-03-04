@@ -43,13 +43,15 @@ class DeepONet(tf.keras.Model):
         for param in required_params:
             if param not in regular_params:
                 logger.error(f"Required parameter {param} not found in regular_params")
-                raise ValueError(f"Required parameter {param} not found in regular_params")
+        
         
         self.params = {
             "hyper_params": hyper_params,
             "regular_params": regular_params
         }
         
+        self.hyper_params = hyper_params
+        self.regular_params = regular_params
         
         self.internal_model = self.regular_params["internal_model"]
         self.external_model = self.regular_params["external_model"]
@@ -60,14 +62,17 @@ class DeepONet(tf.keras.Model):
         self.batch_size = hyper_params["batch_size"] if "batch_size" in hyper_params else 32
         self.verbose = hyper_params["verbose"] if "verbose" in hyper_params else 1
         self.loss_function = hyper_params["loss_function"] if "loss_function" in hyper_params else tf.losses.MeanSquaredError()
-        
-        self.trainable_variables = self.internal_model.trainable_variables + self.external_model.trainable_variables
+    
     
         
         
         
         logger.info(f"Model initialized with {self.n_epochs} epochs, {self.batch_size} batch size, {self.learning_rate} learning rate")
     
+    
+    @property
+    def trainable_variables(self): # for user experience to get the trainable variables, doesn't required by tf
+        return self.internal_model.trainable_variables + self.external_model.trainable_variables
         
     def predict(self,mu:tf.Tensor,x:tf.Tensor): # mu is the input function, x is the pointwise evaluation points
         return tf.tensordot(self.internal_model(mu),self.external_model(x),axes=1) # just an easy dot product
@@ -95,6 +100,14 @@ class DeepONet(tf.keras.Model):
     def call(self,mu:tf.Tensor,x:tf.Tensor)->tf.Tensor:
         return self.predict(mu,x)
     
+    
+    def compile(self): # apparently mandatory to compile the model
+        self.optimizer = self.hyper_params["optimizer"] if "optimizer" in self.hyper_params else tf.optimizers.Adam(self.learning_rate)
+        self.loss_function = self.hyper_params["loss_function"] if "loss_function" in self.hyper_params else tf.losses.MeanSquaredError()
+    
+    def build(self): # apparently also mandatory to build the model for tensorflow
+        self.internal_model.build(input_shape=(None,self.d_p))
+        self.external_model.build(input_shape=(None,self.d_V))
     
     def fit(self,device:str='cpu')->np.ndarray:
         
@@ -137,7 +150,7 @@ class DeepONet(tf.keras.Model):
         return loss
             
             
-    def save(self,save_path:str):  # error handling because it's also critical out there
+    def save(self,save_path:str):  # error handling because it's also critical out there, we save a tensorflow model as a keras file
         if not os.path.exists(save_path):
             os.makedirs(save_path,exist_ok=True)
         
@@ -147,6 +160,20 @@ class DeepONet(tf.keras.Model):
             logger.error(f"Failed to save model in {save_path}")
             raise ValueError(f"Failed to save model in {save_path}")
         
+
+
+    def load_weights(self,save_path:str): # just loading some other weights if we want to compare, but not the entire model
+        if not os.path.exists(save_path):
+            logger.error(f"Weights not found in {save_path}")
+            raise ValueError(f"Weights not found in {save_path}")
+        
+        self.load_weights(save_path)
+        
+    def save_weights(self,save_path:str): 
+        if not os.path.exists(save_path):
+            os.makedirs(save_path,exist_ok=True)
+        
+        self.save_weights(save_path)
 
     def load_to_gpu(self):
         
