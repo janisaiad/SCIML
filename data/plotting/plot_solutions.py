@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
-
+import json
 
 def plot_heat_solution(sol:np.ndarray,x:np.ndarray,y:np.ndarray,t_interior:float,index:int):
     fig = plt.figure(figsize=(12, 10))
@@ -22,8 +22,9 @@ if __name__ == "__main__":
         sol = np.load(f"data/test_data/example_data/heat2d/sol_{index}.npy")
         matrix = np.load(f"data/test_data/example_data/heat2d/mu_{index}.npy")
         xs = np.load(f"data/test_data/example_data/heat2d/xs_{index}.npy") # it is a meshgrid of x,y,t
-        X = xs[:,0]
-        Y = xs[:,1]
-        T = xs[:,2]
-        nt = int(np.sqrt(T.shape[0]))
+        X = np.unique(xs[:,0])
+        Y = np.unique(xs[:,1])
+        with open(f"data/test_data/example_data/heat2d/params.json", "r") as f:
+            params = json.load(f)
+        nt = params["nt"]
         plot_heat_solution(sol,X,Y,nt//2 - 1,index)
