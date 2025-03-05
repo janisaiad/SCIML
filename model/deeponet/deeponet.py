@@ -62,6 +62,9 @@ class DeepONet(tf.keras.Model):
         self.internal_model = self.regular_params["internal_model"]
         self.external_model = self.regular_params["external_model"]
         
+        
+        self.d_p = hyper_params["d_p"]
+        self.d_V = hyper_params["d_V"]
         self.learning_rate = hyper_params["learning_rate"] if "learning_rate" in hyper_params else 0.001
         self.optimizer = hyper_params["optimizer"] if "optimizer" in hyper_params else tf.optimizers.Adam(self.learning_rate) # AdamW to be added after
         self.n_epochs = hyper_params["n_epochs"] if "n_epochs" in hyper_params else 100
@@ -88,13 +91,19 @@ class DeepONet(tf.keras.Model):
         with tf.device(self.device):
             # mu: [batch_size, d_p]
             # x: [batch_size, n_points, 2] ou [batch_size, nx, ny, 2]
-           
-            coefficients = self.internal_model(mu)  # [batch_size, 40]
-            basis_evaluation = self.external_model(x)  # [batch_size, n_points, 40]
+            tf.print(mu.shape)
+            tf.print(x.shape)
+            coefficients = self.internal_model(mu)
     
+            # reshape to get [batch_size, 40]
+            coefficients = tf.reshape(coefficients, [tf.shape(coefficients)[0], -1])[:, :self.d_V]
+            tf.print(coefficients.shape)
+            basis_evaluation = self.external_model(x)  # [batch_size, n_points, 40]
+            tf.print(basis_evaluation.shape)
+
             # Produit tensoriel
             output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)
-            
+            tf.print(output.shape)
             # coefficients: [batch_size, d_V]
             # basis: [batch_size, n_points, d_V]
         return output
@@ -175,11 +184,12 @@ class DeepONet(tf.keras.Model):
             
         
     def train_step(self,batch:tuple[tf.Tensor,tf.Tensor,tf.Tensor])->None:
-        mu,x,y = batch
+        mu,x,sol = batch
         
+        sol = tf.reshape(sol, [tf.shape(sol)[0], -1])[:, :self.d_V]
         with tf.GradientTape() as tape: # gradient tape to compute the gradients
             y_pred = self.predict(mu,x)
-            loss = self.loss_function(y_pred,y)
+            loss = self.loss_function(y_pred,sol)
             
         # Backprop
         gradients = tape.gradient(loss,self.trainable_variables)
