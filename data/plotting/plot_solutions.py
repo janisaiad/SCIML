@@ -25,5 +25,5 @@ if __name__ == "__main__":
         X = xs[:,0]
         Y = xs[:,1]
         T = xs[:,2]
-        nt = T.shape[0]
+        nt = int(np.sqrt(T.shape[0]))
         plot_heat_solution(sol,X,Y,nt//2 - 1,index)
