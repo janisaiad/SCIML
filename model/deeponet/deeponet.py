@@ -3,10 +3,16 @@ import tensorflow as tf
 from typing import Tuple
 from tqdm import tqdm
 import logging # janis sauce to debug
+import os
+import dotenv
+
+dotenv.load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-import os
+
+
+PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 
 
 class DeepONet(tf.keras.Model):
@@ -62,7 +68,8 @@ class DeepONet(tf.keras.Model):
         self.batch_size = hyper_params["batch_size"] if "batch_size" in hyper_params else 32
         self.verbose = hyper_params["verbose"] if "verbose" in hyper_params else 1
         self.loss_function = hyper_params["loss_function"] if "loss_function" in hyper_params else tf.losses.MeanSquaredError()
-    
+        self.device = hyper_params["device"] if "device" in hyper_params else 'cpu'
+        self.folder_path = None  
     
         
         
@@ -74,29 +81,64 @@ class DeepONet(tf.keras.Model):
     def trainable_variables(self): # for user experience to get the trainable variables, doesn't required by tf
         return self.internal_model.trainable_variables + self.external_model.trainable_variables
         
-    def predict(self,mu:tf.Tensor,x:tf.Tensor): # mu is the input function, x is the pointwise evaluation points
-        return tf.tensordot(self.internal_model(mu),self.external_model(x),axes=1) # just an easy dot product
+        
+        
+        
+    def predict(self, mu: tf.Tensor, x: tf.Tensor):
+        with tf.device(self.device):
+            # mu: [batch_size, d_p]
+            # x: [batch_size, n_points, 2] ou [batch_size, nx, ny, 2]
+           
+            coefficients = self.internal_model(mu)  # [batch_size, 40]
+            basis_evaluation = self.external_model(x)  # [batch_size, n_points, 40]
     
+            # Produit tensoriel
+            output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)
+            
+            # coefficients: [batch_size, d_V]
+            # basis: [batch_size, n_points, d_V]
+        return output
+    
+    
+    # in case you want to modify those models but not the other
     def set_internal_model(self,internal_model:tf.keras.Model): # for user experience to tune something
         self.internal_model = internal_model
         
     def set_external_model(self,external_model:tf.keras.Model): # for user experience to tune something
         self.external_model = external_model
+        
+        
+        
+        
+        
     
     
     ### Data loading ### Be careful with the data format, we can have various sensor points for parameters : for instance a specified mu function can require to get many more points to compute the exact solution
     def get_data(self,folder_path:str) -> tuple[tf.Tensor,tf.Tensor]: # typing is important
         
-        try: # error handling because it's critical
-            mus = np.load(folder_path + "mus.npy")
-            xs = np.load(folder_path + "xs.npy") 
-            ys = np.load(folder_path + "ys.npy")    
-        except:
-            logger.error(f"Data not found in {folder_path}")
-            raise ValueError(f"Data not found in {folder_path}")
+        true_path = os.path.join(PROJECT_ROOT,folder_path)
+        self.folder_path = true_path
         
-        return mus, xs, ys
+        try: # error handling because it's critical
+            
+            mu_files = [np.load(os.path.join(true_path,f"mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading mu data")]
+            x_files = [np.load(os.path.join(true_path,f"xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading x data")]
+            sol_files = [np.load(os.path.join(true_path,f"sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading y data")]
+            
+            
+            mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)
+            xs = tf.convert_to_tensor(x_files, dtype=tf.float32) 
+            sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
+            
+        except:
+            logger.error(f"Data not found in {true_path}")
+            raise ValueError(f"Data not found in {true_path}")
+        
+        return mus, xs, sol
     
+    
+    
+    # mandatory methods to be implemented for keras
     def call(self,mu:tf.Tensor,x:tf.Tensor)->tf.Tensor:
         return self.predict(mu,x)
     
@@ -109,28 +151,24 @@ class DeepONet(tf.keras.Model):
         self.internal_model.build(input_shape=(None,self.d_p))
         self.external_model.build(input_shape=(None,self.d_V))
     
-    def fit(self,device:str='cpu')->np.ndarray:
+    
+    
+    ### managing model training methods ###
+    def fit(self,device:str='cpu',mus=None,xs=None,sol=None,folder_path=None)->np.ndarray:
         
         # Get the functions and pointwise evaluation points
-        mus, xs, ys = self.get_data()
+        mus, xs, sol = self.get_data(self.folder_path)
         loss_history = []
-        if device != 'cpu': # not the best way to do it, but it works
-            mus = tf.convert_to_tensor(mus,dtype=tf.float32)
-            xs = tf.convert_to_tensor(xs,dtype=tf.float32)
-            ys = tf.convert_to_tensor(ys,dtype=tf.float32)
-            self.load_to_gpu()
-            
-            dataset = tf.data.Dataset.from_tensor_slices((mus,xs,ys)) # batching the data with batch size
-        else :
-            dataset = tf.data.Dataset.from_tensor_slices((mus,xs,ys))
+        with tf.device(device):
+            dataset = tf.data.Dataset.from_tensor_slices((mus,xs,sol)) # batching the data with batch size
         
-        dataset = dataset.batch(self.batch_size) # batching method from tensorflow
-        # Training loop
-        for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
-            for batch in dataset:
-                loss = self.optimizer.train_step(batch)
-                loss_history.append(loss)
-            logger.info(f"Epoch {epoch} completed")
+            dataset = dataset.batch(self.batch_size) # batching method from tensorflow
+            # Training loop
+            for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
+                for batch in dataset:
+                    loss = self.train_step(batch)
+                    loss_history.append(loss)
+                logger.info(f"Epoch {epoch} completed")
             
         return loss_history
         
@@ -150,6 +188,8 @@ class DeepONet(tf.keras.Model):
         return loss
             
             
+            
+    ## managing model saving methods        
     def save(self,save_path:str):  # error handling because it's also critical out there, we save a tensorflow model as a keras file
         if not os.path.exists(save_path):
             os.makedirs(save_path,exist_ok=True)
@@ -174,15 +214,3 @@ class DeepONet(tf.keras.Model):
             os.makedirs(save_path,exist_ok=True)
         
         self.save_weights(save_path)
-
-    def load_to_gpu(self):
-        
-        if tf.test.is_gpu_available():
-            with tf.device('/GPU:0'):
-                self.internal_model.to_gpu()
-                self.external_model.to_gpu()
-        else:
-            logger.warning("No GPU available, training will be slow")
-        
-    
-    
