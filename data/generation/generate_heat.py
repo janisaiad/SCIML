@@ -62,8 +62,8 @@ def create_heat_data(n_mu:int,nt:int,nx:int,ny:int,alpha:float=1.0)->tuple[np.nd
         
         np.save(f"data/test_data/example_data/heat2d/mu_{i}.npy",boundary_conditions)
         
-        X, Y = np.meshgrid(xs, ys)
-        points = np.column_stack((X.ravel(), Y.ravel()))
+        X, Y, T = np.meshgrid(xs, ys, t)
+        points = np.column_stack((X.ravel(), Y.ravel(), T.ravel()))
         np.save(f"data/test_data/example_data/heat2d/xs_{i}.npy",points)
         np.save(f"data/test_data/example_data/heat2d/sol_{i}.npy",sol)
         with open(f"data/test_data/example_data/heat2d/params.json", "w") as f:

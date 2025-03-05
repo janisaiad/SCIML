@@ -74,7 +74,7 @@ class DeepONet(tf.keras.Model):
         self.device = hyper_params["device"] if "device" in hyper_params else 'cpu'
         self.folder_path = None  
     
-        
+        self.output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
         
         
         logger.info(f"Model initialized with {self.n_epochs} epochs, {self.batch_size} batch size, {self.learning_rate} learning rate")
@@ -84,30 +84,37 @@ class DeepONet(tf.keras.Model):
     def trainable_variables(self): # for user experience to get the trainable variables, doesn't required by tf
         return self.internal_model.trainable_variables + self.external_model.trainable_variables
         
-        
-        
-        
     def predict(self, mu: tf.Tensor, x: tf.Tensor):
+        """
+        Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
+        """
         with tf.device(self.device):
-            # mu: [batch_size, d_p]
-            # x: [batch_size, n_points, 2] ou [batch_size, nx, ny, 2]
-            tf.print(mu.shape)
-            tf.print(x.shape)
-            coefficients = self.internal_model(mu)
-    
-            # reshape to get [batch_size, 40]
-            coefficients = tf.reshape(coefficients, [tf.shape(coefficients)[0], -1])[:, :self.d_V]
-            tf.print(coefficients.shape)
-            basis_evaluation = self.external_model(x)  # [batch_size, n_points, 40]
-            tf.print(basis_evaluation.shape)
-
-            # Produit tensoriel
-            output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)
-            tf.print(output.shape)
-            # coefficients: [batch_size, d_V]
-            # basis: [batch_size, n_points, d_V]
-        return output
-    
+            # Coefficients du branch network
+            coefficients = self.internal_model(mu)  # [batch, d_V]
+            
+            # Pour le trunk network, préserver la structure [batch, n_points, dim_coords]
+            batch_size = tf.shape(x)[0]
+            
+            # Si x est déjà au format [batch, n_points, dim_coords], le traiter directement
+            if len(x.shape) == 3:
+                # Aplatir pour traiter chaque point individuellement
+                n_points = tf.shape(x)[1]
+                x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
+                
+                # Traiter les points
+                basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V]
+                
+                # Restructurer
+                basis_evaluation = tf.reshape(basis_flat, [batch_size, n_points, -1])  # [batch, n_points, d_V]
+                
+                # Produit tensoriel pour DeepONet
+                output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # [batch, n_points]
+                
+                # Pas de reshape en structure spécifique - garder comme vecteur
+                return output
+            else:
+                # Si x est déjà aplati ou a une structure différente, message d'erreur
+                raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
     
     # in case you want to modify those models but not the other
     def set_internal_model(self,internal_model:tf.keras.Model): # for user experience to tune something
@@ -136,9 +143,15 @@ class DeepONet(tf.keras.Model):
             
             
             mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)
-            xs = tf.convert_to_tensor(x_files, dtype=tf.float32) 
-            sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
+            mus = tf.reshape(mus, [tf.shape(mus)[0], -1])
             
+            xs = tf.convert_to_tensor(x_files, dtype=tf.float32) 
+            if len(xs.shape) > 2:  
+                n_samples = xs.shape[0]
+                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])  # Reshape en [batch, n_points, dim_coords]
+        
+            sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
+            sol = tf.reshape(sol, [tf.shape(sol)[0], -1])
         except:
             logger.error(f"Data not found in {true_path}")
             raise ValueError(f"Data not found in {true_path}")
@@ -183,17 +196,22 @@ class DeepONet(tf.keras.Model):
         
             
         
-    def train_step(self,batch:tuple[tf.Tensor,tf.Tensor,tf.Tensor])->None:
-        mu,x,sol = batch
+    def train_step(self, batch: tuple[tf.Tensor, tf.Tensor, tf.Tensor]) -> tf.Tensor:
+        """
+        Étape d'entraînement simplifiée - minimum de code
+        """
+        mu, x, sol = batch
         
-        sol = tf.reshape(sol, [tf.shape(sol)[0], -1])[:, :self.d_V]
-        with tf.GradientTape() as tape: # gradient tape to compute the gradients
-            y_pred = self.predict(mu,x)
-            loss = self.loss_function(y_pred,sol)
+        with tf.GradientTape() as tape:
+            # Prédiction
+            y_pred = self.predict(mu, x)
             
-        # Backprop
-        gradients = tape.gradient(loss,self.trainable_variables)
-        self.optimizer.apply_gradients(zip(gradients,self.trainable_variables)) # apply the gradients to the model, which means updating the weights
+            # Calcul direct de la perte
+            loss = self.loss_function(y_pred, sol)
+        
+        # Backpropagation
+        gradients = tape.gradient(loss, self.trainable_variables)
+        self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
         
         return loss
             
