@@ -89,31 +89,26 @@ class DeepONet(tf.keras.Model):
         Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
         """
         with tf.device(self.device):
-            # Coefficients du branch network
+            #  branch network
             coefficients = self.internal_model(mu)  # [batch, d_V]
             
-            # Pour le trunk network, préserver la structure [batch, n_points, dim_coords]
+            #  trunk network,  [batch, n_points, dim_coords]
             batch_size = tf.shape(x)[0]
             
-            # Si x est déjà au format [batch, n_points, dim_coords], le traiter directement
+            # if x is already in the format [batch, n_points, dim_coords], treat it directly
             if len(x.shape) == 3:
-                # Aplatir pour traiter chaque point individuellement
+                # flatten to treat each point individually
                 n_points = tf.shape(x)[1]
                 x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
                 
-                # Traiter les points
                 basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V]
                 
-                # Restructurer
                 basis_evaluation = tf.reshape(basis_flat, [batch_size, n_points, -1])  # [batch, n_points, d_V]
                 
-                # Produit tensoriel pour DeepONet
                 output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # [batch, n_points]
                 
-                # Pas de reshape en structure spécifique - garder comme vecteur
                 return output
             else:
-                # Si x est déjà aplati ou a une structure différente, message d'erreur
                 raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
     
     # in case you want to modify those models but not the other
@@ -148,7 +143,7 @@ class DeepONet(tf.keras.Model):
             xs = tf.convert_to_tensor(x_files, dtype=tf.float32) 
             if len(xs.shape) > 2:  
                 n_samples = xs.shape[0]
-                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])  # Reshape en [batch, n_points, dim_coords]
+                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])  # reshape en [batch, n_points, dim_coords]
         
             sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
             sol = tf.reshape(sol, [tf.shape(sol)[0], -1])
@@ -178,14 +173,13 @@ class DeepONet(tf.keras.Model):
     ### managing model training methods ###
     def fit(self,device:str='cpu',mus=None,xs=None,sol=None,folder_path=None)->np.ndarray:
         
-        # Get the functions and pointwise evaluation points
         mus, xs, sol = self.get_data(self.folder_path)
         loss_history = []
         with tf.device(device):
             dataset = tf.data.Dataset.from_tensor_slices((mus,xs,sol)) # batching the data with batch size
         
             dataset = dataset.batch(self.batch_size) # batching method from tensorflow
-            # Training loop
+       
             for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
                 for batch in dataset:
                     loss = self.train_step(batch)
