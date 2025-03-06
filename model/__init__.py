@@ -1,5 +1,3 @@
-from .fno import FNO
-from .deeponet import DeepONet
+from . import deeponet
 
-__all__ = ["FNO", "DeepONet"]
-
+__all__ = ["deeponet"]
