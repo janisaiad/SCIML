@@ -1,13 +1,12 @@
 import numpy as np
 import tensorflow as tf
-import numpy as np
-import tensorflow as tf
 from typing import Tuple
 from tqdm import tqdm
 import logging # janis sauce to debug
 import os
 import dotenv
 
+from utils.utils import fourier_building
 dotenv.load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 
-class DeepONet(tf.keras.Model):
+class FNO(tf.keras.Model):
     ### FNO class ###
     def __init__(self, hyper_params: dict, regular_params: dict,fourier_params:dict): 
         """
@@ -28,7 +27,6 @@ class DeepONet(tf.keras.Model):
             - n_modes: number of modes in the fourier layers, default is 16, for future implementation I will make it a tuple, ie a number for each layer
             - activation: activation function for the fourier layers, default is ReLU
             - kernel_initializer: kernel initializer for the fourier layers, default is HeNormal
-            
             - kernel_initializer: kernel initializer for the fourier layers, default is HeNormal
             
         hyper_params: dict
@@ -96,27 +94,20 @@ class DeepONet(tf.keras.Model):
         Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
         """
         with tf.device(self.device):
-            #  branch network
-            coefficients = self.internal_model(mu)  # [batch, d_V]
+            #  first network
+            encoded_mu = self.first_network(mu)  # [batch, n_points, p_1]
             
-            #  trunk network,  [batch, n_points, dim_coords]
             batch_size = tf.shape(x)[0]
             
-            # if x is already in the format [batch, n_points, dim_coords], treat it directly
-            if len(x.shape) == 3:
-                # flatten to treat each point individually
-                n_points = tf.shape(x)[1]
-                x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
-                
-                basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V]
-                
-                basis_evaluation = tf.reshape(basis_flat, [batch_size, n_points, -1])  # [batch, n_points, d_V]
-                
-                output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # [batch, n_points]
-                
-                return output
-            else:
-                raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
+            #  fourier network,  [batch, n_points, p_2]
+            kernelized_mu = self.fourier_network(encoded_mu)
+            
+            #  last network
+            output = self.last_network(kernelized_mu)
+            
+            return output
+    
+    
     
     # in case you want to modify those models but not the other
     def set_first_network(self,first_network:tf.keras.Model): # for user experience to tune something
@@ -167,7 +158,10 @@ class DeepONet(tf.keras.Model):
         self.first_network.build(input_shape=(self.p_1,self.p_2))
         self.last_network.build(input_shape=(self.p_2,self.p_3))
     
-    def build_fourier_network(self):
+    def build_fourier_network(self):  # main function to build the fourier network and allow CuFFT for fourier efficient training (with my rtx 4060)
+        if self.fourier_network is None:
+            self.fourier_network = fourier_building(self.fourier_params["fourier_network"])
+            
         self.fourier_network.build(input_shape=(self.p_2))
     
     ### managing model training methods ###
@@ -230,3 +224,6 @@ class DeepONet(tf.keras.Model):
             os.makedirs(save_path,exist_ok=True)
         
         self.save_weights(save_path)
+        
+
+
