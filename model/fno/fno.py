@@ -6,7 +6,6 @@ import logging # janis sauce to debug
 import os
 import dotenv
 
-from utils.utils import fourier_building
 dotenv.load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +13,72 @@ logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 
+
+
+
+import tensorflow as tf
+import numpy as np
+
+
+class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication
+    def __init__(self, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal",device:str='cuda'):
+        super().__init__()
+        self.n_modes = n_modes
+        self.activation = activation
+        self.kernel_initializer = kernel_initializer
+        self.device = device
+        
+        if self.kernel_initializer == "he_normal":
+            self.fourier_weights = tf.Variable(tf.random.normal([n_modes]),trainable=True)
+        elif self.kernel_initializer == "uniform":
+            self.fourier_weights = tf.Variable(tf.random.uniform([n_modes]),trainable=True)
+        else:
+            raise ValueError(f"kernel_initializer not implemented: {self.kernel_initializer}")
+        
+    
+    
+    
+    def call(self, inputs: tf.Tensor) -> tf.Tensor: # to be used very gently with predict function of FNO
+        with tf.device(self.device):
+            x = tf.signal.fft(tf.cast(inputs, tf.complex64))
+                
+            x = x[:, :self.n_modes]  # get only n_modes frequencies    
+            x = x * tf.cast(self.fourier_weights, tf.complex64) # multiplication by the trainable weights with broadcasting
+            
+            x = tf.signal.ifft(x)
+            
+            x = tf.cast(tf.math.real(x), tf.float32) # real part issues
+        return x
+    
+    def add_weight(self,shape:tuple,initializer:str,trainable:bool,name:str):
+        with tf.device(self.device):
+            self.fourier_weights = tf.Variable(tf.random.normal(shape),trainable=trainable,name=name)
+    
+    def build(self, input_shape: tf.TensorShape):
+        self.fourier_weights = self.add_weight(shape=(input_shape[-1],),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
+
+    
+class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers, ie concatenation of fourier layers
+    def __init__(self, n_layers: int, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal"):
+        super().__init__()
+        self.n_layers = n_layers
+        self.n_modes = n_modes
+        self.activation = activation
+        self.kernel_initializer = kernel_initializer
+        self.fourier_layers = [FourierLayer(n_modes, activation, kernel_initializer) for _ in range(n_layers)]
+
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        for layer in self.fourier_layers:
+            inputs = layer(inputs)
+        return inputs
+    
+    def build(self, input_shape: tf.TensorShape):
+        for layer in self.fourier_layers:
+            layer.build(input_shape)
+            
+
+
+    
 class FNO(tf.keras.Model):
     ### FNO class ###
     def __init__(self, hyper_params: dict, regular_params: dict,fourier_params:dict): 
@@ -26,7 +91,6 @@ class FNO(tf.keras.Model):
             - n_layers: number of fourier layers in the model, default is 3
             - n_modes: number of modes in the fourier layers, default is 16, for future implementation I will make it a tuple, ie a number for each layer
             - activation: activation function for the fourier layers, default is ReLU
-            - kernel_initializer: kernel initializer for the fourier layers, default is HeNormal
             - kernel_initializer: kernel initializer for the fourier layers, default is HeNormal
             
         hyper_params: dict
@@ -44,7 +108,7 @@ class FNO(tf.keras.Model):
             - loss_function: tensorflow loss function for the model, default is MSE
             - device: device for inference and training the model on, default is 'cpu'
             
-        Remarks : regular params have their own (hyper)parameters, which are not passed to the model, it is constructed in the build_model function
+        remarks : regular params have their own (hyper)parameters, which are not passed to the model, it is constructed in the build_model function
         """
         
         super().__init__()
@@ -64,8 +128,8 @@ class FNO(tf.keras.Model):
         self.regular_params = regular_params
         self.fourier_params = fourier_params
         
-        self.first_network = self.regular_params["first_network"]
-        self.last_network = self.regular_params["last_network"]
+        self.first_network = self.regular_params["first_network"] # its a tensorflow model
+        self.last_network = self.regular_params["last_network"] # same
         self.fourier_network = self.fourier_params["fourier_network"] if "fourier_network" in self.fourier_params else self.build_fourier_network() # we can specify it or build it after
         
         self.p_1 = hyper_params["p_1"]
@@ -88,24 +152,32 @@ class FNO(tf.keras.Model):
     @property
     def trainable_variables(self): # for user experience to get the trainable variables, doesn't required by tf
         return self.first_network.trainable_variables + self.last_network.trainable_variables+self.fourier_network.trainable_variables
-        
+    
     def predict(self, mu: tf.Tensor, x: tf.Tensor):
         """
         Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
         """
+        
+        batch_size = tf.shape(x)[0]
+            
         with tf.device(self.device):
             #  first network
-            encoded_mu = self.first_network(mu)  # [batch, n_points, p_1]
-            
-            batch_size = tf.shape(x)[0]
+            first_network_output = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
             
             #  fourier network,  [batch, n_points, p_2]
-            kernelized_mu = self.fourier_network(encoded_mu)
+            kernelized_mu = self.fourier_network(first_network_output)  # [batch, n_points, p_2]
             
-            #  last network
-            output = self.last_network(kernelized_mu)
-            
-            return output
+            # if x is already in the format [batch, n_points, dim_coords], treat it directly
+            if len(x.shape) == 3:
+                # flatten to treat each point individually
+                n_points = tf.shape(x)[1]
+                x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
+                
+                last_network_output = self.last_network(kernelized_mu)  # [batch, n_points, p_3]
+                return last_network_output
+            else:
+                raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
+    
     
     
     
@@ -118,6 +190,9 @@ class FNO(tf.keras.Model):
         
     def set_fourier_network(self,fourier_network:tf.keras.Model): # for user experience to tune something
         self.fourier_network = fourier_network
+        
+        
+        
         
     ### Data loading ### Be careful with the data format, we can have various sensor points for parameters : for instance a specified mu function can require to get many more points to compute the exact solution
     def get_data(self,folder_path:str) -> tuple[tf.Tensor,tf.Tensor]: # typing is important
@@ -146,7 +221,9 @@ class FNO(tf.keras.Model):
         
         return mus, xs, sol
     
-    # mandatory methods to be implemented for keras
+
+    
+    # mandatory, we have an inference point of view
     def call(self,mu:tf.Tensor,x:tf.Tensor)->tf.Tensor:
         return self.predict(mu,x)
     
@@ -157,15 +234,20 @@ class FNO(tf.keras.Model):
     def build(self): # apparently also mandatory to build the model for tensorflow
         self.first_network.build(input_shape=(self.p_1,self.p_2))
         self.last_network.build(input_shape=(self.p_2,self.p_3))
+        self.fourier_network.build(input_shape=(self.p_2))
+    
+    
     
     def build_fourier_network(self):  # main function to build the fourier network and allow CuFFT for fourier efficient training (with my rtx 4060)
         if self.fourier_network is None:
-            self.fourier_network = fourier_building(self.fourier_params["fourier_network"])
+            self.fourier_network = FourierNetwork(self.fourier_params["n_layers"],self.fourier_params["n_modes"],self.fourier_params["activation"],self.fourier_params["kernel_initializer"])
             
         self.fourier_network.build(input_shape=(self.p_2))
     
+    
+    
     ### managing model training methods ###
-    def fit(self,device:str='cpu',mus=None,xs=None,sol=None,folder_path=None)->np.ndarray:
+    def fit(self,device:str='cpu',mus=None,xs=None,sol=None)->np.ndarray:
         
         mus, xs, sol = self.get_data(self.folder_path)
         loss_history = []
@@ -200,8 +282,14 @@ class FNO(tf.keras.Model):
         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
         
         return loss
+    
             
+    
     ## managing model saving methods        
+    
+    
+    
+    
     def save(self,save_path:str):  # error handling because it's also critical out there, we save a tensorflow model as a keras file
         if not os.path.exists(save_path):
             os.makedirs(save_path,exist_ok=True)
