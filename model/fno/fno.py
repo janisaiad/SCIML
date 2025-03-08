@@ -26,10 +26,10 @@ class LinearLayer(tf.keras.layers.Layer):
         self.n_modes = n_modes
         self.initializer = initializer
         self.device = device
-        self.linear_weights = None
     
     def call(self,inputs:tf.Tensor)->tf.Tensor:
-        return self.linear_weights(inputs) # we can use calling because it's a linear layer
+        with tf.device(self.device):
+            return inputs*self.linear_weights
 
     def build(self,input_shape:tf.TensorShape):
         self.linear_weights = self.add_weight(shape=(self.n_modes,),initializer=self.initializer,trainable=True,name="linear_weights")
