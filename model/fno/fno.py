@@ -20,21 +20,32 @@ import tensorflow as tf
 import numpy as np
 
 
-class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication
-    def __init__(self, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal",device:str='cuda'):
+class LinearLayer(tf.keras.layers.Layer):
+    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU'):
+        super().__init__()
+        self.n_modes = n_modes
+        self.initializer = initializer
+        self.device = device
+        self.linear_weights = None
+    
+    def call(self,inputs:tf.Tensor)->tf.Tensor:
+        return self.linear_weights(inputs) # we can use calling because it's a linear layer
+
+    def build(self,input_shape:tf.TensorShape):
+        self.linear_weights = self.add_weight(shape=(self.n_modes,),initializer=self.initializer,trainable=True,name="linear_weights")
+        
+        
+        
+
+class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication with a linear thing in parallel
+    def __init__(self, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal",device:str='GPU',linear_initializer:str='normal'):
         super().__init__()
         self.n_modes = n_modes
         self.activation = activation
         self.kernel_initializer = kernel_initializer
-        self.device = device
-        
-        if self.kernel_initializer == "he_normal":
-            self.fourier_weights = tf.Variable(tf.random.normal([n_modes]),trainable=True)
-        elif self.kernel_initializer == "uniform":
-            self.fourier_weights = tf.Variable(tf.random.uniform([n_modes]),trainable=True)
-        else:
-            raise ValueError(f"kernel_initializer not implemented: {self.kernel_initializer}")
-        
+        self.linear_initializer = linear_initializer
+        self.linear_weights = None
+        self.fourier_weights = None
     
     
     
@@ -48,14 +59,38 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
             x = tf.signal.ifft(x)
             
             x = tf.cast(tf.math.real(x), tf.float32) # real part issues
-        return x
+            
+            ## end of kernel part
+            
+            ## linear part
+            x = x * self.linear_weights
+            
+            ## end of linear part
+            
+            z = self.linear_weights(inputs)
+            
+        return self.activation(x+z)
+    
+    
+    
     
     def add_weight(self,shape:tuple,initializer:str,trainable:bool,name:str):
         with tf.device(self.device):
             self.fourier_weights = tf.Variable(tf.random.normal(shape),trainable=trainable,name=name)
     
     def build(self, input_shape: tf.TensorShape):
-        self.fourier_weights = self.add_weight(shape=(input_shape[-1],),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
+       
+        
+        if self.kernel_initializer == "he_normal":
+            self.fourier_weights = self.add_weight(shape=(self.n_modes,),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
+        elif self.kernel_initializer == "uniform":
+            self.fourier_weights = self.add_weight(shape=(self.n_modes,),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
+        else:
+            raise ValueError(f"kernel_initializer not implemented: {self.kernel_initializer}")
+        
+        self.linear_weights = LinearLayer(self.n_modes,self.linear_initializer,self.device)
+    
+        super().build(input_shape)
 
     
 class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers, ie concatenation of fourier layers
@@ -93,6 +128,8 @@ class FNO(tf.keras.Model):
             - activation: activation function for the fourier layers, default is ReLU
             - kernel_initializer: kernel initializer for the fourier layers, default is HeNormal
             
+            fourier_network: tensorflow model for the fourier layers, default is None, built in the build_fourier_network function
+            
         hyper_params: dict
             ### Model parameters ###
             - p_1: dimension of the input space for input function, number of grid points in the encoder
@@ -113,7 +150,7 @@ class FNO(tf.keras.Model):
         
         super().__init__()
         
-        required_params = ["internal_model","external_model","fourier_params"]
+        required_params = ["first_network","last_network","fourier_params"]
         for param in required_params:
             if param not in regular_params:
                 logger.error(f"Required parameter {param} not found in regular_params")
@@ -130,12 +167,15 @@ class FNO(tf.keras.Model):
         
         self.first_network = self.regular_params["first_network"] # its a tensorflow model
         self.last_network = self.regular_params["last_network"] # same
-        self.fourier_network = self.fourier_params["fourier_network"] if "fourier_network" in self.fourier_params else self.build_fourier_network() # we can specify it or build it after
+        self.fourier_network = self.fourier_params["fourier_network"] if "fourier_network" in self.fourier_params else None # we can specify it or build it after
         
         self.p_1 = hyper_params["p_1"]
         self.p_2 = hyper_params["p_2"]    
         self.p_3 = hyper_params["p_3"]
         
+        
+        
+        # optimisation stuff
         self.learning_rate = hyper_params["learning_rate"] if "learning_rate" in hyper_params else 0.001
         self.optimizer = hyper_params["optimizer"] if "optimizer" in hyper_params else tf.optimizers.Adam(self.learning_rate) # AdamW to be added after
         self.n_epochs = hyper_params["n_epochs"] if "n_epochs" in hyper_params else 100
@@ -146,6 +186,10 @@ class FNO(tf.keras.Model):
         self.folder_path = None  
     
         self.output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
+        
+        
+        self.build()
+        
         
         logger.info(f"Model initialized with {self.n_epochs} epochs, {self.batch_size} batch size, {self.learning_rate} learning rate")
     
@@ -164,7 +208,7 @@ class FNO(tf.keras.Model):
             #  first network
             first_network_output = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
             
-            #  fourier network,  [batch, n_points, p_2]
+            #  fourier network,  [batch, n_points, p_2] -> [batch, p_3]
             kernelized_mu = self.fourier_network(first_network_output)  # [batch, n_points, p_2]
             
             # if x is already in the format [batch, n_points, dim_coords], treat it directly
@@ -231,10 +275,13 @@ class FNO(tf.keras.Model):
         self.optimizer = self.hyper_params["optimizer"] if "optimizer" in self.hyper_params else tf.optimizers.Adam(self.learning_rate)
         self.loss_function = self.hyper_params["loss_function"] if "loss_function" in self.hyper_params else tf.losses.MeanSquaredError()
     
+    
+    
+    
     def build(self): # apparently also mandatory to build the model for tensorflow
-        self.first_network.build(input_shape=(self.p_1,self.p_2))
-        self.last_network.build(input_shape=(self.p_2,self.p_3))
-        self.fourier_network.build(input_shape=(self.p_2))
+        self.first_network.build()
+        self.last_network.build()
+        self.build_fourier_network()
     
     
     
@@ -242,7 +289,7 @@ class FNO(tf.keras.Model):
         if self.fourier_network is None:
             self.fourier_network = FourierNetwork(self.fourier_params["n_layers"],self.fourier_params["n_modes"],self.fourier_params["activation"],self.fourier_params["kernel_initializer"])
             
-        self.fourier_network.build(input_shape=(self.p_2))
+        self.fourier_network.build(input_shape=(self.p_2,))
     
     
     
