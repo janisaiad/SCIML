@@ -66,11 +66,11 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         with tf.device(self.device):
             # Partie Fourier
-            x = tf.signal.fft(tf.cast(inputs, tf.complex64))
-            x = x[:, :self.n_modes]
-            x = x * tf.cast(self.fourier_weights, tf.complex64)
-            x = tf.signal.ifft(x) # here the dimension is [batch, n_points, dim_coords]
-            x = tf.cast(tf.math.real(x), tf.float32)
+            x_complex = tf.signal.fft(tf.cast(inputs, tf.complex64))
+            x_complex = x_complex[:, :self.n_modes]
+            x_complex = x_complex * tf.cast(self.fourier_weights, tf.complex64)
+            x = tf.signal.ifft(x_complex) # here the dimension is [batch, n_points, dim_coords]
+            x = tf.math.real(x)
             
             # Partie linéaire - utiliser la couche linéaire correctement
             z = self.linear_layer(inputs) #  the dimension is [batch, n_points, dim_coords]
