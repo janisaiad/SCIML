@@ -41,11 +41,12 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
     def __init__(self, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal",device:str='GPU',linear_initializer:str='normal'):
         super().__init__()
         self.n_modes = n_modes
-        self.activation = activation
+        self.activation = tf.keras.activations.get(activation)
         self.kernel_initializer = kernel_initializer
         self.linear_initializer = linear_initializer
         self.linear_weights = None
         self.fourier_weights = None
+        self.device = device
     
     
     
@@ -72,24 +73,11 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         return self.activation(x+z)
     
     
-    
-    
-    def add_weight(self,shape:tuple,initializer:str,trainable:bool,name:str):
-        with tf.device(self.device):
-            self.fourier_weights = tf.Variable(tf.random.normal(shape),trainable=trainable,name=name)
-    
     def build(self, input_shape: tf.TensorShape):
-       
-        
-        if self.kernel_initializer == "he_normal":
-            self.fourier_weights = self.add_weight(shape=(self.n_modes,),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
-        elif self.kernel_initializer == "uniform":
-            self.fourier_weights = self.add_weight(shape=(self.n_modes,),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
-        else:
-            raise ValueError(f"kernel_initializer not implemented: {self.kernel_initializer}")
+        self.fourier_weights = self.add_weight(shape=(self.n_modes,),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
         
         self.linear_weights = LinearLayer(self.n_modes,self.linear_initializer,self.device)
-    
+        self.linear_weights.build(input_shape)
         super().build(input_shape)
 
     
@@ -150,7 +138,7 @@ class FNO(tf.keras.Model):
         
         super().__init__()
         
-        required_params = ["first_network","last_network","fourier_params"]
+        required_params = ["first_network","last_network"]
         for param in required_params:
             if param not in regular_params:
                 logger.error(f"Required parameter {param} not found in regular_params")
@@ -188,7 +176,7 @@ class FNO(tf.keras.Model):
         self.output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
         
         
-        self.build()
+        self.build() # most important to build the model
         
         
         logger.info(f"Model initialized with {self.n_epochs} epochs, {self.batch_size} batch size, {self.learning_rate} learning rate")
@@ -278,23 +266,23 @@ class FNO(tf.keras.Model):
     
     
     
-    def build(self): # apparently also mandatory to build the model for tensorflow
-        self.first_network.build()
-        self.last_network.build()
+    def build(self) -> None: # apparently also mandatory to build the model for tensorflow, typed to understand
+        self.first_network.build(input_shape=(None,self.p_1))
+        self.last_network.build(input_shape=(None,self.p_2))
         self.build_fourier_network()
     
     
     
-    def build_fourier_network(self):  # main function to build the fourier network and allow CuFFT for fourier efficient training (with my rtx 4060)
+    def build_fourier_network(self) -> None:  # main function to build the fourier network and allow CuFFT for fourier efficient training (with my rtx 4060)
         if self.fourier_network is None:
             self.fourier_network = FourierNetwork(self.fourier_params["n_layers"],self.fourier_params["n_modes"],self.fourier_params["activation"],self.fourier_params["kernel_initializer"])
             
-        self.fourier_network.build(input_shape=(self.p_2,))
+        self.fourier_network.build(input_shape=(None,self.p_2))
     
     
     
     ### managing model training methods ###
-    def fit(self,device:str='cpu',mus=None,xs=None,sol=None)->np.ndarray:
+    def fit(self,device:str='GPU',mus=None,xs=None,sol=None)->np.ndarray:
         
         mus, xs, sol = self.get_data(self.folder_path)
         loss_history = []
