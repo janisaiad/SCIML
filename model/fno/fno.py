@@ -38,47 +38,42 @@ class LinearLayer(tf.keras.layers.Layer):
         
 
 class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication with a linear thing in parallel
-    def __init__(self, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal",device:str='GPU',linear_initializer:str='normal'):
+    def __init__(self, n_modes: int, activation: str = "relu", kernel_initializer: str = "he_normal", device:str='GPU', linear_initializer:str='normal'):
         super().__init__()
         self.n_modes = n_modes
         self.activation = tf.keras.activations.get(activation)
         self.kernel_initializer = kernel_initializer
         self.linear_initializer = linear_initializer
-        self.linear_weights = None
-        self.fourier_weights = None
         self.device = device
     
-    
-    
-    def call(self, inputs: tf.Tensor) -> tf.Tensor: # to be used very gently with predict function of FNO
-        with tf.device(self.device):
-            x = tf.signal.fft(tf.cast(inputs, tf.complex64))
-                
-            x = x[:, :self.n_modes]  # get only n_modes frequencies    
-            x = x * tf.cast(self.fourier_weights, tf.complex64) # multiplication by the trainable weights with broadcasting
-            
-            x = tf.signal.ifft(x)
-            
-            x = tf.cast(tf.math.real(x), tf.float32) # real part issues
-            
-            ## end of kernel part
-            
-            ## linear part
-            x = x * self.linear_weights
-            
-            ## end of linear part
-            
-            z = self.linear_weights(inputs)
-            
-        return self.activation(x+z)
-    
-    
     def build(self, input_shape: tf.TensorShape):
-        self.fourier_weights = self.add_weight(shape=(self.n_modes,),initializer=self.kernel_initializer,trainable=True,name="fourier_weights")
+        # Poids de Fourier
+        self.fourier_weights = self.add_weight(
+            shape=(self.n_modes,),
+            initializer=self.kernel_initializer,
+            trainable=True,
+            name="fourier_weights"
+        )
         
-        self.linear_weights = LinearLayer(self.n_modes,self.linear_initializer,self.device)
-        self.linear_weights.build(input_shape)
+        # Poids linéaires
+        self.linear_layer = LinearLayer(self.n_modes, self.linear_initializer, self.device)
+        self.linear_layer.build(input_shape)
         super().build(input_shape)
+
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        with tf.device(self.device):
+            # Partie Fourier
+            x = tf.signal.fft(tf.cast(inputs, tf.complex64))
+            x = x[:, :self.n_modes]
+            x = x * tf.cast(self.fourier_weights, tf.complex64)
+            x = tf.signal.ifft(x)
+            x = tf.cast(tf.math.real(x), tf.float32)
+            
+            # Partie linéaire - utiliser la couche linéaire correctement
+            z = self.linear_layer(inputs)
+            
+            # Combiner les deux chemins
+            return self.activation(x + z)
 
     
 class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers, ie concatenation of fourier layers
@@ -347,6 +342,3 @@ class FNO(tf.keras.Model):
             os.makedirs(save_path,exist_ok=True)
         
         self.save_weights(save_path)
-        
-
-
