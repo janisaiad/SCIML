@@ -29,7 +29,10 @@ class LinearLayer(tf.keras.layers.Layer):
     
     def call(self,inputs:tf.Tensor)->tf.Tensor:
         with tf.device(self.device):
-            return inputs*self.linear_weights
+            if len(inputs.shape) == 2:
+                return inputs[:,:self.n_modes]*self.linear_weights
+            else:
+                raise ValueError(f"Format des inputs incorrect. Attendu [batch, n_points, dim_coords], reçu {inputs.shape}")
 
     def build(self,input_shape:tf.TensorShape):
         self.linear_weights = self.add_weight(shape=(self.n_modes,),initializer=self.initializer,trainable=True,name="linear_weights")
@@ -66,11 +69,11 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
             x = tf.signal.fft(tf.cast(inputs, tf.complex64))
             x = x[:, :self.n_modes]
             x = x * tf.cast(self.fourier_weights, tf.complex64)
-            x = tf.signal.ifft(x)
+            x = tf.signal.ifft(x) # here the dimension is [batch, n_points, dim_coords]
             x = tf.cast(tf.math.real(x), tf.float32)
             
             # Partie linéaire - utiliser la couche linéaire correctement
-            z = self.linear_layer(inputs)
+            z = self.linear_layer(inputs) #  the dimension is [batch, n_points, dim_coords]
             
             # Combiner les deux chemins
             return self.activation(x + z)
@@ -186,7 +189,8 @@ class FNO(tf.keras.Model):
         """
         
         batch_size = tf.shape(x)[0]
-            
+        n_points = tf.shape(x)[1]
+        
         with tf.device(self.device):
             #  first network
             first_network_output = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
