@@ -1,3 +1,3 @@
-from model import DeepONet
+from . import utils
 
-__all__ = ["DeepONet"]
+__all__ = ["utils"]
