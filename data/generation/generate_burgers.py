@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 import json
 import os
 
-def solve_burgers_square(initial_conditions:np.ndarray, t:np.ndarray, x:np.ndarray, y:np.ndarray, nu:float=0.01)->np.ndarray:
-    """
-    Solve 2D Burgers equation with periodic boundary conditions using a simple explicit scheme
-    u_t + u*u_x + v*u_y = nu*(u_xx + u_yy)
-    v_t + u*v_x + v*v_y = nu*(v_xx + v_yy)
-    """
+def solve_burgers_square(initial_conditions:np.ndarray, t:np.ndarray, x:np.ndarray, y:np.ndarray)->np.ndarray:
+    '''
+    Solve 2D inviscid Burgers equation with periodic BC using Godunov scheme
+    # Format: (2,nt,nx,ny) for (u,v) components
+    # Equations:
+    # u_t + u*u_x + v*u_y = 0
+    # v_t + u*v_x + v*v_y = 0
+    '''
     nx, ny = len(x), len(y)
     nt = len(t)
     
@@ -19,16 +21,15 @@ def solve_burgers_square(initial_conditions:np.ndarray, t:np.ndarray, x:np.ndarr
     u = np.zeros((nt, nx, ny))
     v = np.zeros((nt, nx, ny))
     
-    # Set initial conditions
     u[0] = initial_conditions[0]
     v[0] = initial_conditions[1]
     
     for n in tqdm(range(1, nt), desc="Solving Burgers equation"):
         dt = t[n] - t[n-1]
         
-        # Copy previous timestep
-        u[n] = u[n-1].copy()
-        v[n] = v[n-1].copy()
+        # CFL condition
+        max_speed = max(np.max(abs(u[n-1])), np.max(abs(v[n-1])))
+        dt = min(dt, 0.5*min(dx,dy)/max_speed) if max_speed > 0 else dt
         
         for i in range(nx):
             for j in range(ny):
@@ -38,31 +39,39 @@ def solve_burgers_square(initial_conditions:np.ndarray, t:np.ndarray, x:np.ndarr
                 jp1 = (j + 1) % ny
                 jm1 = (j - 1) % ny
                 
-                # Compute spatial derivatives
-                u_x = (u[n-1, ip1, j] - u[n-1, im1, j]) / (2*dx)
-                u_y = (u[n-1, i, jp1] - u[n-1, i, jm1]) / (2*dy)
-                u_xx = (u[n-1, ip1, j] - 2*u[n-1, i, j] + u[n-1, im1, j]) / dx**2
-                u_yy = (u[n-1, i, jp1] - 2*u[n-1, i, j] + u[n-1, i, jm1]) / dy**2
+                # Godunov flux for u
+                if u[n-1,i,j] >= 0:
+                    flux_x_u = u[n-1,i,j]**2/2 - u[n-1,im1,j]**2/2
+                else:
+                    flux_x_u = u[n-1,ip1,j]**2/2 - u[n-1,i,j]**2/2
+                    
+                if v[n-1,i,j] >= 0:
+                    flux_y_u = u[n-1,i,j]*v[n-1,i,j] - u[n-1,i,jm1]*v[n-1,i,jm1]
+                else:
+                    flux_y_u = u[n-1,i,jp1]*v[n-1,i,jp1] - u[n-1,i,j]*v[n-1,i,j]
                 
-                v_x = (v[n-1, ip1, j] - v[n-1, im1, j]) / (2*dx)
-                v_y = (v[n-1, i, jp1] - v[n-1, i, jm1]) / (2*dy)
-                v_xx = (v[n-1, ip1, j] - 2*v[n-1, i, j] + v[n-1, im1, j]) / dx**2
-                v_yy = (v[n-1, i, jp1] - 2*v[n-1, i, j] + v[n-1, i, jm1]) / dy**2
+                # Godunov flux for v
+                if u[n-1,i,j] >= 0:
+                    flux_x_v = u[n-1,i,j]*v[n-1,i,j] - u[n-1,im1,j]*v[n-1,im1,j]
+                else:
+                    flux_x_v = u[n-1,ip1,j]*v[n-1,ip1,j] - u[n-1,i,j]*v[n-1,i,j]
+                    
+                if v[n-1,i,j] >= 0:
+                    flux_y_v = v[n-1,i,j]**2/2 - v[n-1,i,jm1]**2/2
+                else:
+                    flux_y_v = v[n-1,i,jp1]**2/2 - v[n-1,i,j]**2/2
                 
-                # Update u and v
-                u[n, i, j] = u[n-1, i, j] - dt * (u[n-1, i, j]*u_x + v[n-1, i, j]*u_y - nu*(u_xx + u_yy))
-                v[n, i, j] = v[n-1, i, j] - dt * (u[n-1, i, j]*v_x + v[n-1, i, j]*v_y - nu*(v_xx + v_yy))
+                # Update
+                u[n,i,j] = u[n-1,i,j] - dt/dx * flux_x_u - dt/dy * flux_y_u
+                v[n,i,j] = v[n-1,i,j] - dt/dx * flux_x_v - dt/dy * flux_y_v
     
     return np.stack([u, v])
 
-def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int, nu:float=0.01)->tuple[np.ndarray,np.ndarray,np.ndarray]:
+def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int)->tuple[np.ndarray,np.ndarray,np.ndarray]:
     """Generate data for different initial conditions"""
-    
-    # Create output directory if it doesn't exist
     os.makedirs("data/test_data/example_data/burgers2d", exist_ok=True)
     
     for i in tqdm(range(n_mu), desc="Creating Burgers data"):
-        # Create random initial conditions with different frequencies
         kx = np.random.randint(1, 4)
         ky = np.random.randint(1, 4)
         
@@ -70,17 +79,13 @@ def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int, nu:float=0.01)->tuple[
         y = np.linspace(0, 2*np.pi, ny)
         X, Y = np.meshgrid(x, y)
         
-        # Initial conditions: random combination of sine waves
         u0 = np.sin(kx*X) * np.cos(ky*Y)
         v0 = np.cos(kx*X) * np.sin(ky*Y)
         initial_conditions = np.array([u0, v0])
         
         t = np.linspace(0, 1, nt)
+        sol = solve_burgers_square(initial_conditions, t, x, y)
         
-        # Solve Burgers equation
-        sol = solve_burgers_square(initial_conditions, t, x, y, nu)
-        
-        # Save data
         X, Y, T = np.meshgrid(x, y, t)
         points = np.column_stack((X.ravel(), Y.ravel(), T.ravel()))
         
@@ -94,10 +99,8 @@ def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int, nu:float=0.01)->tuple[
                 "ky": int(ky),
                 "nt": nt,
                 "nx": nx,
-                "ny": ny,
-                "nu": nu
+                "ny": ny
             }, f)
 
 if __name__ == "__main__":
-    create_burgers_data(n_mu=40, nt=20, nx=32, ny=32, nu=0.01)
-    # Note: For stability, ensure dt < min(dx,dy)^2/(4*nu) and dt < min(dx,dy)/max(|u|,|v|)
+    create_burgers_data(n_mu=40, nt=20, nx=32, ny=32)
