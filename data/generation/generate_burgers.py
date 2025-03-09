@@ -68,19 +68,21 @@ def solve_burgers_square(initial_conditions:np.ndarray, t:np.ndarray, x:np.ndarr
     return np.stack([u, v])
 
 def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int)->tuple[np.ndarray,np.ndarray,np.ndarray]:
-    """Generate data for different initial conditions"""
+    """Generate data for different initial conditions with uniform transport velocities"""
     os.makedirs("data/test_data/example_data/burgers2d", exist_ok=True)
     
     for i in tqdm(range(n_mu), desc="Creating Burgers data"):
-        kx = np.random.randint(1, 4)
-        ky = np.random.randint(1, 4)
+        # Random uniform velocities between -1 and 1
+        u_speed = np.random.uniform(-1, 1)
+        v_speed = np.random.uniform(-1, 1)
         
         x = np.linspace(0, 2*np.pi, nx)
         y = np.linspace(0, 2*np.pi, ny)
         X, Y = np.meshgrid(x, y)
         
-        u0 = np.sin(kx*X) * np.cos(ky*Y)
-        v0 = np.cos(kx*X) * np.sin(ky*Y)
+        # Uniform velocity field - same speed at every point
+        u0 = np.ones((nx, ny)) * u_speed
+        v0 = np.ones((nx, ny)) * v_speed
         initial_conditions = np.array([u0, v0])
         
         t = np.linspace(0, 1, nt)
@@ -95,8 +97,8 @@ def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int)->tuple[np.ndarray,np.n
         
         with open(f"data/test_data/example_data/burgers2d/params.json", "w") as f:
             json.dump({
-                "kx": int(kx),
-                "ky": int(ky),
+                "u_speed": float(u_speed),
+                "v_speed": float(v_speed),
                 "nt": nt,
                 "nx": nx,
                 "ny": ny
