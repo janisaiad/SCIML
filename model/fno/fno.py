@@ -63,7 +63,7 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         self.linear_layer.build(input_shape)
         super().build(input_shape)
 
-    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+    def call(self, inputs: tf.Tensor) -> tf.Tensor: # the fft is spatial so the last coordinate is the time and should not be taken into account
         with tf.device(self.device):
             # Partie Fourier
             x_complex = tf.signal.fft(tf.cast(inputs, tf.complex64))
@@ -121,6 +121,9 @@ class FNO(tf.keras.Model):
             - p_1: dimension of the input space for input function, number of grid points in the encoder
             - p_2: dimension of the encoder space for internal fourier layers, number of basis functions to be learned
             - p_3: dimension of the decoder space for output function, number of modes in the fourier layers
+            - index: time index for the training, default is 1
+            
+            
             
             ### Training parameters ###
             - learning_rate: learning rate for the optimizer, default is 0.001
@@ -183,31 +186,26 @@ class FNO(tf.keras.Model):
     def trainable_variables(self): # for user experience to get the trainable variables, doesn't required by tf
         return self.first_network.trainable_variables + self.last_network.trainable_variables+self.fourier_network.trainable_variables
     
+    
+    
+    
+    
     def predict(self, mu: tf.Tensor, x: tf.Tensor):
-        """
-        Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
-        """
+       
         
         batch_size = tf.shape(x)[0]
         n_points = tf.shape(x)[1]
-        
         with tf.device(self.device):
             #  first network
-            first_network_output = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
+            features = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
             
             #  fourier network,  [batch, n_points, p_2] -> [batch, p_3]
-            kernelized_mu = self.fourier_network(first_network_output)  # [batch, n_points, p_2]
+            fourier_features = self.fourier_network(features)  # [batch, p_2]
+
+            # last network, [batch, n_points, p_3] -> [batch, n_points]
+            output_tensor = self.last_network(fourier_features)
             
-            # if x is already in the format [batch, n_points, dim_coords], treat it directly
-            if len(x.shape) == 3:
-                # flatten to treat each point individually
-                n_points = tf.shape(x)[1]
-                x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
-                
-                last_network_output = self.last_network(kernelized_mu)  # [batch, n_points, p_3]
-                return last_network_output
-            else:
-                raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
+            return output_tensor
     
     
     
@@ -243,9 +241,13 @@ class FNO(tf.keras.Model):
             if len(xs.shape) > 2:  
                 n_samples = xs.shape[0]
                 xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])  # reshape en [batch, n_points, dim_coords]
-        
+            
+
             sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
-            sol = tf.reshape(sol, [tf.shape(sol)[0], -1])
+            sol_reshaped = tf.reshape(sol, [tf.shape(xs)[:-1], -1]) # which means [batch, n_points,dim_coords]
+            
+            index = self.hyper_params["index"]
+            sol = sol_reshaped[..., index]  # [...] keeps all dims except last (time) dim
         except:
             logger.error(f"Data not found in {true_path}")
             raise ValueError(f"Data not found in {true_path}")
