@@ -224,35 +224,62 @@ class FNO(tf.keras.Model):
         
         
     ### Data loading ### Be careful with the data format, we can have various sensor points for parameters : for instance a specified mu function can require to get many more points to compute the exact solution
-    def get_data(self,folder_path:str) -> tuple[tf.Tensor,tf.Tensor]: # typing is important
-        
-        true_path = os.path.join(PROJECT_ROOT,folder_path)
+    def get_data(self, folder_path: str):
+        true_path = os.path.join(PROJECT_ROOT, folder_path)
         self.folder_path = true_path
         
-        try: # error handling because it's critical
-            mu_files = [np.load(os.path.join(true_path,f"mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading mu data")]
-            x_files = [np.load(os.path.join(true_path,f"xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading x data")]
-            sol_files = [np.load(os.path.join(true_path,f"sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading y data")]
+        try:
+           
+            mu_files = [np.load(os.path.join(true_path, f"mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading mu data")]
+            x_files = [np.load(os.path.join(true_path, f"xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading x data")]
+            sol_files = [np.load(os.path.join(true_path, f"sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading y data")]
             
+           
             mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)
-            mus = tf.reshape(mus, [tf.shape(mus)[0], -1])
+            mus = tf.reshape(mus, [tf.shape(mus)[0], -1])  # [batch, 400]
             
-            xs = tf.convert_to_tensor(x_files, dtype=tf.float32) 
-            if len(xs.shape) > 2:  
+            
+            xs = tf.convert_to_tensor(x_files, dtype=tf.float32)
+            if len(xs.shape) > 2:
+                
                 n_samples = xs.shape[0]
-                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])  # reshape en [batch, n_points, dim_coords]
+                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])
+                
+                
+                time_index = self.hyper_params.get("index", 0)
+                n_points_per_time = 400  # 20×20 points
+                
+                
+                start_idx = time_index * n_points_per_time
+                end_idx = start_idx + n_points_per_time
+                
+                
+                xs_at_time = xs[:, start_idx:end_idx, :]
+                
+                
+                xs_spatial = xs_at_time[:, :, :2]  # [batch, 400, 2]
+                xs = xs_spatial
             
-
+            
             sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
-            sol_reshaped = tf.reshape(sol, [tf.shape(xs)[:-1], -1]) # which means [batch, n_points,dim_coords]
             
-            index = self.hyper_params["index"]
-            sol = sol_reshaped[..., index]  # [...] keeps all dims except last (time) dim
-        except:
-            logger.error(f"Data not found in {true_path}")
-            raise ValueError(f"Data not found in {true_path}")
+            
+            sol = tf.reshape(sol, [tf.shape(sol)[0], 20, 400])
+            
+            
+            time_index = self.hyper_params.get("index", 0)
+            sol = sol[:, time_index, :]  # [batch, 400]
+            
+            print(f"Dimensions après extraction du temps {time_index}:")
+            print(f"mus: {mus.shape}")
+            print(f"xs: {xs.shape}")
+            print(f"sol: {sol.shape}")
+            
+            return mus, xs, sol
         
-        return mus, xs, sol
+        except Exception as e:
+            logger.error(f"Erreur lors du chargement des données: {str(e)}")
+            raise ValueError(f"Échec du chargement des données: {str(e)}")
     
 
     
