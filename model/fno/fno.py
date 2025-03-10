@@ -50,7 +50,7 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         self.device = device
     
     def build(self, input_shape: tf.TensorShape):
-        # Poids de Fourier
+        
         self.fourier_weights = self.add_weight(
             shape=(self.n_modes,),
             initializer=self.kernel_initializer,
@@ -58,24 +58,24 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
             name="fourier_weights"
         )
         
-        # Poids linéaires
+        
         self.linear_layer = LinearLayer(self.n_modes, self.linear_initializer, self.device)
         self.linear_layer.build(input_shape)
         super().build(input_shape)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor: # the fft is spatial so the last coordinate is the time and should not be taken into account
         with tf.device(self.device):
-            # Partie Fourier
-            x_complex = tf.signal.fft(tf.cast(inputs, tf.complex64))
-            x_complex = x_complex[:, :self.n_modes]
-            x_complex = x_complex * tf.cast(self.fourier_weights, tf.complex64)
-            x = tf.signal.ifft(x_complex) # here the dimension is [batch, n_points, dim_coords]
-            x = tf.math.real(x)
+        
+            x = tf.signal.rfftnd(tf.cast(inputs, tf.complex64))
+            x = x[:, :self.n_modes]
+            x = x * tf.cast(self.fourier_weights, tf.complex64)
+            x = tf.signal.irfftnd(x) # keep in mind that here the dimension is [batch, n_points, dim_coords]
+            # to be made complex after
             
-            # Partie linéaire - utiliser la couche linéaire correctement
+        
             z = self.linear_layer(inputs) #  the dimension is [batch, n_points, dim_coords]
             
-            # Combiner les deux chemins
+            
             return self.activation(x + z)
 
     
@@ -334,13 +334,13 @@ class FNO(tf.keras.Model):
         mu, x, sol = batch
         
         with tf.GradientTape() as tape:
-            # Prédiction
+            
             y_pred = self.predict(mu, x)
             
-            # Calcul direct de la perte
+           
             loss = self.loss_function(y_pred, sol)
         
-        # Backpropagation
+        
         gradients = tape.gradient(loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
         
