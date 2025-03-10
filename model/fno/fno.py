@@ -220,13 +220,13 @@ class DeepONet(tf.keras.Model):
         mu, x, sol = batch
         
         with tf.GradientTape() as tape:
-            # Prédiction
+            
             y_pred = self.predict(mu, x)
             
-            # Calcul direct de la perte
+           
             loss = self.loss_function(y_pred, sol)
         
-        # Backpropagation
+        
         gradients = tape.gradient(loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
         
