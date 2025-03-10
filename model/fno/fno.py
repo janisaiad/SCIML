@@ -66,10 +66,10 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
     def call(self, inputs: tf.Tensor) -> tf.Tensor: # the fft is spatial so the last coordinate is the time and should not be taken into account
         with tf.device(self.device):
         
-            x = tf.signal.rfftnd(tf.cast(inputs, tf.complex64),axis=1) # here the dimension of x after this operation is [batch, n_points, dim_coords] with dim_coords = 2
+            x = tf.rfftnd(tf.cast(inputs, tf.complex64),axis=1) # here the dimension of x after this operation is [batch, n_points, dim_coords] with dim_coords = 2
             x = x[:, :self.n_modes,:] # because  
             x = x * tf.cast(self.fourier_weights, tf.complex64)
-            x = tf.signal.irfftnd(x,axis=1) # keep in mind that here the dimension is [batch, n_points, dim_coords]
+            x = tf.irfftnd(x,axis=1) # keep in mind that here the dimension is [batch, n_points, dim_coords]
             # to be made complex after
             
         
