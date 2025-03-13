@@ -5,6 +5,8 @@ from tqdm import tqdm
 import logging # janis sauce to debug
 import os
 import dotenv
+import json
+
 
 dotenv.load_dotenv()
 
@@ -35,6 +37,7 @@ class LinearLayer(tf.keras.layers.Layer):
                 raise ValueError(f"Format des inputs incorrect. Attendu [batch, n_points, dim_coords], reçu {inputs.shape}")
 
     def build(self,input_shape:tf.TensorShape):
+        # this is a 2d tensor of shape [n_coords,n_coords]
         self.linear_weights = self.add_weight(shape=(self.n_modes,),initializer=self.initializer,trainable=True,name="linear_weights")
         
         
@@ -50,6 +53,8 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         self.device = device
     
     def build(self, input_shape: tf.TensorShape):
+        # this is a 3d tensor of shape [n_modes,n_coords,n_coords]
+        
         
         self.fourier_weights = self.add_weight(
             shape=(self.n_modes,),
@@ -62,22 +67,28 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         self.linear_layer = LinearLayer(self.n_modes, self.linear_initializer, self.device)
         self.linear_layer.build(input_shape)
         super().build(input_shape)
-
-    def call(self, inputs: tf.Tensor) -> tf.Tensor: # the fft is spatial so the last coordinate is the time and should not be taken into account
-        with tf.device(self.device):
-            x = tf.cast(inputs, tf.float32)
-            x = tf.rfftnd(x,axes=[-1],fft_length=[self.n_modes]) # here the dimension of x after this operation is [batch, n_points, dim_coords] with dim_coords = 2
-            # x = x[:, :self.n_modes,:] # because  it becomes unuseful
-            x = x * tf.cast(self.fourier_weights, tf.complex64) # keeping in mind fourier_weights is a matrix in 2d if dim_coords = 2 (multiplying each)
-            x = tf.irfftnd(x,axes=[-1],fft_length=[self.n_modes]) # keep in mind that here the dimension is [batch, n_points, dim_coords]
-            # to be made complex after
-            x = tf.cast(x,tf.float32)
-            
         
-            z = self.linear_layer(inputs) #  the dimension is [batch, n_points, dim_coords]
-            
-            
-            return self.activation(x + z)
+        
+        def call(self, inputs: tf.Tensor, x: tf.Tensor) -> tf.Tensor:
+            # inputs est de taille [batch, p_2] - représente les valeurs de la fonction
+            # x est de taille [batch, n_points, dim_coords] - représente les points d'évaluation
+            data = tf.concat([x, inputs], axis=2)  # [batch, n_points, dim_coords + 1]
+
+            with tf.device(self.device):
+                casted_data = tf.cast(data, tf.complex64)
+                function_fft = tf.signal.rfftnd(casted_data,axes=[-1],fft_length=[self.n_modes])
+                
+                # On applique les poids de Fourier
+                x_weighted = function_fft * tf.cast(self.fourier_weights, tf.complex64)
+                
+                # On revient dans l'espace spatial
+                x_spatial = tf.irfftnd(x_weighted, axes=[-1], fft_length=[self.n_modes])
+                x_spatial = tf.cast(x_spatial, tf.float32)
+                
+                # Partie linéaire
+                z = self.linear_layer(inputs)
+                
+                return self.activation(x_spatial + z)
 
     
 class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers, ie concatenation of fourier layers
@@ -89,9 +100,9 @@ class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers,
         self.kernel_initializer = kernel_initializer
         self.fourier_layers = [FourierLayer(n_modes, activation, kernel_initializer) for _ in range(n_layers)]
 
-    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+    def call(self, inputs: tf.Tensor, x: tf.Tensor) -> tf.Tensor:
         for layer in self.fourier_layers:
-            inputs = layer(inputs)
+            inputs = layer(inputs, x)
         return inputs
     
     def build(self, input_shape: tf.TensorShape):
@@ -201,7 +212,7 @@ class FNO(tf.keras.Model):
             features = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
             
             #  fourier network,  [batch, n_points, p_2] -> [batch, p_3]
-            fourier_features = self.fourier_network(features)  # [batch, p_2]
+            fourier_features = self.fourier_network(features,x)  # [batch, p_2]
 
             # last network, [batch, n_points, p_3] -> [batch, n_points]
             output_tensor = self.last_network(fourier_features)
@@ -223,60 +234,43 @@ class FNO(tf.keras.Model):
         
         
         
-        
-    ### Data loading ### Be careful with the data format, we can have various sensor points for parameters : for instance a specified mu function can require to get many more points to compute the exact solution
     def get_data(self, folder_path: str):
         true_path = os.path.join(PROJECT_ROOT, folder_path)
         self.folder_path = true_path
         
         try:
-           
-            mu_files = [np.load(os.path.join(true_path, f"mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading mu data")]
-            x_files = [np.load(os.path.join(true_path, f"xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading x data")]
-            sol_files = [np.load(os.path.join(true_path, f"sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading y data")]
+            with open(os.path.join(true_path, "params.json"), "r") as f:
+                params = json.load(f)
             
-           
-            mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)
-            mus = tf.reshape(mus, [tf.shape(mus)[0], -1])  # [batch, 400]
+            nx = params["nx"]
+            ny = params["ny"]
+            nt = params["nt"]
+            n_mu = params["n_mu"]
             
+            mu = np.load(os.path.join(true_path, "mu.npy"))
+            sol = np.load(os.path.join(true_path, "sol.npy"))
             
-            xs = tf.convert_to_tensor(x_files, dtype=tf.float32)
-            if len(xs.shape) > 2:
-                
-                n_samples = xs.shape[0]
-                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])
-                
-                
-                time_index = self.hyper_params.get("index", 0)
-                n_points_per_time = 400  # 20×20 points
-                
-                
-                start_idx = time_index * n_points_per_time
-                end_idx = start_idx + n_points_per_time
-                
-                
-                xs_at_time = xs[:, start_idx:end_idx, :]
-                
-                
-                xs_spatial = xs_at_time[:, :, :2]  # [batch, 400, 2]
-                xs = xs_spatial
+            x = np.linspace(0, 1, nx)
+            y = np.linspace(0, 1, ny)
+            t = np.linspace(0, 1, nt)
             
-            
-            sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
-            
-            
-            sol = tf.reshape(sol, [tf.shape(sol)[0], 20, 400])
-            
+            X, Y = np.meshgrid(x, y)
+            xs = np.stack([X.flatten(), Y.flatten()], axis=-1)
+            xs = np.tile(xs[None, :, :], (n_mu, 1, 1))
             
             time_index = self.hyper_params.get("index", 0)
-            sol = sol[:, time_index, :]  # [batch, 400]
+            time_coords = np.full((n_mu, nx*ny, 1), t[time_index])
             
-            print(f"Dimensions après extraction du temps {time_index}:")
-            print(f"mus: {mus.shape}")
-            print(f"xs: {xs.shape}")
-            print(f"sol: {sol.shape}")
+            xs = np.concatenate([xs, time_coords], axis=-1)
             
-            return mus, xs, sol
+            mu = tf.convert_to_tensor(mu, dtype=tf.float32)
+            xs = tf.convert_to_tensor(xs, dtype=tf.float32)
+            sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)
+            
+            return mu, xs, sol
+            
+        except Exception as e:
+            raise ValueError(f"Failed to load data: {str(e)}")
         
         except Exception as e:
             logger.error(f"Erreur lors du chargement des données: {str(e)}")
