@@ -78,14 +78,11 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
                 casted_data = tf.cast(data, tf.complex64)
                 function_fft = tf.signal.rfftnd(casted_data,axes=[-1],fft_length=[self.n_modes])
                 
-                # On applique les poids de Fourier
                 x_weighted = function_fft * tf.cast(self.fourier_weights, tf.complex64)
                 
-                # On revient dans l'espace spatial
                 x_spatial = tf.irfftnd(x_weighted, axes=[-1], fft_length=[self.n_modes])
                 x_spatial = tf.cast(x_spatial, tf.float32)
                 
-                # Partie linéaire
                 z = self.linear_layer(inputs)
                 
                 return self.activation(x_spatial + z)
