@@ -37,9 +37,9 @@ def solve_heat_square(boundary_conditions:np.ndarray, initial_conditions:np.ndar
 def create_heat_data(n_mu:int, nt:int, nx:int, ny:int, alpha:float=1.0)->tuple[np.ndarray, np.ndarray]:
     freqs = np.linspace(0.5, 1, n_mu)
     
-    # Initialize arrays for mu and solutions
-    mu = np.zeros((n_mu, 1, nx, ny))  # Shape: (N, 1, Nx, Ny) where 1 is for Nt=1
-    sol = np.zeros((n_mu, nt, nx, ny))  # Shape: (N, Nt, Nx, Ny)
+    
+    mu = np.zeros((n_mu, nx*ny))  # Shape: (N, Nx, Ny) for 2D Fourier transforms
+    sol = np.zeros((n_mu, nt, nx*ny))  # Shape: (N, Nt, Nx, Ny)
     
     for i, freq in tqdm(enumerate(freqs), desc="Creating heat data"):
         X, Y = np.meshgrid(np.linspace(0,1,nx), np.linspace(0,1,ny))
@@ -49,18 +49,16 @@ def create_heat_data(n_mu:int, nt:int, nx:int, ny:int, alpha:float=1.0)->tuple[n
         t = np.linspace(0,1,nt)
         x = np.linspace(0,1,nx)
         y = np.linspace(0,1,ny)
+    
+    
+        mu[i] = initial_conditions
         
-        # Store initial conditions in mu array
-        mu[i, 0] = initial_conditions
-        
-        # Solve and store full solution
         sol[i] = solve_heat_square(None, initial_conditions, t, x, y, alpha)
     
-    # Save the data
+    
     np.save("data/test_data/example_data_fno/heat2d/mu.npy", mu)
     np.save("data/test_data/example_data_fno/heat2d/sol.npy", sol)
     
-    # Save parameters
     params = {
         "n_mu": n_mu,
         "nt": nt,
