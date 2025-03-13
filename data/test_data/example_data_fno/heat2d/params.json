@@ -1,1 +1,1 @@
-{"freq": 1.0, "initial_conditions": "np.sin(2*np.pi*freq*X)*np.cos(2*np.pi*freq*Y) + np.cos(2*np.pi*freq*X)*np.sin(2*np.pi*freq*Y)", "nt": 20, "nx": 20, "ny": 20, "alpha": 0.01}
+{"n_mu": 40, "nt": 20, "nx": 20, "ny": 20, "alpha": 0.01, "freq_range": [0.5, 1.0], "initial_conditions": "np.sin(2*np.pi*freq*X)*np.cos(2*np.pi*freq*Y) + np.cos(2*np.pi*freq*X)*np.sin(2*np.pi*freq*Y)"}
