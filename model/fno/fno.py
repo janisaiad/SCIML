@@ -203,17 +203,16 @@ class FNO(tf.keras.Model):
     
     
     
-    def predict(self, mu: tf.Tensor, x: tf.Tensor):
-       
+    def predict(self, inputs: tf.Tensor):
         
-        batch_size = tf.shape(x)[0]
-        n_points = tf.shape(x)[1]
+        batch_size = tf.shape(inputs)[0]
+        n_points = tf.shape(inputs)[1]
         with tf.device(self.device):
             #  first network
-            features = self.first_network(mu)  # [batch, p_1] -> [batch, p_2]
+            features = self.first_network(inputs)  # [batch, p_1] -> [batch, p_2]
             
             #  fourier network,  [batch, n_points, p_2] -> [batch, p_3]
-            fourier_features = self.fourier_network(features,x)  # [batch, p_2]
+            fourier_features = self.fourier_network(features,inputs)  # [batch, p_2]
 
             # last network, [batch, n_points, p_3] -> [batch, n_points]
             output_tensor = self.last_network(fourier_features)
@@ -234,7 +233,6 @@ class FNO(tf.keras.Model):
         self.fourier_network = fourier_network
         
         
-        
     def get_data(self, folder_path: str):
         true_path = os.path.join(PROJECT_ROOT, folder_path)
         self.folder_path = true_path
@@ -243,36 +241,24 @@ class FNO(tf.keras.Model):
             with open(os.path.join(true_path, "params.json"), "r") as f:
                 params = json.load(f)
             
-            nx = params["nx"]
-            ny = params["ny"]
-            nt = params["nt"]
-            n_mu = params["n_mu"]
+            nx = params["nx"]  # [scalar]
+            ny = params["ny"]  # [scalar] 
+            nt = params["nt"]  # [scalar]
+            n_mu = params["n_mu"]  # [scalar]
+        
             
-            mu = np.load(os.path.join(true_path, "mu.npy"))
-            sol = np.load(os.path.join(true_path, "sol.npy"))
+            mu = np.load(os.path.join(true_path, "mu.npy"))  # [N, nx, ny, 1]
+            sol = np.load(os.path.join(true_path, "sol.npy"))  # [N, nx, ny, nt]
+            xs = np.load(os.path.join(true_path, "xs.npy"))  # [N, nx, ny, 2]
+
+            time_index = self.hyper_params.get("index", -1)  # [scalar], this means that we take the last time step for the training in the worst case
+                
+            mu = tf.convert_to_tensor(mu, dtype=tf.float32)  # [N, nx, ny, 1]
+            xs = tf.convert_to_tensor(xs, dtype=tf.float32)  # [n_mu, nx, ny, 2]
+            sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)  # [N, nx*ny]
             
-            x = np.linspace(0, 1, nx)
-            y = np.linspace(0, 1, ny)
-            t = np.linspace(0, 1, nt)
-            
-            X, Y = np.meshgrid(x, y)
-            xs = np.stack([X.flatten(), Y.flatten()], axis=-1)
-            xs = np.tile(xs[None, :, :], (n_mu, 1, 1))
-            
-            time_index = self.hyper_params.get("index", 0)
-            time_coords = np.full(( n_mu, nx*ny, 1), t[time_index])
-            
-            xs = np.concatenate([xs, time_coords], axis=-1)
-            
-            mu = tf.convert_to_tensor(mu, dtype=tf.float32)
-            xs = tf.convert_to_tensor(xs, dtype=tf.float32) # this is a tensor of shape (n_mu, nx*ny, 2) for instance
-            sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)
-            
-            # we reshape mus to be a 2d tensor, its n_mu x 1 x .. x ... ..., i want  it to be n_mu x N
-            # mus = tf.reshape(mu, (tf.shape(mu)[0], -1)) 
-            
-            
-            return mu, xs, sol
+            inputs = tf.concat([mu, xs], axis=-1)  # [N, nx, ny, 3]
+            return inputs, sol
             
         except Exception as e:
             raise ValueError(f"Failed to load data: {str(e)}")
@@ -284,8 +270,8 @@ class FNO(tf.keras.Model):
 
     
     # mandatory, we have an inference point of view
-    def call(self,mu:tf.Tensor,x:tf.Tensor)->tf.Tensor:
-        return self.predict(mu,x)
+    def call(self,inputs:tf.Tensor)->tf.Tensor:
+        return self.predict(inputs)
     
     def compile(self): # apparently mandatory to compile the model
         self.optimizer = self.hyper_params["optimizer"] if "optimizer" in self.hyper_params else tf.optimizers.Adam(self.learning_rate)
@@ -293,10 +279,9 @@ class FNO(tf.keras.Model):
     
     
     
-    
-    def build(self) -> None: # apparently also mandatory to build the model for tensorflow, typed to understand
-        self.first_network.build(input_shape=(None,self.p_1))
-        self.last_network.build(input_shape=(None,self.p_2))
+    def build(self) -> None:
+        self.first_network.build(input_shape=(None, self.p_1, self.p_1, self.dim_coords+1))
+        self.last_network.build(input_shape=(None, self.p_1, self.p_1, self.dim_coords+1))
         self.build_fourier_network()
 
     
@@ -310,12 +295,12 @@ class FNO(tf.keras.Model):
     
     
     ### managing model training methods ###
-    def fit(self,device:str='GPU',mus=None,xs=None,sol=None)->np.ndarray:
+    def fit(self,device:str='GPU',inputs=None,sol=None)->np.ndarray:
         
-        mus, xs, sol = self.get_data(self.folder_path)
+        inputs, sol = self.get_data(self.folder_path)
         loss_history = []
         with tf.device(device):
-            dataset = tf.data.Dataset.from_tensor_slices((mus,xs,sol)) # batching the data with batch size
+            dataset = tf.data.Dataset.from_tensor_slices((inputs,sol)) # batching the data with batch size
         
             dataset = dataset.batch(self.batch_size) # batching method from tensorflow
        
@@ -331,11 +316,11 @@ class FNO(tf.keras.Model):
         """
         Étape d'entraînement simplifiée - minimum de code
         """
-        mu, x, sol = batch
+        inputs, sol = batch
         
         with tf.GradientTape() as tape:
             
-            y_pred = self.predict(mu, x)
+            y_pred = self.predict(inputs)
             
            
             loss = self.loss_function(y_pred, sol)
