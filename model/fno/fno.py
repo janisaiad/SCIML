@@ -21,30 +21,29 @@ PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 import tensorflow as tf
 import numpy as np
 
-
 class LinearLayer(tf.keras.layers.Layer):
-    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU'):
+    # [batch, p_1, p_1, n_coords] -> [batch, p_1, p_1, n_modes]
+    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU',p_1:int=20):
         super().__init__()
         self.n_modes = n_modes
         self.initializer = initializer
         self.device = device
-    
+        self.p_1 = p_1
+        
     def call(self,inputs:tf.Tensor)->tf.Tensor:
         with tf.device(self.device):
-            if len(inputs.shape) == 2:
-                return inputs[:,:self.n_modes]*self.linear_weights
+            if len(inputs.shape) == 3:
+                return inputs * self.linear_weights # [batch, p_1, p_1, n_modes]
             else:
-                raise ValueError(f"Format des inputs incorrect. Attendu [batch, n_points, dim_coords], reçu {inputs.shape}")
+                raise ValueError(f"Expected shape [batch, p_1, p_1, n_coords], got {inputs.shape}")
 
     def build(self,input_shape:tf.TensorShape):
-        # this is a 2d tensor of shape [n_coords,n_coords]
-        self.linear_weights = self.add_weight(shape=(self.n_modes,),initializer=self.initializer,trainable=True,name="linear_weights")
-        
-        
+        # [p_1, p_1]
+        self.linear_weights = self.add_weight(shape=(self.p_1,self.p_1,),initializer=self.initializer,trainable=True,name="linear_weights")
         
 
 class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication with a linear thing in parallel
-    def __init__(self, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal", device:str='GPU', linear_initializer:str='normal'):
+    def __init__(self, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal", device:str='GPU', linear_initializer:str='normal',p_1:int=20):
         super().__init__()
         self.n_modes = n_modes
         self.activation = tf.keras.activations.get(activation)
@@ -52,42 +51,52 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         self.linear_initializer = linear_initializer
         self.device = device
         self.dim_coords = dim_coords
+        
+        self.p_1 = p_1
+        
+        
     def build(self, input_shape: tf.TensorShape):
         # this is a 3d tensor of shape [n_modes,n_coords,n_coords]
         
         
         self.fourier_weights = self.add_weight(
-            shape=(self.n_modes,self.dim_coords),
+            shape=(self.p_1,self.p_1,),
             initializer=self.kernel_initializer,
             trainable=True,
             name="fourier_weights"
         )
         
         
-        self.linear_layer = LinearLayer(self.n_modes, self.linear_initializer, self.device)
+        self.linear_layer = LinearLayer(self.n_modes, self.linear_initializer, self.device,self.p_1)
         self.linear_layer.build(input_shape)
         super().build(input_shape)
         
         
-    def call(self, inputs: tf.Tensor, x: tf.Tensor) -> tf.Tensor:
-        # inputs est de taille [batch, p_2] - représente les valeurs de la fonction
-        # x est de taille [batch, n_points, dim_coords] - représente les points d'évaluation
-        data = tf.concat([x, inputs], axis=2)  # [batch, n_points, dim_coords + 1]
-
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        # inputs est de taille [batch, p_2,p_2,1] - représente les valeurs de la fonction
+        print("inputs shape",inputs.shape)
         with tf.device(self.device):
-            casted_data = tf.cast(data, tf.complex64)
-            function_fft = tf.signal.rfftnd(casted_data,axes=[-1],fft_length=[self.n_modes])
+            casted_data = tf.cast(inputs, tf.complex64) # to real, [batch, p_2,p_2,1]
+            function_fft = tf.signal.fft2d(casted_data) # [batch, p_2,p_2, n_modes]
             
+            print("function_fft shape",function_fft.shape)
             # keep in mind fourier_weights is a tensor of shape [n_modes,dim_coords]
-            # Multiply each mode with corresponding weights for each batch
-            # function_fft shape: [batch, n_modes, dim_coords]
-            # fourier_weights shape: [n_modes, dim_coords]
-            # Expand fourier_weights to match batch dimension
-            fourier_weights_expanded = tf.expand_dims(tf.cast(self.fourier_weights, tf.complex64), 0)  # [1, n_modes, dim_coords]
-            x_weighted = function_fft * fourier_weights_expanded  # Broadcasting handles batch dimension
-            x_spatial = tf.irfftnd(x_weighted, axes=[-1], fft_length=[self.n_modes])
+
+            fourier_casted = tf.cast(self.fourier_weights,tf.complex64)
+            
+            print("fourier_weights shape",fourier_casted.shape)
+            try:
+                function_fft = function_fft * fourier_casted  # with broadcasting
+            except:
+                print("function_fft shape",function_fft.shape)
+                print("fourier_casted shape",fourier_casted.shape)
+                raise ValueError("Shape mismatch")
+            
+            x_spatial = tf.signal.ifft2d(function_fft)
             x_spatial = tf.cast(x_spatial, tf.float32)
             z = self.linear_layer(inputs)
+            print("x_spatial shape",x_spatial.shape)
+            print("z shape",z.shape)
             return self.activation(x_spatial + z)
 
     
@@ -100,9 +109,9 @@ class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers,
         self.kernel_initializer = kernel_initializer
         self.fourier_layers = [FourierLayer(n_modes, dim_coords, activation, kernel_initializer) for _ in range(n_layers)]
 
-    def call(self, inputs: tf.Tensor, x: tf.Tensor) -> tf.Tensor:
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
         for layer in self.fourier_layers:
-            inputs = layer(inputs, x)
+            inputs = layer(inputs)
         return inputs
     
     def build(self, input_shape: tf.TensorShape):
@@ -209,10 +218,10 @@ class FNO(tf.keras.Model):
         n_points = tf.shape(inputs)[1]
         with tf.device(self.device):
             #  first network
-            features = self.first_network(inputs)  # [batch, p_1] -> [batch, p_2]
+            features = self.first_network(inputs)  # [batch, p_1, p_1, 3] -> [batch, p_1, p_1, p_2]
             
             #  fourier network,  [batch, n_points, p_2] -> [batch, p_3]
-            fourier_features = self.fourier_network(features,inputs)  # [batch, p_2]
+            fourier_features = self.fourier_network(features)  # [batch, p_2]
 
             # last network, [batch, n_points, p_3] -> [batch, n_points]
             output_tensor = self.last_network(fourier_features)
@@ -257,7 +266,10 @@ class FNO(tf.keras.Model):
             xs = tf.convert_to_tensor(xs, dtype=tf.float32)  # [n_mu, nx, ny, 2]
             sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)  # [N, nx*ny]
             
-            inputs = tf.concat([mu, xs], axis=-1)  # [N, nx, ny, 3]
+            print("mu shape",mu.shape)
+            inputs = tf.squeeze(mu,axis=-1)
+            print("inputs shape",inputs.shape)
+            #inputs = tf.concat([mu, xs], axis=-1)  # [N, nx, ny, 3]
             return inputs, sol
             
         except Exception as e:
@@ -280,8 +292,8 @@ class FNO(tf.keras.Model):
     
     
     def build(self) -> None:
-        self.first_network.build(input_shape=(None, self.p_1, self.p_1, self.dim_coords+1))
-        self.last_network.build(input_shape=(None, self.p_1, self.p_1, self.dim_coords+1))
+        self.first_network.build(input_shape=(None, self.p_1, self.p_1))
+        self.last_network.build(input_shape=(None, self.p_1, self.p_1))
         self.build_fourier_network()
 
     
