@@ -260,7 +260,7 @@ class FNO(tf.keras.Model):
             xs = np.tile(xs[None, :, :], (n_mu, 1, 1))
             
             time_index = self.hyper_params.get("index", 0)
-            time_coords = np.full((n_mu, nx*ny, 1), t[time_index])
+            time_coords = np.full(( n_mu, nx*ny, 1), t[time_index])
             
             xs = np.concatenate([xs, time_coords], axis=-1)
             
@@ -272,7 +272,7 @@ class FNO(tf.keras.Model):
             # mus = tf.reshape(mu, (tf.shape(mu)[0], -1)) 
             
             
-            return mus, xs, sol
+            return mu, xs, sol
             
         except Exception as e:
             raise ValueError(f"Failed to load data: {str(e)}")

@@ -13,16 +13,16 @@ def create_heat_animation(sol:np.ndarray, x:np.ndarray, y:np.ndarray, nt:int, in
     """Create animation of heat equation solution over time"""
     fig = plt.figure(figsize=(12, 10))
     ax = fig.add_subplot(111, projection='3d')
-    X, Y = np.meshgrid(x, y)
+    X, Y = np.meshgrid(x, y)  # [nx, ny], [nx, ny]
     
-    surf = ax.plot_surface(X, Y, sol[0].T, cmap=cm.viridis, alpha=0.8)
+    surf = ax.plot_surface(X, Y, sol[0].T, cmap=cm.viridis, alpha=0.8)  # [nx, ny]
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('Temperature')
     
     def update(frame):
         ax.clear()
-        surf = ax.plot_surface(X, Y, sol[frame].T, cmap=cm.viridis, alpha=0.8)
+        surf = ax.plot_surface(X, Y, sol[frame].T, cmap=cm.viridis, alpha=0.8)  # [nx, ny]
         ax.set_xlabel('x')
         ax.set_ylabel('y') 
         ax.set_zlabel('Temperature')
@@ -40,8 +40,8 @@ def create_heat_animation(sol:np.ndarray, x:np.ndarray, y:np.ndarray, nt:int, in
 def plot_heat_solution(sol:np.ndarray, x:np.ndarray, y:np.ndarray, t_interior:int, index:int):
     fig = plt.figure(figsize=(12, 10))
     ax = fig.add_subplot(111, projection='3d')
-    X, Y = np.meshgrid(x, y)
-    surf = ax.plot_surface(X, Y, sol[t_interior].T, cmap=cm.viridis, alpha=0.8)
+    X, Y = np.meshgrid(x, y)  # [nx, ny], [nx, ny]
+    surf = ax.plot_surface(X, Y, sol[t_interior].T, cmap=cm.viridis, alpha=0.8)  # [nx, ny]
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('Temperature')
@@ -54,20 +54,20 @@ def plot_heat_solution(sol:np.ndarray, x:np.ndarray, y:np.ndarray, t_interior:in
 
 if __name__ == "__main__":
     # Load the full dataset
-    sol = np.load("data/test_data/example_data_fno/heat2d/sol.npy")
-    mu = np.load("data/test_data/example_data_fno/heat2d/mu.npy")
+    sol = np.load("data/test_data/example_data_fno/heat2d/sol.npy")  # [N, nx, ny, nt]
+    mu = np.load("data/test_data/example_data_fno/heat2d/mu.npy")  # [N, nx, ny, 1]
     
     with open("data/test_data/example_data_fno/heat2d/params.json", "r") as f:
         params = json.load(f)
     
-    nx = params["nx"]
-    ny = params["ny"]
-    nt = params["nt"]
+    nx = params["nx"]  # [scalar]
+    ny = params["ny"]  # [scalar]
+    nt = params["nt"]  # [scalar]
     
-    x = np.linspace(0, 1, nx)
-    y = np.linspace(0, 1, ny)
+    x = np.linspace(0, 1, nx)  # [nx]
+    y = np.linspace(0, 1, ny)  # [ny]
     
     # Plot each solution and create animation
     for index in tqdm(range(params["n_mu"]), desc="Creating plots and animations"):
-        plot_heat_solution(sol[index], x, y, nt//2 - 1, index)
+        plot_heat_solution(sol[index], x, y, nt-1, index)  # Plot final time
         create_heat_animation(sol[index], x, y, nt, index)
