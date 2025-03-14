@@ -35,6 +35,7 @@ def create_heat_data(N:int, nx:int, ny:int, nt:int, alpha:float=1.0)->tuple[np.n
     freqs = np.linspace(0.5, 1, N)  # [N]
     mu = np.zeros((N, nx, ny, 1))  # [N, nx, ny, 1]
     sol = np.zeros((N, nx, ny, nt))  # [N, nx, ny, nt]
+    xs = np.zeros((N, nx, ny, 2))  # [N, nx, ny, 2]
     
     for i, freq in tqdm(enumerate(freqs), desc="Creating heat data"):
         X, Y = np.meshgrid(np.linspace(0,1,nx), np.linspace(0,1,ny))  # [nx, ny], [nx, ny]
@@ -47,10 +48,10 @@ def create_heat_data(N:int, nx:int, ny:int, nt:int, alpha:float=1.0)->tuple[np.n
         
         mu[i, :, :, 0] = initial_conditions  # [nx, ny]
         sol[i] = solve_heat_square(None, initial_conditions, t, x, y, alpha)  # [nx, ny, nt]
-    
+        xs[i, :, :, :] = np.stack([X, Y], axis=-1)  # [nx, ny, 2]
     np.save("data/test_data/example_data_fno/heat2d/mu.npy", mu)  # [N, nx, ny, 1]
     np.save("data/test_data/example_data_fno/heat2d/sol.npy", sol)  # [N, nx, ny, nt]
-    
+    np.save("data/test_data/example_data_fno/heat2d/xs.npy", xs)  # [N, nx, ny, 2]
     params = {
         "n_mu": N,
         "nx": nx, 
