@@ -81,3 +81,8 @@ Ce projet est distribué sous licence MIT. Voir le fichier [LICENSE](LICENSE) po
 
 # Jupytext 
 find . -name "*.ipynb" -type f -exec jupytext --to py {} \;
+
+
+# Observation
+
+Many fourier layers lead to a very unstable and low training
