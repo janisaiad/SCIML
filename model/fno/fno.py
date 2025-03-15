@@ -485,17 +485,21 @@ class FNO(tf.keras.Model):
                 logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
                 logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
                 logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
-                if loss_history_train[-1] < 0.0002:
+                if max(loss_history_train[-1],loss_history_test[-1]) < 0.0002:
                     break
                 
         with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
             json.dump(loss_history_train,f)
             json.dump(self.hyper_params,f)
             json.dump(self.fourier_params,f)
+            network_shapes = {"first_network":self.regular_params["first_network"].get_config(),"last_network":self.regular_params["last_network"].get_config()}
+            json.dump(network_shapes,f)
         with open(os.path.join("data/weights/fno",f"loss_history_test_{date}.json"),"w") as f:
             json.dump(loss_history_test,f)
             json.dump(self.hyper_params,f)
             json.dump(self.fourier_params,f)
+            network_shapes = {"fourier_network":self.fourier_network.get_config()}
+            json.dump(network_shapes,f)
         if save_weights:
             try:
                 self.save_weights(os.path.join("data/weights/fno",f"weights_{date}.keras"))
