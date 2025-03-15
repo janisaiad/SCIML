@@ -485,8 +485,9 @@ class FNO(tf.keras.Model):
                 logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
                 logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
                 logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
-        
-                       
+                if loss_history_train[-1] < 0.0002:
+                    break
+                
         with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
             json.dump(loss_history_train,f)
             json.dump(self.hyper_params,f)
