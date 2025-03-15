@@ -16,73 +16,72 @@ import deepxde as dde
 import numpy as np
 from deepxde.backend import tf
 import matplotlib.pyplot as plt
-
-# Define unknown parameter C
-C = dde.Variable(2.0)
-
-# Define PDE
-def pde(x, y):  # x: [batch, 2], y: [batch, 1]
-    dy_t = dde.grad.jacobian(y, x, i=0, j=1)  # [batch, 1] 
-    dy_xx = dde.grad.hessian(y, x, i=0, j=0)  # [batch, 1]
-    return (
-        dy_t
-        - C * dy_xx
-        + tf.exp(-x[:, 1:])
-        * (tf.sin(np.pi * x[:, 0:1]) - np.pi ** 2 * tf.sin(np.pi * x[:, 0:1]))
-    )  # [batch, 1]
-
-# Define exact solution
-def func(x):  # x: [batch, 2]
-    return np.sin(np.pi * x[:, 0:1]) * np.exp(-x[:, 1:])  # [batch, 1]
+import os
+from tqdm import tqdm
+from datetime import datetime
+# Define parameters
+nx = 30  # Number of points in x direction
+ny = 30  # Number of points in y direction
+nt = 500  # Number of time steps
+alpha = 0.05  # Diffusion coefficient
 
 # Define geometry and time domain
-geom = dde.geometry.Interval(-1, 1)  # 1D spatial domain
-timedomain = dde.geometry.TimeDomain(0, 1)  # Time domain [0,1]
-geomtime = dde.geometry.GeometryXTime(geom, timedomain)  # Combined space-time domain
+geom = dde.geometry.Rectangle([-1, -1], [1, 1])  # 2D spatial domain
+timedomain = dde.geometry.TimeDomain(0, 2)  # Time domain [0,2]
+geomtime = dde.geometry.GeometryXTime(geom, timedomain)
+
+# Generate initial conditions like in generate_big_heat_fno.py
+X, Y = np.meshgrid(np.linspace(-1, 1, nx), np.linspace(-1, 1, ny))
+mean_x, mean_y = np.random.uniform(0.3, 0.7, size=2)
+var = np.random.uniform(0.01, 0.1)
+initial_conditions = np.exp(-((X - mean_x)**2 + (Y - mean_y)**2)/(2*var))
+
+def pde(x, y):  # x: [batch, 3], y: [batch, 1]
+    dy_t = dde.grad.jacobian(y, x, i=0, j=2)  # Time derivative
+    dy_xx = dde.grad.hessian(y, x, i=0, j=0)  # Second x derivative  
+    dy_yy = dde.grad.hessian(y, x, i=1, j=1)  # Second y derivative
+    return dy_t - alpha * (dy_xx + dy_yy)  # Heat equation
+
+def func(x):  # Initial condition function
+    return initial_conditions[
+        np.searchsorted(np.linspace(-1, 1, nx), x[:, 0]),
+        np.searchsorted(np.linspace(-1, 1, ny), x[:, 1])
+    ][:, None]
 
 # Define boundary and initial conditions
 bc = dde.icbc.DirichletBC(geomtime, func, lambda _, on_boundary: on_boundary)
 ic = dde.icbc.IC(geomtime, func, lambda _, on_initial: on_initial)
 
-# Add observation points
-observe_x = np.vstack((np.linspace(-1, 1, num=10), np.full((10), 1))).T  # [10, 2]
-observe_y = dde.icbc.PointSetBC(observe_x, func(observe_x), component=0)  # [10, 1]
-
 # Create the TimePDE problem
 data = dde.data.TimePDE(
     geomtime,
     pde,
-    [bc, ic, observe_y],
-    num_domain=40,
-    num_boundary=20, 
-    num_initial=10,
-    anchors=observe_x,
-    solution=func,
-    num_test=10000,
+    [bc, ic],
+    num_domain=2000,
+    num_boundary=400,
+    num_initial=400,
+    solution=None,
+    num_test=10000
 )
 
 # Define neural network architecture
-layer_size = [2] + [32] * 3 + [1]  # Input: 2, Hidden: [32,32,32], Output: 1
+layer_size = [3] + [64] * 4 + [1]  # Input: 3 (x,y,t), Hidden: [64,64,64,64], Output: 1
 activation = "tanh"
 initializer = "Glorot uniform"
 net = dde.nn.FNN(layer_size, activation, initializer)
 
 # Create and compile model
 model = dde.Model(data, net)
-model.compile("adam", lr=0.001, metrics=["l2 relative error"], external_trainable_variables=C)
+model.compile("adam", lr=0.001, metrics=["l2 relative error"])
 
 # Train model
-variable = dde.callbacks.VariableValue(C, period=1000)
-losshistory, train_state = model.train(iterations=50000, callbacks=[variable])
+losshistory, train_state = model.train(iterations=50000)
 
 # Save and plot results
-import os
 save_path = "results/xde/"
-os.makedirs(save_path,exist_ok=True)
+os.makedirs(save_path, exist_ok=True)
 dde.saveplot(losshistory, train_state, issave=True, isplot=True, save_path=save_path)
 
-import datetime
-date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 # Plot loss history
 plt.figure()
 plt.semilogy(losshistory.steps, losshistory.loss_train, label="Training loss")
@@ -90,5 +89,5 @@ plt.semilogy(losshistory.steps, losshistory.loss_test, label="Testing loss")
 plt.xlabel("Iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig(os.path.join(save_path,f"deep_xde_baseline_{date}.png"))
+plt.savefig(os.path.join(save_path, f"deep_xde_baseline_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.png"))
 plt.show()
