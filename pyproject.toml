@@ -5,6 +5,7 @@ description = "SCIML"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "deepxde>=1.13.2",
     "dotenv>=0.9.9",
     "jupyter>=1.1.1",
     "jupytext>=1.16.7",

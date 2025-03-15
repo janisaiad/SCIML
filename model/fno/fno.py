@@ -439,7 +439,7 @@ class FNO(tf.keras.Model):
         return loss
     
     ### managing model training methods ###
-    def fit_partial(self,device:str='GPU',inputs=None,sol=None)->np.ndarray:
+    def fit_partial(self,device:str='GPU',inputs=None,sol=None,save_weights:bool=False)->np.ndarray:
         
         inputs, sol = self.get_data_partial(self.folder_path,alpha=self.alpha)
         loss_history_train = []
@@ -470,20 +470,29 @@ class FNO(tf.keras.Model):
                 for batch in train_dataset:
                     loss = self.train_step(batch)
                     mean_loss += loss
-                loss_history_train.append(mean_loss/len(train_dataset))
+                loss_history_train.append(float(mean_loss/len(train_dataset)))
                     
                 mean_loss = 0
                 for batch in test_dataset:
                     batchloss = self.test_step(batch)
                     mean_loss += batchloss
-                loss_history_test.append(mean_loss/len(test_dataset))
+                loss_history_test.append(float(mean_loss/len(test_dataset)))
+                
+                date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                
                 
                 
                 logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
                 logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
                 logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
-                
         
+                       
+        with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
+            json.dump(loss_history_train,f)
+        with open(os.path.join("data/weights/fno",f"loss_history_test_{date}.json"),"w") as f:
+            json.dump(loss_history_test,f)
+        if save_weights:
+            self.save_weights(os.path.join("data/weights/fno",f"weights_{date}.keras"))
         logger.info("=== Partial Training Completed ===")
         logger.info(f"Final Training Loss: {loss_history_train[-1]:.6f}")
         logger.info(f"Final Test Loss: {loss_history_test[-1]:.6f}")
@@ -521,6 +530,7 @@ class FNO(tf.keras.Model):
             logger.error(f"Failed to save model in {save_path}")
             raise ValueError(f"Failed to save model in {save_path}")
 
+
     def load_weights(self,save_path:str): # just loading some other weights if we want to compare, but not the entire model
         if not os.path.exists(save_path):
             logger.error(f"Weights not found in {save_path}")
@@ -529,7 +539,4 @@ class FNO(tf.keras.Model):
         self.load_weights(save_path)
         
     def save_weights(self,save_path:str): 
-        if not os.path.exists(save_path):
-            os.makedirs(save_path,exist_ok=True)
-        
-        self.save_weights(save_path)
+        tf.keras.models.save_model(self,save_path)
