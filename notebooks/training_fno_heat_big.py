@@ -23,10 +23,10 @@ nb_xi = 2 # can be deduced from mu because it's len(mu.shape) - 1
 p_1 = 30 # dimension of scheme for xi for all i
 p_2 = 30 # dimension of scheme for xi for all i
 p_3 = 30 # dimension of scheme for xi for all i
-epochs = 50
+epochs = 100
 index = 50
 n_modes = p_1
-n_layers = 8
+n_layers = 3 
 alpha = 0.4
 
 activation = 'relu'
@@ -81,7 +81,7 @@ import os
 import logging
 tf.get_logger().setLevel('ERROR')
 # Ajouter en haut du notebook pour désactiver tout le logging
-logging.getLogger().setLevel(logging.ERROR)  # Ne montrera que les erreurs graves
+# logging.getLogger().setLevel(logging.ERROR)  # Ne montrera que les erreurs graves
 
 loss_history_train,loss_history_test = model.fit_partial()
 
@@ -91,7 +91,6 @@ print(len(loss_history_test))
 from datetime import datetime
 plt.plot(loss_history_train,color='blue')
 plt.plot(loss_history_test,color='red')
-plt.title(f'Loss History with params: {model.hyper_params}')
 plt.legend(['Train','Test'])
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
