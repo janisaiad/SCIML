@@ -23,11 +23,11 @@ nb_xi = 2 # can be deduced from mu because it's len(mu.shape) - 1
 p_1 = 30 # dimension of scheme for xi for all i
 p_2 = 30 # dimension of scheme for xi for all i
 p_3 = 30 # dimension of scheme for xi for all i
-epochs = 100
-index = 50
+epochs = 500
+index = 450
 n_modes = p_1
-n_layers = 3 
-alpha = 0.4
+n_layers = 4
+alpha = 0.5
 
 activation = 'relu'
 kernel_initializer = 'he_normal'

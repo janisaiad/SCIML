@@ -88,5 +88,5 @@ find . -name "*.ipynb" -type f -exec jupytext --to py {} \;
 Many fourier layers lead to a very unstable and low training
 Try to infer time after time with a pipeline
 Use a NACA dataset
-
+for fno heat, we can try to infer on a completely different solutions to see
 for neuraloperator, don't forget torch_harmonics and wandb
