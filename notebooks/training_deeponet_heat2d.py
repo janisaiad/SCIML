@@ -59,6 +59,8 @@ print(sol.shape)
 train_history = model.fit()
 
 plt.plot(train_history)
+#log 
+plt.yscale('log')
 plt.grid()
 plt.show()
 
