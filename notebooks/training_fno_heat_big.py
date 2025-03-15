@@ -27,7 +27,7 @@ epochs = 100
 index = 50
 n_modes = p_1
 n_layers = 3 
-alpha = 0.1
+alpha = 0.4
 
 activation = 'relu'
 kernel_initializer = 'he_normal'
@@ -40,7 +40,7 @@ n_epochs = epochs
 # inputs are of the form [batch, p_1, p_1, nd_xi +1] for nb_xi=2 (+1 because of the mu=f(x))
 
 first_network = tf.keras.Sequential([
-    tf.keras.layers.InputLayer(shape=(p_1, p_1,)),  # [batch, p_1, p_1, 3]
+    tf.keras.layers.Input(shape=(p_1, p_1,)),  # [batch, p_1, p_1, 3]
     tf.keras.layers.Flatten(),  # [batch, p_1*p_1*3]
     tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(256, activation='relu'),
@@ -49,7 +49,7 @@ first_network = tf.keras.Sequential([
 ])
 
 last_network = tf.keras.Sequential([
-    tf.keras.layers.InputLayer(shape=(p_1, p_1,)),  # [batch, p_1, p_1, 3]
+    tf.keras.layers.Input(shape=(p_1, p_1,)),  # [batch, p_1, p_1, 3]
     tf.keras.layers.Flatten(),  # [batch, p_1*p_1*3]
     tf.keras.layers.Dense(256, activation='relu'),
     tf.keras.layers.Dense(512, activation='relu'),

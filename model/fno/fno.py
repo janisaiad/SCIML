@@ -231,7 +231,7 @@ class FNO(tf.keras.Model):
         self.device = hyper_params["device"] if "device" in hyper_params else 'cpu'
         self.folder_path = os.path.join(PROJECT_ROOT,hyper_params["folder_path"])
     
-        self.output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
+        self.model_output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
         self.alpha = hyper_params["alpha"] if "alpha" in hyper_params else 0.01
         
         self.build() # most important to build the model
