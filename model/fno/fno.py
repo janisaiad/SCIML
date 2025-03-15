@@ -10,7 +10,7 @@ import json
 
 dotenv.load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO) 
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = os.getenv("PROJECT_ROOT")
@@ -23,7 +23,7 @@ import numpy as np
 
 class LinearLayer(tf.keras.layers.Layer):
     # [batch, p_1, p_1, n_coords] -> [batch, p_1, p_1, n_modes]
-    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU',p_1:int=20):
+    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU',p_1:int=50): # attention ici
         super().__init__()
         self.n_modes = n_modes
         self.initializer = initializer
@@ -245,11 +245,11 @@ class FNO(tf.keras.Model):
     def get_data(self, folder_path: str):
         true_path = os.path.join(PROJECT_ROOT, folder_path)
         self.folder_path = true_path
-        
+
         try:
             with open(os.path.join(true_path, "params.json"), "r") as f:
                 params = json.load(f)
-            
+        
             nx = params["nx"]  # [scalar]
             ny = params["ny"]  # [scalar] 
             nt = params["nt"]  # [scalar]
@@ -279,6 +279,49 @@ class FNO(tf.keras.Model):
             logger.error(f"Erreur lors du chargement des données: {str(e)}")
             raise ValueError(f"Échec du chargement des données: {str(e)}")
     
+    def get_data_partial(self, folder_path: str,alpha:float=0.01):
+        true_path = os.path.join(PROJECT_ROOT, folder_path)
+        self.folder_path = true_path
+
+        try:
+            with open(os.path.join(true_path, "params.json"), "r") as f:
+                params = json.load(f)
+        
+            nx = params["nx"]  # [scalar]
+            ny = params["ny"]  # [scalar] 
+            nt = params["nt"]  # [scalar]
+            n_mu = params["n_mu"]  # [scalar]
+            
+            mu_list = []
+            sol_list = []
+            xs_list = []
+            
+            for i in range(int(n_mu*alpha)):
+                mu_list.append(np.load(os.path.join(true_path, f"mu/mu_{i}.npy")))  # [nx, ny, 1]
+                sol_list.append(np.load(os.path.join(true_path, f"sol/sol_{i}.npy")))  # [nx, ny, nt]
+                xs_list.append(np.load(os.path.join(true_path, f"xs/xs_{i}.npy")))  # [nx, ny, 2]
+            
+            mu = np.stack(mu_list, axis=0)  # [N, nx, ny, 1]
+            sol = np.stack(sol_list, axis=0)  # [N, nx, ny, nt] 
+            xs = np.stack(xs_list, axis=0)  # [N, nx, ny, 2]
+
+            time_index = self.hyper_params.get("index", -1)  # [scalar], this means that we take the last time step for the training in the worst case
+                
+            mu = tf.convert_to_tensor(mu, dtype=tf.float32)  # [N, nx, ny, 1]
+            xs = tf.convert_to_tensor(xs, dtype=tf.float32)  # [n_mu, nx, ny, 2]
+            sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)  # [N, nx*ny]
+            
+            print("mu shape",mu.shape)
+            inputs = tf.squeeze(mu,axis=-1)
+            print("inputs shape",inputs.shape)
+            return inputs, sol
+            
+        except Exception as e:
+            raise ValueError(f"Failed to load data: {str(e)}")
+        
+        except Exception as e:
+            logger.error(f"Erreur lors du chargement des données: {str(e)}")
+            raise ValueError(f"Échec du chargement des données: {str(e)}")
 
     
     # mandatory, we have an inference point of view
