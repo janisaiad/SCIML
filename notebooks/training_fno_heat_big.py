@@ -27,7 +27,7 @@ epochs = 100
 index = 50
 n_modes = p_1
 n_layers = 3 
-alpha = 0.4
+alpha = 0.1
 
 activation = 'relu'
 kernel_initializer = 'he_normal'
@@ -83,7 +83,7 @@ tf.get_logger().setLevel('ERROR')
 # Ajouter en haut du notebook pour désactiver tout le logging
 # logging.getLogger().setLevel(logging.ERROR)  # Ne montrera que les erreurs graves
 
-loss_history_train,loss_history_test = model.fit_partial()
+loss_history_train,loss_history_test = model.fit_partial(save_weights=True)
 
 print(len(loss_history_train))
 print(len(loss_history_test))
