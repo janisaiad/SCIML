@@ -233,7 +233,7 @@ class FNO(tf.keras.Model):
     
         self.model_output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
         self.alpha = hyper_params["alpha"] if "alpha" in hyper_params else 0.01
-        
+        self.best_loss = hyper_params["best_loss"] if "best_loss" in hyper_params else 0.0002
         self.build() # most important to build the model
         
         
@@ -485,7 +485,7 @@ class FNO(tf.keras.Model):
                 logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
                 logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
                 logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
-                if max(loss_history_train[-1],loss_history_test[-1]) < 0.0002:
+                if max(loss_history_train[-1],loss_history_test[-1]) < self.best_loss:
                     break
                 
         with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
