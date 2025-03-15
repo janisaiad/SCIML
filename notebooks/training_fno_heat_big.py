@@ -29,6 +29,7 @@ index = 450
 n_modes = p_1
 n_layers = 4 # need to be low because there is a low difference between the with time
 alpha = 0.5
+best_loss = 0.00005
 activation = 'relu'
 kernel_initializer = 'he_normal'
 device = "GPU"
@@ -68,7 +69,7 @@ last_network = tf.keras.Sequential([
 
 folder_path = "data/test_data/big_dataset_fno/heat2d/"
 
-model = FNO(regular_params={"first_network": first_network, "last_network": last_network},fourier_params={"n_layers": n_layers, "dim_coords":2, "n_modes": n_modes, "activation": activation, "kernel_initializer": kernel_initializer}, hyper_params={"p_1": p_1, "p_2": p_2,'p_3':p_3,"device": device,"n_epochs":n_epochs,"index":index,"alpha":alpha,"folder_path":folder_path})
+model = FNO(regular_params={"first_network": first_network, "last_network": last_network},fourier_params={"n_layers": n_layers, "dim_coords":2, "n_modes": n_modes, "activation": activation, "kernel_initializer": kernel_initializer}, hyper_params={"p_1": p_1, "p_2": p_2,'p_3':p_3,"device": device,"n_epochs":n_epochs,"index":index,"alpha":alpha,"folder_path":folder_path,"best_loss":best_loss})
 
 os.makedirs('results/fnograph', exist_ok=True)
 
