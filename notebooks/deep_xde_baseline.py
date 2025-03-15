@@ -12,82 +12,181 @@
 #     name: python3
 # ---
 
+# + [markdown]
+# # Deep XDE Baseline for Heat Equation
+# This notebook implements a PINN model using DeepXDE to solve the 2D heat equation.
+
+# + [code]
 import deepxde as dde
 import numpy as np
-from deepxde.backend import tf
+import tensorflow as tf
 import matplotlib.pyplot as plt
 import os
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Check for GPU availability and configure device
+device = "/CPU:0"  # Default to CPU
+if tf.test.is_built_with_cuda():
+    physical_devices = tf.config.list_physical_devices('GPU')
+    if physical_devices:
+        try:
+            tf.config.experimental.set_memory_growth(physical_devices[0], True)
+            device = "/GPU:0"
+            logger.info(f"Using GPU: {physical_devices[0]}")
+        except RuntimeError as e:
+            logger.warning(f"Unable to use GPU: {e}")
+            logger.warning("Falling back to CPU")
+    else:
+        logger.warning("No GPU devices found, using CPU")
+else:
+    logger.warning("CUDA is not available, using CPU")
+
+# + [code]
 # Define parameters
 nx = 30  # Number of points in x direction
 ny = 30  # Number of points in y direction
-nt = 500  # Number of time steps
 alpha = 0.05  # Diffusion coefficient
+t1 = 0  # Initial temperature at x=0
+t2 = 1  # Initial temperature at x=1
+end_time = 1  # End time
 
+# + [code]
+def pde(x, T):
+    dT_xx = dde.grad.hessian(T, x, j=0)
+    dT_yy = dde.grad.hessian(T, x, j=1) 
+    dT_t = dde.grad.jacobian(T, x, j=2)
+    return dT_t - alpha * (dT_xx + dT_yy)
+
+def boundary_x_l(x, on_boundary):
+    return on_boundary and np.isclose(x[0], 0)
+
+def boundary_x_r(x, on_boundary):
+    return on_boundary and np.isclose(x[0], 1)
+
+def boundary_y_b(x, on_boundary):
+    return on_boundary and np.isclose(x[1], 0)
+
+def boundary_y_u(x, on_boundary):
+    return on_boundary and np.isclose(x[1], 1)
+
+def boundary_initial(x, on_initial):
+    return on_initial and np.isclose(x[2], 0)
+
+# + [code]
+def init_func(x):
+    x_coord = x[:, 0:1]
+    t = np.zeros((len(x), 1))
+    for i, x_ in enumerate(x_coord):
+        if x_ < 0.5:
+            t[i] = t1
+        else:
+            t[i] = t1 + 2 * (x_ - 0.5)
+    return t
+
+def dir_func_l(x):
+    return t1 * np.ones((len(x), 1))
+
+def dir_func_r(x):
+    return t2 * np.ones((len(x), 1))
+
+def func_zero(x):
+    return np.zeros((len(x), 1))
+
+# + [code]
 # Define geometry and time domain
-geom = dde.geometry.Rectangle([-1, -1], [1, 1])  # 2D spatial domain
-timedomain = dde.geometry.TimeDomain(0, 2)  # Time domain [0,2]
+geom = dde.geometry.Rectangle([0, 0], [1, 1])
+timedomain = dde.geometry.TimeDomain(0, end_time)
 geomtime = dde.geometry.GeometryXTime(geom, timedomain)
 
-# Generate initial conditions like in generate_big_heat_fno.py
-X, Y = np.meshgrid(np.linspace(-1, 1, nx), np.linspace(-1, 1, ny))
-mean_x, mean_y = np.random.uniform(0.3, 0.7, size=2)
-var = np.random.uniform(0.01, 0.1)
-initial_conditions = np.exp(-((X - mean_x)**2 + (Y - mean_y)**2)/(2*var))
+# Define boundary conditions
+bc_l = dde.DirichletBC(geomtime, dir_func_l, boundary_x_l)
+bc_r = dde.DirichletBC(geomtime, dir_func_r, boundary_x_r)
+bc_u = dde.NeumannBC(geomtime, func_zero, boundary_y_u)
+bc_b = dde.NeumannBC(geomtime, func_zero, boundary_y_b)
+ic = dde.IC(geomtime, init_func, boundary_initial)
 
-def pde(x, y):  # x: [batch, 3], y: [batch, 1]
-    dy_t = dde.grad.jacobian(y, x, i=0, j=2)  # Time derivative
-    dy_xx = dde.grad.hessian(y, x, i=0, j=0)  # Second x derivative  
-    dy_yy = dde.grad.hessian(y, x, i=1, j=1)  # Second y derivative
-    return dy_t - alpha * (dy_xx + dy_yy)  # Heat equation
-
-def func(x):  # Initial condition function
-    return initial_conditions[
-        np.searchsorted(np.linspace(-1, 1, nx), x[:, 0]),
-        np.searchsorted(np.linspace(-1, 1, ny), x[:, 1])
-    ][:, None]
-
-# Define boundary and initial conditions
-bc = dde.icbc.DirichletBC(geomtime, func, lambda _, on_boundary: on_boundary)
-ic = dde.icbc.IC(geomtime, func, lambda _, on_initial: on_initial)
-
-# Create the TimePDE problem
+# + [code]
+# Create TimePDE problem with real-time monitoring
 data = dde.data.TimePDE(
     geomtime,
     pde,
-    [bc, ic],
-    num_domain=2000,
-    num_boundary=400,
-    num_initial=400,
-    solution=None,
-    num_test=10000
+    [bc_l, bc_r, bc_u, bc_b, ic],
+    num_domain=30000,
+    num_boundary=8000,
+    num_initial=20000
 )
 
-# Define neural network architecture
-layer_size = [3] + [64] * 4 + [1]  # Input: 3 (x,y,t), Hidden: [64,64,64,64], Output: 1
+# Define neural network
+layer_size = [3] + [60] * 5 + [1]
 activation = "tanh"
 initializer = "Glorot uniform"
-net = dde.nn.FNN(layer_size, activation, initializer)
+net = dde.maps.FNN(layer_size, activation, initializer)
+net.apply_output_transform(lambda x, y: abs(y))
 
-# Create and compile model
+# + [code]
+# Create model and compile with monitoring
 model = dde.Model(data, net)
-model.compile("adam", lr=0.001, metrics=["l2 relative error"])
+model.compile("adam", lr=1e-3, loss_weights=[10, 1, 1, 1, 1, 10])
 
-# Train model
-losshistory, train_state = model.train(iterations=50000)
+# Custom callback for real-time monitoring
+class TrainingMonitor(dde.callbacks.Callback):
+    def on_epoch_end(self):
+        if self.model.train_state.epoch % 100 == 0:
+            logger.info(f"Epoch {self.model.train_state.epoch}: "
+                       f"Loss = {self.model.train_state.loss:.6f}")
 
+# + [code]
+# Train model with monitoring
+checker = dde.callbacks.ModelCheckpoint(
+    "model/model.ckpt", save_better_only=True, period=1000
+)
+monitor = TrainingMonitor()
+logger.info("Starting Adam optimization...")
+with tqdm(total=10000, desc="Training (Adam)") as pbar:
+    losshistory, train_state = model.train(
+        iterations=10000,  # Using iterations instead of deprecated epochs
+        batch_size=256,
+        callbacks=[checker, monitor],
+        display_every=100,
+        disregard_previous_best=True
+    )
+    pbar.update(10000)
+
+# + [code]
+# L-BFGS optimization with monitoring
+logger.info("Starting L-BFGS optimization...")
+model.compile("L-BFGS-B")
+dde.optimizers.set_LBFGS_options(maxcor=50)
+with tqdm(total=10000, desc="Training (L-BFGS)") as pbar:
+    losshistory, train_state = model.train(
+        iterations=10000,  # Using iterations instead of deprecated epochs
+        batch_size=256,
+        display_every=100
+    )
+    pbar.update(10000)
+
+# + [code]
 # Save and plot results
 save_path = "results/xde/"
 os.makedirs(save_path, exist_ok=True)
 dde.saveplot(losshistory, train_state, issave=True, isplot=True, save_path=save_path)
 
-# Plot loss history
-plt.figure()
+plt.figure(figsize=(10, 6))
 plt.semilogy(losshistory.steps, losshistory.loss_train, label="Training loss")
 plt.semilogy(losshistory.steps, losshistory.loss_test, label="Testing loss")
 plt.xlabel("Iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig(os.path.join(save_path, f"deep_xde_baseline_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.png"))
+plt.grid(True)
+timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+plt.savefig(os.path.join(save_path, f"deep_xde_baseline_{timestamp}.png"))
 plt.show()
+
+logger.info(f"Training completed. Final loss: {train_state.loss:.6f}")
+logger.info(f"Results saved to {save_path}")
