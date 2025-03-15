@@ -489,10 +489,19 @@ class FNO(tf.keras.Model):
                        
         with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
             json.dump(loss_history_train,f)
+            json.dump(self.hyper_params,f)
+            json.dump(self.fourier_params,f)
         with open(os.path.join("data/weights/fno",f"loss_history_test_{date}.json"),"w") as f:
             json.dump(loss_history_test,f)
+            json.dump(self.hyper_params,f)
+            json.dump(self.fourier_params,f)
         if save_weights:
-            self.save_weights(os.path.join("data/weights/fno",f"weights_{date}.keras"))
+            try:
+                self.save_weights(os.path.join("data/weights/fno",f"weights_{date}.keras"))
+            except Exception as e:
+                print("Failed to save weights")
+                pass
+            
         logger.info("=== Partial Training Completed ===")
         logger.info(f"Final Training Loss: {loss_history_train[-1]:.6f}")
         logger.info(f"Final Test Loss: {loss_history_test[-1]:.6f}")

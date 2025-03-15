@@ -47,8 +47,10 @@ def create_big_heat_data(N:int=1000, nx:int=30, ny:int=30, nt:int=500, alpha:flo
     
     for i in tqdm(range(N_half), desc="Creating Gaussian heat data"):
         mean_x, mean_y = means[i]  # [scalar], [scalar]
+        opposed_mean_x, opposed_mean_y = 1-mean_x, 1-mean_y  # [scalar], [scalar]
         var = variances[i]  # [scalar]
-        initial_conditions = np.exp(-((X - mean_x)**2 + (Y - mean_y)**2)/(2*var))  # [nx, ny]
+        random_sign = np.random.choice([-1, 1])
+        initial_conditions = random_sign * np.exp(-((X - mean_x)**2 + (Y - mean_y)**2)/(2*var))+(1-random_sign) * np.exp(-((X - opposed_mean_x)**2 + (Y - opposed_mean_y)**2)/(2*var))   # [nx, ny] 
         
         T = 2
         t = np.linspace(0,T,nt)  # [nt]
