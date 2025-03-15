@@ -6,7 +6,7 @@ import logging # janis sauce to debug
 import os
 import dotenv
 import json
-
+from sklearn.model_selection import train_test_split
 
 dotenv.load_dotenv()
 
@@ -23,7 +23,7 @@ import numpy as np
 
 class LinearLayer(tf.keras.layers.Layer):
     # [batch, p_1, p_1, n_coords] -> [batch, p_1, p_1, n_modes]
-    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU',p_1:int=50): # attention ici
+    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU',p_1:int=30): # attention ici
         super().__init__()
         self.n_modes = n_modes
         self.initializer = initializer
@@ -43,7 +43,7 @@ class LinearLayer(tf.keras.layers.Layer):
         
 
 class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication with a linear thing in parallel
-    def __init__(self, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal", device:str='GPU', linear_initializer:str='normal',p_1:int=20):
+    def __init__(self, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal", device:str='GPU', linear_initializer:str='normal',p_1:int=30):
         super().__init__()
         self.n_modes = n_modes
         self.activation = tf.keras.activations.get(activation)
@@ -74,40 +74,41 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
         
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         # inputs est de taille [batch, p_2,p_2,1] - représente les valeurs de la fonction
-        print("inputs shape",inputs.shape)
+        # print("inputs shape",inputs.shape)
         with tf.device(self.device):
             casted_data = tf.cast(inputs, tf.complex64) # to real, [batch, p_2,p_2,1]
             function_fft = tf.signal.fft2d(casted_data) # [batch, p_2,p_2, n_modes]
             
-            print("function_fft shape",function_fft.shape)
+            # print("function_fft shape",function_fft.shape)
             # keep in mind fourier_weights is a tensor of shape [n_modes,dim_coords]
 
             fourier_casted = tf.cast(self.fourier_weights,tf.complex64)
             
-            print("fourier_weights shape",fourier_casted.shape)
+            # print("fourier_weights shape",fourier_casted.shape)
             try:
                 function_fft = function_fft * fourier_casted  # with broadcasting
             except:
-                print("function_fft shape",function_fft.shape)
-                print("fourier_casted shape",fourier_casted.shape)
+                # print("function_fft shape",function_fft.shape)
+                # print("fourier_casted shape",fourier_casted.shape)
                 raise ValueError("Shape mismatch")
             
             x_spatial = tf.signal.ifft2d(function_fft)
             x_spatial = tf.cast(x_spatial, tf.float32)
             z = self.linear_layer(inputs)
-            print("x_spatial shape",x_spatial.shape)
-            print("z shape",z.shape)
+            # print("x_spatial shape",x_spatial.shape)
+            # print("z shape",z.shape)
             return self.activation(x_spatial + z)
 
     
 class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers, ie concatenation of fourier layers
-    def __init__(self, n_layers: int, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal"):
+    def __init__(self, n_layers: int, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal",p_1:int=30):
         super().__init__()
         self.n_layers = n_layers
         self.n_modes = n_modes
         self.activation = activation
+        self.p_1 = p_1
         self.kernel_initializer = kernel_initializer
-        self.fourier_layers = [FourierLayer(n_modes, dim_coords, activation, kernel_initializer) for _ in range(n_layers)]
+        self.fourier_layers = [FourierLayer(n_modes, dim_coords, activation, kernel_initializer,p_1=self.p_1) for _ in range(n_layers)]
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         for layer in self.fourier_layers:
@@ -194,10 +195,10 @@ class FNO(tf.keras.Model):
         self.verbose = hyper_params["verbose"] if "verbose" in hyper_params else 1
         self.loss_function = hyper_params["loss_function"] if "loss_function" in hyper_params else tf.losses.MeanSquaredError()
         self.device = hyper_params["device"] if "device" in hyper_params else 'cpu'
-        self.folder_path = None  
+        self.folder_path = os.path.join(PROJECT_ROOT,hyper_params["folder_path"])
     
         self.output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
-        
+        self.alpha = hyper_params["alpha"] if "alpha" in hyper_params else 0.01
         
         self.build() # most important to build the model
         
@@ -266,9 +267,9 @@ class FNO(tf.keras.Model):
             xs = tf.convert_to_tensor(xs, dtype=tf.float32)  # [n_mu, nx, ny, 2]
             sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)  # [N, nx*ny]
             
-            print("mu shape",mu.shape)
+            # print("mu shape",mu.shape)
             inputs = tf.squeeze(mu,axis=-1)
-            print("inputs shape",inputs.shape)
+            # print("inputs shape",inputs.shape)
             #inputs = tf.concat([mu, xs], axis=-1)  # [N, nx, ny, 3]
             return inputs, sol
             
@@ -304,16 +305,18 @@ class FNO(tf.keras.Model):
             mu = np.stack(mu_list, axis=0)  # [N, nx, ny, 1]
             sol = np.stack(sol_list, axis=0)  # [N, nx, ny, nt] 
             xs = np.stack(xs_list, axis=0)  # [N, nx, ny, 2]
-
+            # print("mu shape",mu.shape)
+            # print("sol shape",sol.shape)
+            # print("xs shape",xs.shape)
             time_index = self.hyper_params.get("index", -1)  # [scalar], this means that we take the last time step for the training in the worst case
                 
             mu = tf.convert_to_tensor(mu, dtype=tf.float32)  # [N, nx, ny, 1]
             xs = tf.convert_to_tensor(xs, dtype=tf.float32)  # [n_mu, nx, ny, 2]
-            sol = tf.convert_to_tensor(sol[:, time_index, :], dtype=tf.float32)  # [N, nx*ny]
+            sol = tf.convert_to_tensor(sol[..., time_index], dtype=tf.float32)  # [N, nx*ny]
             
-            print("mu shape",mu.shape)
+            # print("mu shape",mu.shape)
             inputs = tf.squeeze(mu,axis=-1)
-            print("inputs shape",inputs.shape)
+            # print("inputs shape",inputs.shape)
             return inputs, sol
             
         except Exception as e:
@@ -343,7 +346,7 @@ class FNO(tf.keras.Model):
     
     def build_fourier_network(self) -> None:  # main function to build the fourier network and allow CuFFT for fourier efficient training (with my rtx 4060)
         if self.fourier_network is None:
-            self.fourier_network = FourierNetwork(dim_coords=self.dim_coords,n_layers=self.fourier_params["n_layers"],n_modes=self.fourier_params["n_modes"],activation=self.fourier_params["activation"],kernel_initializer=self.fourier_params["kernel_initializer"])
+            self.fourier_network = FourierNetwork(dim_coords=self.dim_coords,n_layers=self.fourier_params["n_layers"],n_modes=self.fourier_params["n_modes"],activation=self.fourier_params["activation"],kernel_initializer=self.fourier_params["kernel_initializer"],p_1=self.p_1)
             
         self.fourier_network.build(input_shape=(None,self.p_2)) # it takes a tuple 
     
@@ -353,19 +356,62 @@ class FNO(tf.keras.Model):
     def fit(self,device:str='GPU',inputs=None,sol=None)->np.ndarray:
         
         inputs, sol = self.get_data(self.folder_path)
-        loss_history = []
+        loss_history_train = []
+        loss_history_test = []
+        
         with tf.device(device):
             dataset = tf.data.Dataset.from_tensor_slices((inputs,sol)) # batching the data with batch size
-        
-            dataset = dataset.batch(self.batch_size) # batching method from tensorflow
+            train_dataset,test_dataset = tf.keras.utils.split_dataset(dataset,left_size=0.8,right_size=0.2,seed=42)
+            train_dataset = train_dataset.batch(self.batch_size) # batching method from tensorflow
+            test_dataset = test_dataset.batch(self.batch_size) # batching method from tensorflow
        
             for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
-                for batch in dataset:
+                for batch in train_dataset:
                     loss = self.train_step(batch)
-                    loss_history.append(loss)
+                    loss_history_train.append(loss)
+                for batch in test_dataset:
+                    loss = self.test_step(batch)
+                    loss_history_test.append(loss)
                 logger.info(f"Epoch {epoch} completed")
             
-        return loss_history
+        return loss_history_train,loss_history_test
+    
+    def test_step(self,batch:tuple[tf.Tensor,tf.Tensor])->tf.Tensor:
+        inputs,sol = batch
+        y_pred = self.predict(inputs)
+        loss = self.loss_function(y_pred,sol)
+        return loss
+    
+    ### managing model training methods ###
+    def fit_partial(self,device:str='GPU',inputs=None,sol=None)->np.ndarray:
+        
+        inputs, sol = self.get_data_partial(self.folder_path,alpha=self.alpha)
+        loss_history_train = []
+        loss_history_test = []
+        
+        with tf.device(device):
+            dataset = tf.data.Dataset.from_tensor_slices((inputs,sol)) # batching the data with batch size
+            train_dataset,test_dataset = tf.keras.utils.split_dataset(dataset,left_size=0.8,right_size=0.2,seed=42)
+            train_dataset = train_dataset.batch(self.batch_size) # batching method from tensorflow
+            test_dataset = test_dataset.batch(self.batch_size) # batching method from tensorflow
+       
+            for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
+                mean_loss = 0
+                for batch in train_dataset:
+                    loss = self.train_step(batch)
+                    mean_loss += loss
+                loss_history_train.append(mean_loss/len(train_dataset))
+                    
+                mean_loss = 0
+                for batch in test_dataset:
+                    batchloss = self.test_step(batch)
+                    mean_loss += batchloss
+                loss_history_test.append(mean_loss/len(test_dataset))
+                logger.info(f"Epoch {epoch} completed")
+        logger.info(f"Train loss: {loss_history_train[-1]}")
+        logger.info(f"Test loss: {loss_history_test[-1]}")
+        return loss_history_train,loss_history_test
+        
         
     def train_step(self, batch: tuple[tf.Tensor, tf.Tensor, tf.Tensor]) -> tf.Tensor:
         """

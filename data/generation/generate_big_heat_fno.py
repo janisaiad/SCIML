@@ -32,9 +32,9 @@ def solve_heat_square(boundary_conditions:np.ndarray, initial_conditions:np.ndar
     
     return solution  # [nx, ny, nt]
 
-def create_big_heat_data(N:int=1000, nx:int=30, ny:int=30, nt:int=250, alpha:float=0.1)->None:
+def create_big_heat_data(N:int=1000, nx:int=30, ny:int=30, nt:int=500, alpha:float=0.05)->None:
     
-    # Create directories if they don't exist
+    
     base_dir = "data/test_data/big_dataset_fno/heat2d"
     for subdir in ['mu', 'sol', 'xs']:
         os.makedirs(os.path.join(base_dir, subdir), exist_ok=True)
