@@ -26,7 +26,7 @@ p_3 = 30 # dimension of scheme for xi for all i
 epochs = 100
 index = 450
 n_modes = p_1
-n_layers = 4
+n_layers = 4 # need to be low
 alpha = 0.5
 
 activation = 'relu'
