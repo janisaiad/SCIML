@@ -1,19 +1,53 @@
 import numpy as np
 import tensorflow as tf
-from typing import Tuple
+from typing import Tuple, Dict, Any
 from tqdm import tqdm
-import logging # janis sauce to debug
+import logging
 import os
 import dotenv
 import json
 from sklearn.model_selection import train_test_split
+from datetime import datetime
 
 dotenv.load_dotenv()
 
-logging.basicConfig(level=logging.INFO) 
+PROJECT_ROOT = os.getenv("PROJECT_ROOT")
+if not PROJECT_ROOT:
+    logging.warning("PROJECT_ROOT not found in environment variables. Using current directory.")
+    PROJECT_ROOT = os.getcwd()
+
+VERBOSE_LOGGING = True   
+
+log_dir = os.path.join(PROJECT_ROOT, "logs")
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
+
+current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+log_file = os.path.join(log_dir, f"fno_training_{current_time}.log")
+
+logging.basicConfig(
+    level=logging.INFO if VERBOSE_LOGGING else logging.ERROR,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler() if VERBOSE_LOGGING else logging.NullHandler()
+    ]
+)
 logger = logging.getLogger(__name__)
 
-PROJECT_ROOT = os.getenv("PROJECT_ROOT")
+def make_json_serializable(obj):
+    if isinstance(obj, (tf.keras.Model, tf.keras.Sequential, tf.keras.layers.Layer)):
+        return f"{obj.__class__.__name__}"
+    elif isinstance(obj, tf.keras.optimizers.Optimizer):
+        return f"{obj.__class__.__name__}(lr={obj.learning_rate.numpy() if hasattr(obj.learning_rate, 'numpy') else obj.learning_rate})"
+    elif isinstance(obj, tf.keras.losses.Loss):
+        return f"{obj.__class__.__name__}"
+    elif isinstance(obj, dict):
+        return {k: make_json_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [make_json_serializable(item) for item in obj]
+    else:
+        return obj
 
 
 
@@ -359,6 +393,19 @@ class FNO(tf.keras.Model):
         loss_history_train = []
         loss_history_test = []
         
+        # Créer des versions sérialisables des paramètres
+        hyper_params_json = make_json_serializable(self.hyper_params)
+        regular_params_json = make_json_serializable(self.regular_params)
+        fourier_params_json = make_json_serializable(self.fourier_params)
+        
+        logger.info("=== Training Started ===")
+        logger.info(f"Model Configuration:")
+        logger.info(f"Hyperparameters: {json.dumps(hyper_params_json, indent=2)}")
+        #logger.info(f"Regular Parameters: {json.dumps(regular_params_json, indent=2)}")
+        logger.info(f"Fourier Parameters: {json.dumps(fourier_params_json, indent=2)}")
+        logger.info(f"Data Shape - Inputs: {inputs.shape}, Solutions: {sol.shape}")
+        logger.info(f"Device: {device}")
+        
         with tf.device(device):
             dataset = tf.data.Dataset.from_tensor_slices((inputs,sol)) # batching the data with batch size
             train_dataset,test_dataset = tf.keras.utils.split_dataset(dataset,left_size=0.8,right_size=0.2,seed=42)
@@ -372,7 +419,16 @@ class FNO(tf.keras.Model):
                 for batch in test_dataset:
                     loss = self.test_step(batch)
                     loss_history_test.append(loss)
-                logger.info(f"Epoch {epoch} completed")
+                
+                
+                logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
+                logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
+                logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
+            
+            
+            logger.info("=== Training Completed ===")
+            logger.info(f"Final Training Loss: {loss_history_train[-1]:.6f}")
+            logger.info(f"Final Test Loss: {loss_history_test[-1]:.6f}")
             
         return loss_history_train,loss_history_test
     
@@ -388,6 +444,20 @@ class FNO(tf.keras.Model):
         inputs, sol = self.get_data_partial(self.folder_path,alpha=self.alpha)
         loss_history_train = []
         loss_history_test = []
+        
+        
+        hyper_params_json = make_json_serializable(self.hyper_params)
+        regular_params_json = make_json_serializable(self.regular_params)
+        fourier_params_json = make_json_serializable(self.fourier_params)
+        
+        logger.info("=== Partial Training Started ===")
+        logger.info(f"Model Configuration:")
+        logger.info(f"Hyperparameters: {json.dumps(hyper_params_json, indent=2)}")
+        #logger.info(f"Regular Parameters: {json.dumps(regular_params_json, indent=2)}")
+        logger.info(f"Fourier Parameters: {json.dumps(fourier_params_json, indent=2)}")
+        logger.info(f"Data Shape - Inputs: {inputs.shape}, Solutions: {sol.shape}")
+        logger.info(f"Alpha (partial training fraction): {self.alpha}")
+        logger.info(f"Device: {device}")
         
         with tf.device(device):
             dataset = tf.data.Dataset.from_tensor_slices((inputs,sol)) # batching the data with batch size
@@ -407,9 +477,17 @@ class FNO(tf.keras.Model):
                     batchloss = self.test_step(batch)
                     mean_loss += batchloss
                 loss_history_test.append(mean_loss/len(test_dataset))
-                logger.info(f"Epoch {epoch} completed")
-        logger.info(f"Train loss: {loss_history_train[-1]}")
-        logger.info(f"Test loss: {loss_history_test[-1]}")
+                
+                
+                logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
+                logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
+                logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
+                
+        
+        logger.info("=== Partial Training Completed ===")
+        logger.info(f"Final Training Loss: {loss_history_train[-1]:.6f}")
+        logger.info(f"Final Test Loss: {loss_history_test[-1]:.6f}")
+        
         return loss_history_train,loss_history_test
         
         
@@ -418,15 +496,9 @@ class FNO(tf.keras.Model):
         Étape d'entraînement simplifiée - minimum de code
         """
         inputs, sol = batch
-        
         with tf.GradientTape() as tape:
-            
-            y_pred = self.predict(inputs)
-            
-           
+            y_pred = self.predict(inputs)   
             loss = self.loss_function(y_pred, sol)
-        
-        
         gradients = tape.gradient(loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
         
