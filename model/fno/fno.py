@@ -117,7 +117,6 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
             # keep in mind fourier_weights is a tensor of shape [n_modes,dim_coords]
 
             fourier_casted = tf.cast(self.fourier_weights,tf.complex64)
-            
             # print("fourier_weights shape",fourier_casted.shape)
             try:
                 function_fft = function_fft * fourier_casted  # with broadcasting
