@@ -1,349 +1,156 @@
-\documentclass[tikz,border=10pt]{standalone}
+\documentclass[tikz]{standalone}
 
 %% Language and font encodings
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{tikz}
+
 \usepackage{xcolor}
-\usepackage{amsmath}
-\usepackage{tikz-3dplot}
+\definecolor{darkblue}{HTML}{1f4e79}
+\definecolor{lightblue}{HTML}{00b0f0}
+\definecolor{salmon}{HTML}{ff9c6b}
 
-% Définition des couleurs
-\definecolor{encodercolor}{RGB}{70,130,180}   % Bleu acier
-\definecolor{fourierlayercolor}{RGB}{220,20,60}  % Rouge cramoisi
-\definecolor{decodercolor}{RGB}{46,139,87}    % Vert mer
-\definecolor{inputcolor}{RGB}{255,165,0}      % Orange
-\definecolor{outputcolor}{RGB}{148,0,211}     % Violet
-\definecolor{fftcolor}{RGB}{255,105,180}      % Rose vif
-\definecolor{spectralcolor}{RGB}{100,149,237} % Bleu cornflower
-\definecolor{weightcolor}{RGB}{255,215,0}     % Or
+\usetikzlibrary{backgrounds,calc,shadings,shapes.arrows,arrows,shapes.symbols,shadows,positioning,decorations.markings,backgrounds,arrows.meta}
 
-\usetikzlibrary{backgrounds,calc,shadings,shapes.arrows,arrows,shapes.symbols,shadows,positioning,decorations.markings,backgrounds,arrows.meta,3d}
+% Define parallelepiped shape:
+\makeatletter
+\pgfkeys{/pgf/.cd,
+  parallelepiped offset x/.initial=2mm,
+  parallelepiped offset y/.initial=2mm
+}
+\pgfdeclareshape{parallelepiped}
+{
+  \inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+  \inheritanchorborder[from=rectangle]
+  \inheritanchor[from=rectangle]{north}
+  \inheritanchor[from=rectangle]{north west}
+  \inheritanchor[from=rectangle]{north east}
+  \inheritanchor[from=rectangle]{center}
+  \inheritanchor[from=rectangle]{west}
+  \inheritanchor[from=rectangle]{east}
+  \inheritanchor[from=rectangle]{mid}
+  \inheritanchor[from=rectangle]{mid west}
+  \inheritanchor[from=rectangle]{mid east}
+  \inheritanchor[from=rectangle]{base}
+  \inheritanchor[from=rectangle]{base west}
+  \inheritanchor[from=rectangle]{base east}
+  \inheritanchor[from=rectangle]{south}
+  \inheritanchor[from=rectangle]{south west}
+  \inheritanchor[from=rectangle]{south east}
+  \backgroundpath{
+    % store lower right in xa/ya and upper right in xb/yb
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfmathsetlength\pgfutil@tempdima{\pgfkeysvalueof{/pgf/parallelepiped
+      offset x}}
+    \pgfmathsetlength\pgfutil@tempdimb{\pgfkeysvalueof{/pgf/parallelepiped
+      offset y}}
+    \def\ppd@offset{\pgfpoint{\pgfutil@tempdima}{\pgfutil@tempdimb}}
+    \pgfpathmoveto{\pgfqpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xa}{\pgf@yb}}
+    \pgfpathclose
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathlineto{\pgfpointadd{\pgfpoint{\pgf@xb}{\pgf@ya}}{\ppd@offset}}
+    \pgfpathlineto{\pgfpointadd{\pgfpoint{\pgf@xb}{\pgf@yb}}{\ppd@offset}}
+    \pgfpathlineto{\pgfpointadd{\pgfpoint{\pgf@xa}{\pgf@yb}}{\ppd@offset}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xa}{\pgf@yb}}
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \pgfpathlineto{\pgfpointadd{\pgfpoint{\pgf@xb}{\pgf@yb}}{\ppd@offset}}
+  }
+}
+\makeatother
 
-% Configuration de la vue 3D
-\tdplotsetmaincoords{70}{110}
+\tikzset{
+  % Dark blue blocks
+  block/.style={
+    parallelepiped,fill=white, draw,
+    minimum width=0.8cm,
+    minimum height=2.4cm,
+    parallelepiped offset x=0.5cm,
+    parallelepiped offset y=0.5cm,
+    path picture={
+      \draw[top color=darkblue,bottom color=darkblue]
+        (path picture bounding box.south west) rectangle 
+        (path picture bounding box.north east);
+    },
+    text=white,
+  },
+  % Orange-ish blocks
+  conv/.style={
+    parallelepiped,fill=white, draw,
+    minimum width=0.8cm,
+    minimum height=2.4cm,
+    parallelepiped offset x=0.5cm,
+    parallelepiped offset y=0.5cm,
+    path picture={
+      \draw[top color=salmon,bottom color=salmon]
+        (path picture bounding box.south west) rectangle 
+        (path picture bounding box.north east);
+    },
+    text=white,
+  },
+  % Taller Light blue blocks:
+  plate/.style={
+    parallelepiped,fill=white, draw,
+    minimum width=0.1cm,
+    minimum height=7.4cm,
+    parallelepiped offset x=0.5cm,
+    parallelepiped offset y=0.5cm,
+    path picture={
+      \draw[top color=lightblue,bottom color=lightblue]
+        (path picture bounding box.south west) rectangle 
+        (path picture bounding box.north east);
+    },
+    text=white,
+  },
+  % Arrows between blocks:
+  link/.style={
+    color=lightblue,
+    line width=2mm,
+  },
+}
 
 \begin{document}
 
-% Première visualisation - Flux des tenseurs à travers le réseau FNO
-\begin{tikzpicture}[tdplot_main_coords, scale=0.8]
-    % Définition des styles
-    \tikzset{
-        cuboide/.style={
-            opacity=0.8,
-            draw=black,
-            thick,
-            fill=#1
-        },
-        fleche/.style={
-            ->,
-            >=stealth,
-            thick,
-            draw=black!70
-        },
-        etiquette/.style={
-            font=\small,
-            align=center
-        }
-    }
-    
-    % Fonction pour dessiner un cuboïde 3D
-    \newcommand{\drawcuboid}[7]{% x, y, z, dx, dy, dz, color
-        \begin{scope}[shift={(#1,#2,#3)}]
-            % Face avant
-            \fill[cuboide=#7] (0,0,0) -- (#4,0,0) -- (#4,#5,0) -- (0,#5,0) -- cycle;
-            % Face droite
-            \fill[cuboide=#7,opacity=0.6] (#4,0,0) -- (#4,#5,0) -- (#4,#5,#6) -- (#4,0,#6) -- cycle;
-            % Face supérieure
-            \fill[cuboide=#7,opacity=0.7] (0,#5,0) -- (#4,#5,0) -- (#4,#5,#6) -- (0,#5,#6) -- cycle;
-            % Face arrière
-            \draw[cuboide=#7,opacity=0.4] (0,0,#6) -- (#4,0,#6) -- (#4,#5,#6) -- (0,#5,#6) -- cycle;
-            % Face gauche
-            \draw[cuboide=#7,opacity=0.5] (0,0,0) -- (0,#5,0) -- (0,#5,#6) -- (0,0,#6) -- cycle;
-            % Face inférieure
-            \draw[cuboide=#7,opacity=0.3] (0,0,0) -- (#4,0,0) -- (#4,0,#6) -- (0,0,#6) -- cycle;
-            
-            % Arêtes
-            \draw[black, thick] (0,0,0) -- (#4,0,0) -- (#4,#5,0) -- (0,#5,0) -- cycle;
-            \draw[black, thick] (0,0,#6) -- (#4,0,#6) -- (#4,#5,#6) -- (0,#5,#6) -- cycle;
-            \draw[black, thick] (0,0,0) -- (0,0,#6);
-            \draw[black, thick] (#4,0,0) -- (#4,0,#6);
-            \draw[black, thick] (#4,#5,0) -- (#4,#5,#6);
-            \draw[black, thick] (0,#5,0) -- (0,#5,#6);
-        \end{scope}
-    }
-    
-    % Axes principaux
-    \draw[->, thick] (0,0,0) -- (15,0,0) node[right] {$x$};
-    \draw[->, thick] (0,0,0) -- (0,10,0) node[above] {$y$};
-    \draw[->, thick] (0,0,0) -- (0,0,6) node[above] {$z$ (batch)};
-    
-    % Tenseur d'entrée [B, p_1, p_1]
-    \drawcuboid{0}{0}{0}{3}{3}{2}{inputcolor}
-    \node[etiquette, below=0.1cm] at (1.5,1.5,0) {Entrée $[B, p_1, p_1]$};
-    \node[etiquette] at (-0.5,0,-0.5) {$p_1=30$};
-    \node[etiquette] at (0,-0.5,-0.5) {$p_1=30$};
-    \node[etiquette] at (-0.5,-0.5,2) {$B$ (batch)};
-    
-    % Encodeur
-    \node[etiquette, above] at (5,2,2.5) {Encodeur};
-    \draw[fleche] (3.5,1.5,1) -- (4.5,1.5,1);
-    
-    % Sortie de l'encodeur [B, p_1, p_1]
-    \drawcuboid{5}{0}{0}{3}{3}{2}{encodercolor}
-    \node[etiquette, below=0.1cm] at (6.5,1.5,0) {$[B, p_1, p_1]$};
-    
-    % FFT
-    \draw[fleche] (8.5,1.5,1) -- (9.5,1.5,1);
-    \node[etiquette, above] at (9,1.5,1.5) {FFT 2D};
-    
-    % Domaine de Fourier [B, p_1, p_1] (complexe)
-    \drawcuboid{10}{0}{0}{3}{3}{2}{fftcolor}
-    \node[etiquette, below=0.1cm] at (11.5,1.5,0) {$[B, p_1, p_1]$ (complexe)};
-    
-    % Poids spectraux [p_1, p_1]
-    \drawcuboid{10}{5}{0}{3}{3}{0.5}{weightcolor}
-    \node[etiquette, above=0.1cm] at (11.5,6.5,0.5) {Poids spectraux $[p_1, p_1]$};
-    
-    % Multiplication
-    \draw[fleche] (13.5,1.5,1) -- (14.5,1.5,1);
-    \draw[fleche] (11.5,5,0.25) -- (14,2.5,1);
-    \node[etiquette] at (14,2,2) {$\times$};
-    
-    % Résultat dans le domaine spectral
-    \drawcuboid{15}{0}{0}{3}{3}{2}{spectralcolor}
-    \node[etiquette, below=0.1cm] at (16.5,1.5,0) {$[B, p_1, p_1]$ après mult.};
-    
-    % IFFT
-    \draw[fleche] (18.5,1.5,1) -- (19.5,1.5,1);
-    \node[etiquette, above] at (19,1.5,1.5) {IFFT 2D};
-    
-    % Sortie de la couche de Fourier
-    \drawcuboid{20}{0}{0}{3}{3}{2}{fourierlayercolor}
-    \node[etiquette, below=0.1cm] at (21.5,1.5,0) {$[B, p_1, p_1]$ après IFFT};
-    
-    % Chemin linéaire parallèle
-    \drawcuboid{5}{5}{0}{3}{3}{2}{inputcolor}
-    \node[etiquette, above=0.1cm] at (6.5,6.5,2) {Entrée pour chemin linéaire};
-    
-    % Couche linéaire
-    \draw[fleche] (8.5,6.5,1) -- (14.5,6.5,1);
-    \node[etiquette, above] at (11.5,6.5,1.5) {Couche linéaire};
-    
-    % Sortie du chemin linéaire
-    \drawcuboid{15}{5}{0}{3}{3}{2}{decodercolor}
-    \node[etiquette, above=0.1cm] at (16.5,6.5,2) {$[B, p_1, p_1]$ linéaire};
-    
-    % Addition
-    \draw[fleche] (18.5,6.5,1) -- (19.5,4,1);
-    \draw[fleche] (21.5,1.5,1) -- (19.5,3,1);
-    \node[etiquette] at (19.5,3.5,2) {$+$};
-    
-    % Activation ReLU
-    \draw[fleche] (19.5,3.5,1) -- (21,3.5,1);
-    \node[etiquette, above] at (21,3.5,1.5) {ReLU};
-    
-    % Sortie finale d'une couche de Fourier
-    \drawcuboid{22}{2}{0}{3}{3}{2}{outputcolor}
-    \node[etiquette, below=0.1cm] at (23.5,3.5,0) {$[B, p_1, p_1]$ sortie de couche};
-    
-    % Titre global
-    \node[font=\large\bfseries] at (12.5,10,0) {Traitement des tenseurs dans une couche de Fourier du FNO};
-    
-    % Légende des dimensions
-    \node[draw, rounded corners, fill=white, align=left, text width=10cm] at (13,-2,0) {
-        \textbf{Dimensions des tenseurs:}\\
-        $B$ = Taille du batch\\
-        $p_1$ = Dimension de la grille d'entrée ($30 \times 30$)\\
-        Toutes les couches de Fourier préservent les dimensions $[B, p_1, p_1]$
-    };
+\begin{tikzpicture}
+  % First network
+  % The order of blocks matters since some are partially hidden behind subsequent blocks.
+  \node[conv](conv1){\rotatebox{90}{Conv}};
+  \node[plate,right=0.2cm of conv1](plate1){};
+  % yshift to align the bottom of that blocks with the previous taller block.
+  \node[block,right=0.2cm of plate1,yshift=-2.5cm](resblock1){\rotatebox{90}{ResBlock}};
+  \node[block,above=0.1cm of resblock1](resblock2){\rotatebox{90}{ResBlock}};
+  \node[block,above=0.1cm of resblock2](resblock3){\rotatebox{90}{ResBlock}};
+  \node[block,right=0.2cm of resblock1](x1){\rotatebox{90}{(X4)}};
+  \node[block,above=0.1cm of x1](x2){\rotatebox{90}{(X3)}};
+  \node[block,above=0.1cm of x2](x3){\rotatebox{90}{(X2)}};
+  \node[plate,right=0.2cm of x2](plate2){};
+  \node[block,right=0.6cm of x2](resblock4){\rotatebox{90}{ResBlock4}};
+  \node[block,right=2cm of resblock4](resblock5){\rotatebox{90}{ResBlock5}};
+  \node[conv,right=0.2cm of resblock5](conv2){\rotatebox{90}{Conv}};
+  \draw [-,link] ([xshift=0.2cm,yshift=0.2cm]resblock4.east) -- ([yshift=0.2cm]resblock5.west);
+  \draw [-triangle 60,link] ([xshift=0.2cm,yshift=0.2cm]conv2.east) -- ([xshift=1.5cm,yshift=0.2cm]conv2.east);
+
+  % Second network
+  \node[conv,right=4cm of conv2](conv3){\rotatebox{90}{Conv}};
+  \node[plate,right=0.2cm of conv3](plate3){};
+  \node[block,right=0.2cm of plate3,yshift=-2.5cm](resblock6){\rotatebox{90}{ResBlock}};
+  \node[block,above=0.1cm of resblock6](resblock7){\rotatebox{90}{ResBlock}};
+  \node[block,above=0.1cm of resblock7](resblock8){\rotatebox{90}{ResBlock}};
+  \node[block,right=0.2cm of resblock6](x4){\rotatebox{90}{(X4)}};
+  \node[block,above=0.1cm of x4](x5){\rotatebox{90}{(X3)}};
+  \node[block,above=0.1cm of x5](x6){\rotatebox{90}{(X2)}};
+  \node[plate,right=0.2cm of x5](plate4){};
+  \node[block,right=0.6cm of x5](resblock9){\rotatebox{90}{ResBlock4}};
+  \node[block,right=2cm of resblock9](resblock10){\rotatebox{90}{ResBlock5}};
+  \node[conv,right=0.2cm of resblock10](conv4){\rotatebox{90}{Conv}};
+  \draw [-,link] ([xshift=0.2cm,yshift=0.2cm]resblock9.east) -- ([yshift=0.2cm]resblock10.west);
+  \draw [-triangle 60,link] ([xshift=0.2cm,yshift=0.2cm]conv4.east) -- ([xshift=1.5cm,yshift=0.2cm]conv4.east);
+
+  % Connection between networks
+  \draw [-triangle 60,link] ([xshift=1.5cm,yshift=0.2cm]conv2.east) -- ([yshift=0.2cm]conv3.west);
 \end{tikzpicture}
 
-% Deuxième visualisation - Focus sur la structure des tenseurs
-\begin{tikzpicture}[tdplot_main_coords, scale=1.2]
-    % Styles
-    \tikzset{
-        grid/.style={
-            draw=gray!50,
-            thin
-        },
-        cell/.style={
-            draw=black,
-            fill=#1,
-            opacity=0.8
-        },
-        axes/.style={
-            ->,
-            >=stealth,
-            thick
-        }
-    }
-    
-    % Fonction pour dessiner un cuboïde 3D avec grille
-    \newcommand{\drawTensorGrid}[7]{% x, y, z, dx, dy, dz, color
-        \begin{scope}[shift={(#1,#2,#3)}]
-            % Dessiner la structure en grille
-            % Face avant
-            \foreach \i in {0,...,#4} {
-                \draw[grid] (\i,0,0) -- (\i,#5,0);
-            }
-            \foreach \j in {0,...,#5} {
-                \draw[grid] (0,\j,0) -- (#4,\j,0);
-            }
-            
-            % Face droite
-            \foreach \i in {0,...,#6} {
-                \draw[grid] (#4,0,\i) -- (#4,#5,\i);
-            }
-            \foreach \j in {0,...,#5} {
-                \draw[grid] (#4,\j,0) -- (#4,\j,#6);
-            }
-            
-            % Face supérieure
-            \foreach \i in {0,...,#4} {
-                \draw[grid] (\i,#5,0) -- (\i,#5,#6);
-            }
-            \foreach \k in {0,...,#6} {
-                \draw[grid] (0,#5,\k) -- (#4,#5,\k);
-            }
-            
-            % Contours extérieurs
-            \draw[black, thick] (0,0,0) -- (#4,0,0) -- (#4,#5,0) -- (0,#5,0) -- cycle;
-            \draw[black, thick] (0,0,#6) -- (#4,0,#6) -- (#4,#5,#6) -- (0,#5,#6) -- cycle;
-            \draw[black, thick] (0,0,0) -- (0,0,#6);
-            \draw[black, thick] (#4,0,0) -- (#4,0,#6);
-            \draw[black, thick] (#4,#5,0) -- (#4,#5,#6);
-            \draw[black, thick] (0,#5,0) -- (0,#5,#6);
-            
-            % Dessiner quelques cellules pour montrer la structure
-            \filldraw[cell=#7] (1,1,0) -- (2,1,0) -- (2,2,0) -- (1,2,0) -- cycle;
-            \filldraw[cell=#7] (3,2,0) -- (4,2,0) -- (4,3,0) -- (3,3,0) -- cycle;
-            \filldraw[cell=#7] (2,4,0) -- (3,4,0) -- (3,5,0) -- (2,5,0) -- cycle;
-            
-            \filldraw[cell=#7] (1,1,1) -- (2,1,1) -- (2,2,1) -- (1,2,1) -- cycle;
-            \filldraw[cell=#7] (3,3,1) -- (4,3,1) -- (4,4,1) -- (3,4,1) -- cycle;
-            
-            \filldraw[cell=#7] (2,2,2) -- (3,2,2) -- (3,3,2) -- (2,3,2) -- cycle;
-            \filldraw[cell=#7] (4,4,2) -- (5,4,2) -- (5,5,2) -- (4,5,2) -- cycle;
-        \end{scope}
-    }
-    
-    % Axes
-    \draw[axes] (0,0,0) -- (6.5,0,0) node[right] {axe $i$ (largeur)};
-    \draw[axes] (0,0,0) -- (0,6.5,0) node[above] {axe $j$ (hauteur)};
-    \draw[axes] (0,0,0) -- (0,0,3.5) node[above] {axe $k$ (batch)};
-    
-    % Dessiner un tenseur 3D d'entrée
-    \drawTensorGrid{0}{0}{0}{5}{5}{2}{inputcolor}
-    
-    % Étiquettes des dimensions
-    \node[align=center] at (2.5,-1,0) {$p_1 = 30$};
-    \node[align=center] at (-1,2.5,0) {$p_1 = 30$};
-    \node[align=center] at (-1,-1,1.5) {$B$ (batch)};
-    
-    % Titre
-    \node[font=\large\bfseries] at (3,8,0) {Structure d'un tenseur d'entrée dans le FNO};
-    
-    % Annotations supplémentaires
-    \node[draw, rounded corners, fill=white, align=left, text width=10cm] at (10,3,1) {
-        \textbf{Structure des tenseurs dans le FNO:}\\
-        - Chaque cellule $(i,j)$ représente une valeur sur la grille spatiale\\
-        - La dimension $k$ représente les différents exemples du batch\\
-        - Les opérations FFT/IFFT sont appliquées sur les dimensions $i,j$\\
-        - La dimension de batch $k$ est préservée à travers toutes les couches
-    };
-    
-    % Flèche explicative pour un élément spécifique
-    \draw[->, thick, red] (7,3,1) -- (3,3,1);
-    \node[align=center, red] at (8,4,1.5) {Élément $(i=3,j=3,k=1)$};
-\end{tikzpicture}
-
-% Troisième visualisation - Architecture complète
-\begin{tikzpicture}[tdplot_main_coords, scale=0.7]
-    % Styles pour les cuboïdes
-    \tikzset{
-        module/.style={
-            draw,
-            thick,
-            fill=#1,
-            opacity=0.8,
-            rounded corners
-        },
-        fleche/.style={
-            ->,
-            >=stealth,
-            thick,
-            draw=black
-        }
-    }
-    
-    % Fonction pour dessiner un module 3D (parallélépipède pour représenter une couche)
-    \newcommand{\drawModule}[7]{% x, y, z, dx, dy, dz, color
-        \begin{scope}[shift={(#1,#2,#3)}]
-            % Face avant arrondie
-            \fill[module=#7] (0,0,0) -- (#4,0,0) -- (#4,#5,0) -- (0,#5,0) -- cycle;
-            % Face droite
-            \fill[module=#7,opacity=0.6] (#4,0,0) -- (#4,#5,0) -- (#4,#5,#6) -- (#4,0,#6) -- cycle;
-            % Face supérieure
-            \fill[module=#7,opacity=0.7] (0,#5,0) -- (#4,#5,0) -- (#4,#5,#6) -- (0,#5,#6) -- cycle;
-            % Contours
-            \draw[black, thick] (0,0,0) -- (#4,0,0) -- (#4,#5,0) -- (0,#5,0) -- cycle;
-            \draw[black, thick] (0,0,#6) -- (#4,0,#6) -- (#4,#5,#6) -- (0,#5,#6) -- cycle;
-            \draw[black, thick] (0,0,0) -- (0,0,#6);
-            \draw[black, thick] (#4,0,0) -- (#4,0,#6);
-            \draw[black, thick] (#4,#5,0) -- (#4,#5,#6);
-            \draw[black, thick] (0,#5,0) -- (0,#5,#6);
-        \end{scope}
-    }
-    
-    % Tenseur d'entrée [B, p_1, p_1]
-    \drawcuboid{0}{0}{0}{3}{3}{2}{inputcolor}
-    \node[align=center, font=\small] at (1.5,-1,1) {Entrée $[B, p_1, p_1]$};
-    
-    % Réseau encodeur
-    \drawModule{4}{0}{0}{2}{3}{2}{encodercolor}
-    \node[align=center, font=\small] at (5,-1,1) {Encodeur};
-    \draw[fleche] (3.2,1.5,1) -- (3.8,1.5,1);
-    
-    % Couches de Fourier
-    \drawModule{7}{0}{0}{2}{3}{2}{fourierlayercolor}
-    \node[align=center, font=\small] at (8,-1,1) {Fourier Layer 1};
-    \draw[fleche] (6.2,1.5,1) -- (6.8,1.5,1);
-    
-    \drawModule{10}{0}{0}{2}{3}{2}{fourierlayercolor}
-    \node[align=center, font=\small] at (11,-1,1) {Fourier Layer 2};
-    \draw[fleche] (9.2,1.5,1) -- (9.8,1.5,1);
-    
-    \drawModule{13}{0}{0}{2}{3}{2}{fourierlayercolor}
-    \node[align=center, font=\small] at (14,-1,1) {Fourier Layer 3};
-    \draw[fleche] (12.2,1.5,1) -- (12.8,1.5,1);
-    
-    \drawModule{16}{0}{0}{2}{3}{2}{fourierlayercolor}
-    \node[align=center, font=\small] at (17,-1,1) {Fourier Layer 4};
-    \draw[fleche] (15.2,1.5,1) -- (15.8,1.5,1);
-    
-    % Réseau décodeur
-    \drawModule{19}{0}{0}{2}{3}{2}{decodercolor}
-    \node[align=center, font=\small] at (20,-1,1) {Décodeur};
-    \draw[fleche] (18.2,1.5,1) -- (18.8,1.5,1);
-    
-    % Tenseur de sortie [B, p_3, p_3]
-    \drawcuboid{22}{0}{0}{3}{3}{2}{outputcolor}
-    \node[align=center, font=\small] at (23.5,-1,1) {Sortie $[B, p_3, p_3]$};
-    \draw[fleche] (21.2,1.5,1) -- (21.8,1.5,1);
-    
-    % Titre global
-    \node[font=\large\bfseries] at (12,5,1) {Architecture complète du modèle FNO};
-    
-    % Légende des dimensions des tenseurs à chaque étape
-    \node[draw, rounded corners, fill=white, align=left, text width=14cm] at (12,-4,1) {
-        \textbf{Évolution des dimensions des tenseurs:}\\
-        Entrée: $[B, p_1, p_1]$ où $p_1 = 30$ (grille spatiale d'entrée)\\
-        Encodeur: transforme les données tout en conservant les dimensions $[B, p_1, p_1]$\\
-        Couches de Fourier: appliquent des transformations dans le domaine spectral, préservant $[B, p_1, p_1]$\\
-        Décodeur: produit la sortie finale de dimensions $[B, p_3, p_3]$ où $p_3 = 30$ (grille de sortie)
-    };
-\end{tikzpicture}
-
-\end{document} 
+\end{document}
