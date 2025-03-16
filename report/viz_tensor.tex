@@ -9,6 +9,7 @@
 \definecolor{darkblue}{HTML}{1f4e79}
 \definecolor{lightblue}{HTML}{00b0f0}
 \definecolor{salmon}{HTML}{ff9c6b}
+\definecolor{purple}{HTML}{9933ff}
 
 \usetikzlibrary{backgrounds,calc,shadings,shapes.arrows,arrows,shapes.symbols,shadows,positioning,decorations.markings,backgrounds,arrows.meta}
 
@@ -20,7 +21,7 @@
 }
 \pgfdeclareshape{parallelepiped}
 {
-  \inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+  \inheritsavedanchors[from=rectangle]
   \inheritanchorborder[from=rectangle]
   \inheritanchor[from=rectangle]{north}
   \inheritanchor[from=rectangle]{north west}
@@ -38,13 +39,10 @@
   \inheritanchor[from=rectangle]{south west}
   \inheritanchor[from=rectangle]{south east}
   \backgroundpath{
-    % store lower right in xa/ya and upper right in xb/yb
     \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y
     \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
-    \pgfmathsetlength\pgfutil@tempdima{\pgfkeysvalueof{/pgf/parallelepiped
-      offset x}}
-    \pgfmathsetlength\pgfutil@tempdimb{\pgfkeysvalueof{/pgf/parallelepiped
-      offset y}}
+    \pgfmathsetlength\pgfutil@tempdima{\pgfkeysvalueof{/pgf/parallelepiped offset x}}
+    \pgfmathsetlength\pgfutil@tempdimb{\pgfkeysvalueof{/pgf/parallelepiped offset y}}
     \def\ppd@offset{\pgfpoint{\pgfutil@tempdima}{\pgfutil@tempdimb}}
     \pgfpathmoveto{\pgfqpoint{\pgf@xa}{\pgf@ya}}
     \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
@@ -63,13 +61,12 @@
 \makeatother
 
 \tikzset{
-  % Dark blue blocks
-  block/.style={
+  dense/.style={
     parallelepiped,fill=white, draw,
     minimum width=0.8cm,
-    minimum height=2.4cm,
-    parallelepiped offset x=0.5cm,
-    parallelepiped offset y=0.5cm,
+    minimum height=1.2cm,
+    parallelepiped offset x=0.3cm,
+    parallelepiped offset y=0.3cm,
     path picture={
       \draw[top color=darkblue,bottom color=darkblue]
         (path picture bounding box.south west) rectangle 
@@ -77,10 +74,9 @@
     },
     text=white,
   },
-  % Orange-ish blocks
-  conv/.style={
+  fourier/.style={
     parallelepiped,fill=white, draw,
-    minimum width=0.8cm,
+    minimum width=1.2cm,
     minimum height=2.4cm,
     parallelepiped offset x=0.5cm,
     parallelepiped offset y=0.5cm,
@@ -91,66 +87,89 @@
     },
     text=white,
   },
-  % Taller Light blue blocks:
-  plate/.style={
+  linear/.style={
     parallelepiped,fill=white, draw,
-    minimum width=0.1cm,
-    minimum height=7.4cm,
+    minimum width=1.2cm,
+    minimum height=2.4cm,
     parallelepiped offset x=0.5cm,
     parallelepiped offset y=0.5cm,
     path picture={
-      \draw[top color=lightblue,bottom color=lightblue]
+      \draw[top color=purple,bottom color=purple]
         (path picture bounding box.south west) rectangle 
         (path picture bounding box.north east);
     },
     text=white,
   },
-  % Arrows between blocks:
   link/.style={
-    color=lightblue,
-    line width=2mm,
+    color=black,
+    line width=1mm,
+    ->,
   },
 }
 
 \begin{document}
 
 \begin{tikzpicture}
-  % First network
-  % The order of blocks matters since some are partially hidden behind subsequent blocks.
-  \node[conv](conv1){\rotatebox{90}{Conv}};
-  \node[plate,right=0.2cm of conv1](plate1){};
-  % yshift to align the bottom of that blocks with the previous taller block.
-  \node[block,right=0.2cm of plate1,yshift=-2.5cm](resblock1){\rotatebox{90}{ResBlock}};
-  \node[block,above=0.1cm of resblock1](resblock2){\rotatebox{90}{ResBlock}};
-  \node[block,above=0.1cm of resblock2](resblock3){\rotatebox{90}{ResBlock}};
-  \node[block,right=0.2cm of resblock1](x1){\rotatebox{90}{(X4)}};
-  \node[block,above=0.1cm of x1](x2){\rotatebox{90}{(X3)}};
-  \node[block,above=0.1cm of x2](x3){\rotatebox{90}{(X2)}};
-  \node[plate,right=0.2cm of x2](plate2){};
-  \node[block,right=0.6cm of x2](resblock4){\rotatebox{90}{ResBlock4}};
-  \node[block,right=2cm of resblock4](resblock5){\rotatebox{90}{ResBlock5}};
-  \node[conv,right=0.2cm of resblock5](conv2){\rotatebox{90}{Conv}};
-  \draw [-,link] ([xshift=0.2cm,yshift=0.2cm]resblock4.east) -- ([yshift=0.2cm]resblock5.west);
-  \draw [-triangle 60,link] ([xshift=0.2cm,yshift=0.2cm]conv2.east) -- ([xshift=1.5cm,yshift=0.2cm]conv2.east);
+  % First Dense Network (64->32->p1*p1)
+  \node[dense](dense1){\rotatebox{90}{Dense 64}};
+  \node[dense,right=0.5cm of dense1](dense2){\rotatebox{90}{Dense 32}};
+  \node[dense,right=0.5cm of dense2](dense3){\rotatebox{90}{Dense p1*p1}};
 
-  % Second network
-  \node[conv,right=4cm of conv2](conv3){\rotatebox{90}{Conv}};
-  \node[plate,right=0.2cm of conv3](plate3){};
-  \node[block,right=0.2cm of plate3,yshift=-2.5cm](resblock6){\rotatebox{90}{ResBlock}};
-  \node[block,above=0.1cm of resblock6](resblock7){\rotatebox{90}{ResBlock}};
-  \node[block,above=0.1cm of resblock7](resblock8){\rotatebox{90}{ResBlock}};
-  \node[block,right=0.2cm of resblock6](x4){\rotatebox{90}{(X4)}};
-  \node[block,above=0.1cm of x4](x5){\rotatebox{90}{(X3)}};
-  \node[block,above=0.1cm of x5](x6){\rotatebox{90}{(X2)}};
-  \node[plate,right=0.2cm of x5](plate4){};
-  \node[block,right=0.6cm of x5](resblock9){\rotatebox{90}{ResBlock4}};
-  \node[block,right=2cm of resblock9](resblock10){\rotatebox{90}{ResBlock5}};
-  \node[conv,right=0.2cm of resblock10](conv4){\rotatebox{90}{Conv}};
-  \draw [-,link] ([xshift=0.2cm,yshift=0.2cm]resblock9.east) -- ([yshift=0.2cm]resblock10.west);
-  \draw [-triangle 60,link] ([xshift=0.2cm,yshift=0.2cm]conv4.east) -- ([xshift=1.5cm,yshift=0.2cm]conv4.east);
+  % First Fourier Network (4 layers)
+  \node[fourier,right=2cm of dense3](fourier1){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier1](linear1){\rotatebox{90}{Linear Layer}};
+  
+  \node[fourier,right=1cm of fourier1](fourier2){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier2](linear2){\rotatebox{90}{Linear Layer}};
+  
+  \node[fourier,right=1cm of fourier2](fourier3){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier3](linear3){\rotatebox{90}{Linear Layer}};
+  
+  \node[fourier,right=1cm of fourier3](fourier4){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier4](linear4){\rotatebox{90}{Linear Layer}};
 
-  % Connection between networks
-  \draw [-triangle 60,link] ([xshift=1.5cm,yshift=0.2cm]conv2.east) -- ([yshift=0.2cm]conv3.west);
+  % Second Fourier Network (4 layers) 
+  \node[fourier,right=2cm of fourier4](fourier5){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier5](linear5){\rotatebox{90}{Linear Layer}};
+  
+  \node[fourier,right=1cm of fourier5](fourier6){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier6](linear6){\rotatebox{90}{Linear Layer}};
+  
+  \node[fourier,right=1cm of fourier6](fourier7){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier7](linear7){\rotatebox{90}{Linear Layer}};
+  
+  \node[fourier,right=1cm of fourier7](fourier8){\rotatebox{90}{Fourier Layer}};
+  \node[linear,above=0.8cm of fourier8](linear8){\rotatebox{90}{Linear Layer}};
+
+  % Last Dense Network (64->32->p1*p1)
+  \node[dense,right=2cm of fourier8](dense4){\rotatebox{90}{Dense 64}};
+  \node[dense,right=0.5cm of dense4](dense5){\rotatebox{90}{Dense 32}};
+  \node[dense,right=0.5cm of dense5](dense6){\rotatebox{90}{Dense p1*p1}};
+
+  % Connections
+  \draw[->,link] (dense1) -- (dense2);
+  \draw[->,link] (dense2) -- (dense3);
+  \draw[->,link] (dense3) -- (fourier1);
+  
+  \foreach \i in {1,2,3,4}{
+    \draw[->,link] (fourier\i) -- (fourier\the\numexpr\i+1);
+    \draw[->,link] (fourier\i) -- (linear\i);
+    \draw[->,link] (linear\i) -- (fourier\the\numexpr\i+1);
+  }
+  
+  \foreach \i in {5,6,7}{
+    \draw[->,link] (fourier\i) -- (fourier\the\numexpr\i+1);
+    \draw[->,link] (fourier\i) -- (linear\i);
+    \draw[->,link] (linear\i) -- (fourier\the\numexpr\i+1);
+  }
+  
+  \draw[->,link] (fourier8) -- (dense4);
+  \draw[->,link] (fourier8) -- (linear8);
+  \draw[->,link] (linear8) -- (dense4);
+  
+  \draw[->,link] (dense4) -- (dense5);
+  \draw[->,link] (dense5) -- (dense6);
+
 \end{tikzpicture}
 
 \end{document}
