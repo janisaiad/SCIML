@@ -102,7 +102,7 @@
   },
   link/.style={
     color=black,
-    line width=1mm,
+    line width=0.5mm,
     ->,
   },
 }
@@ -110,63 +110,47 @@
 \begin{document}
 
 \begin{tikzpicture}
-  % First Dense Network (64->32->p1*p1)
-  \node[dense](dense1){\rotatebox{90}{Dense 64}};
-  \node[dense,right=0.5cm of dense1](dense2){\rotatebox{90}{Dense 32}};
-  \node[dense,right=0.5cm of dense2](dense3){\rotatebox{90}{Dense p1*p1}};
+  % Input shape
+  \node[dense](input){\rotatebox{90}{$p_1{\times}p_1{\times}batch$}};
 
-  % First Fourier Network (4 layers)
+  % First Dense Network (64->32->p1*p1)
+  \node[dense,right=1cm of input](dense1){\rotatebox{90}{Dense 64}};
+  \node[below=0.2cm of dense1]{\rotatebox{0}{$p_1^2$}};
+  
+  \node[dense,right=0.5cm of dense1](dense2){\rotatebox{90}{Dense 32}};
+  \node[below=0.2cm of dense2]{\rotatebox{0}{$p_1^2$}};
+  
+  \node[dense,right=0.5cm of dense2](dense3){\rotatebox{90}{Dense $p_1^2$}};
+  \node[below=0.2cm of dense3]{\rotatebox{0}{$p_1^2$}};
+
+  % First Fourier Network (2 layers)
   \node[fourier,right=2cm of dense3](fourier1){\rotatebox{90}{Fourier Layer}};
   \node[linear,above=0.8cm of fourier1](linear1){\rotatebox{90}{Linear Layer}};
   
   \node[fourier,right=1cm of fourier1](fourier2){\rotatebox{90}{Fourier Layer}};
   \node[linear,above=0.8cm of fourier2](linear2){\rotatebox{90}{Linear Layer}};
-  
-  \node[fourier,right=1cm of fourier2](fourier3){\rotatebox{90}{Fourier Layer}};
-  \node[linear,above=0.8cm of fourier3](linear3){\rotatebox{90}{Linear Layer}};
-  
-  \node[fourier,right=1cm of fourier3](fourier4){\rotatebox{90}{Fourier Layer}};
-  \node[linear,above=0.8cm of fourier4](linear4){\rotatebox{90}{Linear Layer}};
 
-  % Second Fourier Network (4 layers) 
-  \node[fourier,right=2cm of fourier4](fourier5){\rotatebox{90}{Fourier Layer}};
-  \node[linear,above=0.8cm of fourier5](linear5){\rotatebox{90}{Linear Layer}};
-  
-  \node[fourier,right=1cm of fourier5](fourier6){\rotatebox{90}{Fourier Layer}};
-  \node[linear,above=0.8cm of fourier6](linear6){\rotatebox{90}{Linear Layer}};
-  
-  \node[fourier,right=1cm of fourier6](fourier7){\rotatebox{90}{Fourier Layer}};
-  \node[linear,above=0.8cm of fourier7](linear7){\rotatebox{90}{Linear Layer}};
-  
-  \node[fourier,right=1cm of fourier7](fourier8){\rotatebox{90}{Fourier Layer}};
-  \node[linear,above=0.8cm of fourier8](linear8){\rotatebox{90}{Linear Layer}};
+  % Dots indicating more layers
+  \node[right=1cm of fourier2](dots){$\cdots$};
+  \node[below=0.2cm of dots]{$T$};
 
   % Last Dense Network (64->32->p1*p1)
-  \node[dense,right=2cm of fourier8](dense4){\rotatebox{90}{Dense 64}};
+  \node[dense,right=1cm of dots](dense4){\rotatebox{90}{Dense 64}};
   \node[dense,right=0.5cm of dense4](dense5){\rotatebox{90}{Dense 32}};
-  \node[dense,right=0.5cm of dense5](dense6){\rotatebox{90}{Dense p1*p1}};
+  \node[dense,right=0.5cm of dense5](dense6){\rotatebox{90}{Dense $p_1^2$}};
 
   % Connections
+  \draw[->,link] (input) -- (dense1);
   \draw[->,link] (dense1) -- (dense2);
   \draw[->,link] (dense2) -- (dense3);
   \draw[->,link] (dense3) -- (fourier1);
+  \draw[->,link] (dense3) -- (linear1);
+
+  \draw[->,link] (fourier1) -- (fourier2);
+  \draw[->,link] (fourier1) -- (linear2);
+  \draw[->,link] (fourier2) -- (dots);
   
-  \foreach \i in {1,2,3,4}{
-    \draw[->,link] (fourier\i) -- (fourier\the\numexpr\i+1);
-    \draw[->,link] (fourier\i) -- (linear\i);
-    \draw[->,link] (linear\i) -- (fourier\the\numexpr\i+1);
-  }
-  
-  \foreach \i in {5,6,7}{
-    \draw[->,link] (fourier\i) -- (fourier\the\numexpr\i+1);
-    \draw[->,link] (fourier\i) -- (linear\i);
-    \draw[->,link] (linear\i) -- (fourier\the\numexpr\i+1);
-  }
-  
-  \draw[->,link] (fourier8) -- (dense4);
-  \draw[->,link] (fourier8) -- (linear8);
-  \draw[->,link] (linear8) -- (dense4);
-  
+  \draw[->,link] (dots) -- (dense4);
   \draw[->,link] (dense4) -- (dense5);
   \draw[->,link] (dense5) -- (dense6);
 
