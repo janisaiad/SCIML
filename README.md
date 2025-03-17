@@ -26,6 +26,13 @@ Ce projet implémente des architectures de réseaux de neurones modernes pour la
 - **Analyse spectrale** : Utilisation de transformées de Fourier pour capturer efficacement les dynamiques spatiales
 - **Apprentissage supervisé** : Entraînement sur des paires entrée-sortie générées par des solveurs numériques classiques
 
+## 📊 Format des données
+
+Les données d'entraînement sont structurées en triplets (mu, x, sol) où :
+- `mu` représente les fonctions d'entrée (ex: conditions aux limites, conditions initiales)
+- `x` représente les points dans le domaine spatial
+- `sol` représente les solutions attendues aux points `x`
+
 ## 📁 Structure du projet
 
 ```
@@ -35,81 +42,51 @@ sciml/
 │   ├── deeponet/      # Implémentation de DeepONet
 │   └── fno/           # Implémentation de Fourier Neural Operator
 ├── notebooks/         # Notebooks Jupyter pour les expériences et visualisations
+│   ├── deeponet/      # Notebooks pour DeepONet
+│   └── fno/           # Notebooks pour FNO
 ├── utils/             # Fonctions utilitaires
 ├── tests/             # Tests unitaires et d'intégration
 └── logs/              # Journaux d'entraînement et résultats
 ```
 
-## 📊 Format des données
+## 🚀 Installation et configuration
 
-Les données d'entraînement sont structurées en triplets (mu, x, sol) où :
-- `mu` représente les fonctions d'entrée (ex: conditions aux limites, conditions initiales)
-- `x` représente les points dans le domaine spatial
-- `sol` représente les solutions attendues aux points `x`
+### Prérequis
 
-## 🚀 Utilisation
+- Python 3.9+
+- TensorFlow 2.8+
+- Environnement virtuel (recommandé)
 
-### Installation
+### Étapes d'installation
+
+1. Cloner le dépôt
+   ```bash
+   git clone https://github.com/username/sciml.git
+   cd sciml
+   ```
+
+2. Configurer l'environnement et installer les dépendances
+   ```bash
+   chmod +x launch.sh
+   ./launch.sh
+   ```
+
+3. Activation de l'environnement virtuel
+   ```bash
+   source .venv/bin/activate  # Pour Linux/MacOS
+   # ou
+   .\.venv\Scripts\activate   # Pour Windows
+   ```
+
+## 📚 Utilisation
+
+### Génération de données
+
+Les scripts de génération de données se trouvent dans le répertoire `data/generation/`. Exemple d'utilisation :
 
 ```bash
-
-git clone https://github.com/username/sciml.git
-cd sciml
-
-chmod+X launch.sh
-
-
+python data/generation/generate_big_heat_fno.py
 ```
-
-
-## Si bug
-
-
-(SCIML) (base) jovyan@jupyter-janis-2eaiad-40polytechnique-2eedu:~/persistent/SCIML$ history
-    1  ls
-    2  cd persistent/
-    3  ls
-    4  cd SCIML/
-    5  LS
-    6  ls
-    7  git checkout janis
-    8  ./launch.sh
-    9  git branch idcs
-   10  git branch
-   11  git checkout idcs
-   12  git status
-   13  git add .
-   14  git status
-   15  git commit -m "idcs setup"
-   16  git config --global user.email "janis.aiad@polytechnique.edu"
-   17  git commit -m "idcs setup"
-   18  git push
-   19  git push origin idsc
-   20  git push origin idcs
-   21  ls
-   22  pwd
-   23  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/data/generation/generate_heat_fno_big.py
-   24  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/data/generation/generate_big_heat_fno.py
-   25  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
-   26  uv remove jax
-   27  uv pip uninstall jax
-   28  uv add jax
-   29  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
-   30  uv pip uninstall jaxlib
-   31  source .venv/bin/activate
-   32  uv remove jaxlib
-   33  uv pip uninstall jaxlib
-   34  uv add jaxlib
-   35  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
-   36  uv remove jax
-   37  uv pip uninstall jax
-   38  uv add jax
-   39  uv pip list
-   40  uv remove jaxlib
-   41  uv add jaxlib==0.4.17
-   42  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
-   43  history
-(SCIML) (base) jovyan@jupyter-janis-2eaiad-40polytechnique-2eedu:~/persistent/SCIML$ 
 
 ### Entraînement des modèles
 
@@ -126,23 +103,54 @@ deeponet_model = DeepONet(hyper_params, regular_params)
 deeponet_model.fit()
 ```
 
+### Notebooks d'exemples
+
+Plusieurs notebooks sont disponibles pour démontrer l'utilisation des modèles :
+
+- Pour DeepONet : `notebooks/deeponet/TORUNDEEPONETCOMPARISON.ipynb`
+- Pour FNO : `notebooks/fno/TORUNFNO.ipynb`
+
+### Conversion de notebooks avec Jupytext
+
+Pour convertir tous les notebooks en fichiers Python :
+
+```bash
+find . -name "*.ipynb" -type f -exec jupytext --to py {} \;
+```
+
+## 🔍 Dépannage
+
+Si vous rencontrez des problèmes avec JAX/JAXlib lors de l'entraînement des modèles FNO, essayez les commandes suivantes :
+
+```bash
+# Activation de l'environnement virtuel si ce n'est pas déjà fait
+source .venv/bin/activate
+
+# Désinstallation des versions actuelles
+uv pip uninstall jax jaxlib
+
+# Installation des versions compatibles
+uv add jax
+uv add jaxlib==0.4.17
+```
+
+## 📝 Notes de recherche et observations
+
+### Performances du FNO
+- trop de couches de fourier déstabilise l'entraînement
+- considérer l'inférence temporelle séquentielle
+- tester sur d'autres données (naca)
+
+### améliorations deeponet
+- comparer avec rb et pod
+- tester architectures branch/trunk alternatives
+
+### analyse spectrale
+- impact nb couches fourier sur généralisation
+- comparaison poids fourier entre couches  
+- vérifier cast/coeff et phase multiplication
+
 ## 📄 Licence
 
 Ce projet est distribué sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-# Jupytext 
-find . -name "*.ipynb" -type f -exec jupytext --to py {} \;
-
-
-# Observation
-
-Many fourier layers lead to a very unstable and low training
-Try to infer time after time with a pipeline
-Use a NACA dataset
-add an rb and pod comparison for deeponet
-for fno heat, we can try to infer on a completely different solutions to see
-dependency to number of fourier layers
-for neuraloperator, don't forget torch_harmonics and wandb
-we can compare the fourier weights for every layers
-make a computationnal 
-faire attention au casting et aux coefficients, et à la phase en multipliiant chaque coefficient, donc on fait bien ce qu'il faut
+to push on neuraloperator library & some other opensource things, fftnd
