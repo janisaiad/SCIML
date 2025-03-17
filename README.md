@@ -61,7 +61,7 @@ sciml/
 
 1. Cloner le dépôt
    ```bash
-   git clone https://github.com/username/sciml.git
+   git clone https://github.com/janisaiad/sciml.git
    cd sciml
    ```
 
