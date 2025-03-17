@@ -1,0 +1,6 @@
+2025-03-17 02:00:48,081 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 02:01:09,897 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 02:01:21,859 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 02:01:46,158 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 02:01:48,896 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 02:02:01,692 - sciml.model.deeponet.deeponet - INFO - Model initialized with 3 epochs, 32 batch size, 0.001 learning rate
