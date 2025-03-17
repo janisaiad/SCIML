@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import json
-
+import os
 # simples way to solve heat with euler scheme, stable
 def solve_heat_square(boundary_conditions:np.ndarray, initial_conditions:np.ndarray, t:np.ndarray, x:np.ndarray, y:np.ndarray, alpha:float=1.0)->np.ndarray:
     nx, ny = len(x), len(y)
@@ -64,8 +64,12 @@ def create_heat_data(n_mu:int,nt:int,nx:int,ny:int,alpha:float=1.0)->tuple[np.nd
         
         X, Y, T = np.meshgrid(xs, ys, t)
         points = np.column_stack((X.ravel(), Y.ravel(), T.ravel()))
-        np.save(f"data/test_data/example_data/heat2d/xs_{i}.npy",points)
-        np.save(f"data/test_data/example_data/heat2d/sol_{i}.npy",sol)
+        os.makedirs(f"data/test_data/example_data/heat2d/mu",exist_ok=True)
+        os.makedirs(f"data/test_data/example_data/heat2d/xs",exist_ok=True)
+        os.makedirs(f"data/test_data/example_data/heat2d/sol",exist_ok=True)
+        np.save(f"data/test_data/example_data/heat2d/mu/mu_{i}.npy",boundary_conditions)
+        np.save(f"data/test_data/example_data/heat2d/xs/xs_{i}.npy",points)
+        np.save(f"data/test_data/example_data/heat2d/sol/sol_{i}.npy",sol)
         with open(f"data/test_data/example_data/heat2d/params.json", "w") as f:
             json.dump({"freq": freq,"initial_conditions": "np.exp(-(np.linspace(0,1,nx)**2 + np.linspace(0,1,ny)**2))", "nt": nt, "nx": nx, "ny": ny, "alpha": alpha}, f)
 
