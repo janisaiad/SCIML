@@ -122,28 +122,19 @@ class DeepONet(tf.keras.Model):
         return self.internal_model.trainable_variables + self.external_model.trainable_variables
         
     def predict(self, mu: tf.Tensor, x: tf.Tensor):
-        """
-        Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
-        """
         with tf.device(self.device):
             #  branch network
             coefficients = self.internal_model(mu)  # [batch, d_V]
-            
-            #  trunk network,  [batch, n_points, dim_coords]
             batch_size = tf.shape(x)[0]
-            
+            # trunk network, basis evaluation
             # if x is already in the format [batch, n_points, dim_coords], treat it directly
             if len(x.shape) == 3:
-                # flatten to treat each point individually
+                # flatten to treat each point as a separate input, batch differenciation is unuseful
                 n_points = tf.shape(x)[1]
                 x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
-                
-                basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V]
-                
+                basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V], to be fed to the external               
                 basis_evaluation = tf.reshape(basis_flat, [batch_size, n_points, -1])  # [batch, n_points, d_V]
-                
-                output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # [batch, n_points]
-                
+                output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # tensor contraction [batch, n_points]
                 return output
             else:
                 raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
@@ -169,9 +160,9 @@ class DeepONet(tf.keras.Model):
         
         try: # error handling because it's critical
             
-            mu_files = [np.load(os.path.join(true_path,f"mu/mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path,"mu")))), desc="Loading mu data")]
-            x_files = [np.load(os.path.join(true_path,f"xs/xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path,"xs")))), desc="Loading x data")]
-            sol_files = [np.load(os.path.join(true_path,f"sol/sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path,"sol")))), desc="Loading y data")]
+            mu_files = [np.load(os.path.join(true_path,f"mu/mu_{i}.npy")) for i in tqdm(range(min(len(os.listdir(os.path.join(true_path,"mu"))),100)), desc="Loading mu data")]
+            x_files = [np.load(os.path.join(true_path,f"xs/xs_{i}.npy")) for i in tqdm(range(min(len(os.listdir(os.path.join(true_path,"xs"))),100)), desc="Loading x data")]
+            sol_files = [np.load(os.path.join(true_path,f"sol/sol_{i}.npy")) for i in tqdm(range(min(len(os.listdir(os.path.join(true_path,"sol"))),100)), desc="Loading y data")]
             
             
             mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)

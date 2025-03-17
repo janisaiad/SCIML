@@ -96,11 +96,11 @@ def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int)->tuple[np.ndarray,np.n
         X, Y, T = np.meshgrid(x, y, t)
         points = np.column_stack((X.ravel(), Y.ravel(), T.ravel()))
         
-        np.save(f"data/test_data/example_data/burgers2d/mu_{i}.npy", initial_conditions)
-        np.save(f"data/test_data/example_data/burgers2d/xs_{i}.npy", points)
-        np.save(f"data/test_data/example_data/burgers2d/sol_{i}.npy", sol)
+        np.save(f"data/test_data/example_data/burgers2d/mu/mu_{i}.npy", initial_conditions)
+        np.save(f"data/test_data/example_data/burgers2d/xs/x_{i}.npy", points)
+        np.save(f"data/test_data/example_data/burgers2d/sol/sol_{i}.npy", sol)
         
-        with open(f"data/test_data/example_data/burgers2d/params.json", "w") as f:
+        with open(f"data/test_data/example_data/burgers2d/params/params_{i}.json", "w") as f:
             json.dump({
                 "u_speed": float(u_speed),
                 "v_speed": float(v_speed),
