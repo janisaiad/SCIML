@@ -52,13 +52,64 @@ Les données d'entraînement sont structurées en triplets (mu, x, sol) où :
 ### Installation
 
 ```bash
-# Cloner le dépôt
+
 git clone https://github.com/username/sciml.git
 cd sciml
 
-# Installer les dépendances
-pip install -e .
+chmod+X launch.sh
+
+
 ```
+
+
+## Si bug
+
+
+(SCIML) (base) jovyan@jupyter-janis-2eaiad-40polytechnique-2eedu:~/persistent/SCIML$ history
+    1  ls
+    2  cd persistent/
+    3  ls
+    4  cd SCIML/
+    5  LS
+    6  ls
+    7  git checkout janis
+    8  ./launch.sh
+    9  git branch idcs
+   10  git branch
+   11  git checkout idcs
+   12  git status
+   13  git add .
+   14  git status
+   15  git commit -m "idcs setup"
+   16  git config --global user.email "janis.aiad@polytechnique.edu"
+   17  git commit -m "idcs setup"
+   18  git push
+   19  git push origin idsc
+   20  git push origin idcs
+   21  ls
+   22  pwd
+   23  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/data/generation/generate_heat_fno_big.py
+   24  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/data/generation/generate_big_heat_fno.py
+   25  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
+   26  uv remove jax
+   27  uv pip uninstall jax
+   28  uv add jax
+   29  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
+   30  uv pip uninstall jaxlib
+   31  source .venv/bin/activate
+   32  uv remove jaxlib
+   33  uv pip uninstall jaxlib
+   34  uv add jaxlib
+   35  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
+   36  uv remove jax
+   37  uv pip uninstall jax
+   38  uv add jax
+   39  uv pip list
+   40  uv remove jaxlib
+   41  uv add jaxlib==0.4.17
+   42  /home/jovyan/persistent/SCIML/.venv/bin/python /home/jovyan/persistent/SCIML/notebooks/training_fno_heat_big.py
+   43  history
+(SCIML) (base) jovyan@jupyter-janis-2eaiad-40polytechnique-2eedu:~/persistent/SCIML$ 
 
 ### Entraînement des modèles
 
