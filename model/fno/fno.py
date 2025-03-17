@@ -35,11 +35,127 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def make_json_serializable(obj):
+    if isinstance(obj, (tf.keras.Model, tf.keras.Sequential, tf.keras.layers.Layer)):
+        return f"{obj.__class__.__name__}"
+    elif isinstance(obj, tf.keras.optimizers.Optimizer):
+        return f"{obj.__class__.__name__}(lr={obj.learning_rate.numpy() if hasattr(obj.learning_rate, 'numpy') else obj.learning_rate})"
+    elif isinstance(obj, tf.keras.losses.Loss):
+        return f"{obj.__class__.__name__}"
+    elif isinstance(obj, dict):
+        return {k: make_json_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [make_json_serializable(item) for item in obj]
+    else:
+        return obj
 
-PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 
 
-class DeepONet(tf.keras.Model):
+
+import tensorflow as tf
+import numpy as np
+
+class LinearLayer(tf.keras.layers.Layer):
+    # [batch, p_1, p_1, n_coords] -> [batch, p_1, p_1, n_modes]
+    def __init__(self,n_modes:int,initializer:str='normal',device:str='GPU',p_1:int=30): # attention ici
+        super().__init__()
+        self.n_modes = n_modes
+        self.initializer = initializer
+        self.device = device
+        self.p_1 = p_1
+        
+    def call(self,inputs:tf.Tensor)->tf.Tensor:
+        with tf.device(self.device):
+            if len(inputs.shape) == 3:
+                return inputs * self.linear_weights # [batch, p_1, p_1, n_modes]
+            else:
+                raise ValueError(f"Expected shape [batch, p_1, p_1, n_coords], got {inputs.shape}")
+
+    def build(self,input_shape:tf.TensorShape):
+        # [p_1, p_1]
+        self.linear_weights = self.add_weight(shape=(self.p_1,self.p_1,),initializer=self.initializer,trainable=True,name="linear_weights")
+        
+
+class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with pointwise multiplication with a linear thing in parallel
+    def __init__(self, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal", device:str='GPU', linear_initializer:str='normal',p_1:int=30):
+        super().__init__()
+        self.n_modes = n_modes
+        self.activation = tf.keras.activations.get(activation)
+        self.kernel_initializer = kernel_initializer
+        self.linear_initializer = linear_initializer
+        self.device = device
+        self.dim_coords = dim_coords
+        
+        self.p_1 = p_1
+        
+        
+    def build(self, input_shape: tf.TensorShape):
+        # this is a 3d tensor of shape [n_modes,n_coords,n_coords]
+        
+        
+        self.fourier_weights = self.add_weight(
+            shape=(self.p_1,self.p_1,),
+            initializer=self.kernel_initializer,
+            trainable=True,
+            name="fourier_weights"
+        )
+        
+        
+        self.linear_layer = LinearLayer(self.n_modes, self.linear_initializer, self.device,self.p_1)
+        self.linear_layer.build(input_shape)
+        super().build(input_shape)
+        
+        
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        # inputs est de taille [batch, p_2,p_2,1] - représente les valeurs de la fonction
+        # print("inputs shape",inputs.shape)
+        with tf.device(self.device):
+            casted_data = tf.cast(inputs, tf.complex64) # to real, [batch, p_2,p_2,1]
+            function_fft = tf.signal.fft2d(casted_data) # [batch, p_2,p_2, n_modes]
+            
+            # print("function_fft shape",function_fft.shape)
+            # keep in mind fourier_weights is a tensor of shape [n_modes,dim_coords]
+
+            fourier_casted = tf.cast(self.fourier_weights,tf.complex64)
+            # print("fourier_weights shape",fourier_casted.shape)
+            try:
+                function_fft = function_fft * fourier_casted  # with broadcasting
+            except:
+                # print("function_fft shape",function_fft.shape)
+                # print("fourier_casted shape",fourier_casted.shape)
+                raise ValueError("Shape mismatch")
+            
+            x_spatial = tf.signal.ifft2d(function_fft)
+            x_spatial = tf.cast(x_spatial, tf.float32)
+            z = self.linear_layer(inputs)
+            # print("x_spatial shape",x_spatial.shape)
+            # print("z shape",z.shape)
+            return self.activation(x_spatial + z)
+
+    
+class FourierNetwork(tf.keras.Model): # we consider a network of fourier layers, ie concatenation of fourier layers
+    def __init__(self, n_layers: int, n_modes: int, dim_coords: int, activation: str = "relu", kernel_initializer: str = "he_normal",p_1:int=30):
+        super().__init__()
+        self.n_layers = n_layers
+        self.n_modes = n_modes
+        self.activation = activation
+        self.p_1 = p_1
+        self.kernel_initializer = kernel_initializer
+        self.fourier_layers = [FourierLayer(n_modes, dim_coords, activation, kernel_initializer,p_1=self.p_1) for _ in range(n_layers)]
+
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        for layer in self.fourier_layers:
+            inputs = layer(inputs)
+        return inputs
+    
+    def build(self, input_shape: tf.TensorShape):
+        for layer in self.fourier_layers:
+            layer.build(input_shape)
+            
+
+
+    
+class FNO(tf.keras.Model):
     ### FNO class ###
     def __init__(self, hyper_params: dict, regular_params: dict,fourier_params:dict): 
         """
@@ -176,31 +292,49 @@ class DeepONet(tf.keras.Model):
         
         true_path = os.path.join(PROJECT_ROOT,folder_path)
         self.folder_path = true_path
+
+        try:
+            with open(os.path.join(true_path, "params.json"), "r") as f:
+                params = json.load(f)
         
-        try: # error handling because it's critical
+            nx = params["nx"]  # [scalar]
+            ny = params["ny"]  # [scalar] 
+            nt = params["nt"]  # [scalar]
+            n_mu = params["n_mu"]  # [scalar]
             
-            mu_files = [np.load(os.path.join(true_path,f"mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading mu data")]
-            x_files = [np.load(os.path.join(true_path,f"xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading x data")]
-            sol_files = [np.load(os.path.join(true_path,f"sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading y data")]
+            mu_list = []
+            sol_list = []
+            xs_list = []
             
+            for i in range(int(n_mu*alpha)):
+                mu_list.append(np.load(os.path.join(true_path, f"mu/mu_{i}.npy")))  # [nx, ny, 1]
+                sol_list.append(np.load(os.path.join(true_path, f"sol/sol_{i}.npy")))  # [nx, ny, nt]
+                xs_list.append(np.load(os.path.join(true_path, f"xs/xs_{i}.npy")))  # [nx, ny, 2]
             
-            mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)
-            mus = tf.reshape(mus, [tf.shape(mus)[0], -1])
+            mu = np.stack(mu_list, axis=0)  # [N, nx, ny, 1]
+            sol = np.stack(sol_list, axis=0)  # [N, nx, ny, nt] 
+            xs = np.stack(xs_list, axis=0)  # [N, nx, ny, 2]
+            # print("mu shape",mu.shape)
+            # print("sol shape",sol.shape)
+            # print("xs shape",xs.shape)
+            time_index = self.hyper_params.get("index", -1)  # [scalar], this means that we take the last time step for the training in the worst case
+                
+            mu = tf.convert_to_tensor(mu, dtype=tf.float32)  # [N, nx, ny, 1]
+            xs = tf.convert_to_tensor(xs, dtype=tf.float32)  # [n_mu, nx, ny, 2]
+            sol = tf.convert_to_tensor(sol[..., time_index], dtype=tf.float32)  # [N, nx*ny]
             
-            xs = tf.convert_to_tensor(x_files, dtype=tf.float32) 
-            if len(xs.shape) > 2:  
-                n_samples = xs.shape[0]
-                xs = tf.reshape(xs, [n_samples, -1, xs.shape[-1]])  # reshape en [batch, n_points, dim_coords]
+            # print("mu shape",mu.shape)
+            inputs = tf.squeeze(mu,axis=-1)
+            # print("inputs shape",inputs.shape)
+            return inputs, sol
+            
+        except Exception as e:
+            pass
         
-            sol = tf.convert_to_tensor(sol_files, dtype=tf.float32)
-            sol = tf.reshape(sol, [tf.shape(sol)[0], -1])
-        except:
-            logger.error(f"Data not found in {true_path}")
-            raise ValueError(f"Data not found in {true_path}")
-        
-        return mus, xs, sol
-    
-    
+        except Exception as e:
+            logger.error(f"Erreur lors du chargement des données: {str(e)}")
+            pass
+
     
     # mandatory methods to be implemented for keras
     def call(self,mu:tf.Tensor,x:tf.Tensor)->tf.Tensor:
@@ -301,17 +435,58 @@ class DeepONet(tf.keras.Model):
                 mean_loss = 0
                 for batch in train_dataset:
                     loss = self.train_step(batch)
-                    loss_history.append(loss)
-                logger.info(f"Epoch {epoch} completed")
-            
-        return loss_history
+                    mean_loss += loss
+                loss_history_train.append(float(mean_loss/len(train_dataset)))
+                    
+                mean_loss = 0
+                for batch in test_dataset:
+                    batchloss = self.test_step(batch)
+                    mean_loss += batchloss
+                loss_history_test.append(float(mean_loss/len(test_dataset)))
+                
+                date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                
+                
+                
+                logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
+                logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
+                logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
+                if max(loss_history_train[-1],loss_history_test[-1]) < self.best_loss:
+                    break
+                
+        try:       
+            with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
+                json.dump(loss_history_train,f)
+                json.dump(self.hyper_params,f)
+                json.dump(self.fourier_params,f)
+                network_shapes = {"first_network":self.regular_params["first_network"].get_config(),"last_network":self.regular_params["last_network"].get_config()}
+                json.dump(network_shapes,f)
+            with open(os.path.join("data/weights/fno",f"loss_history_test_{date}.json"),"w") as f:
+                json.dump(loss_history_test,f)
+                json.dump(self.hyper_params,f)
+                json.dump(self.fourier_params,f)
+                network_shapes = {"fourier_network":self.fourier_network.get_config()}
+                json.dump(network_shapes,f)
+        except Exception as e:
+            logger.error(f"Failed to save weights: {str(e)}")
+            pass
         
+        if save_weights:
+            try:
+                self.save_weights(os.path.join("data/weights/fno",f"weights_{date}.keras"))
+            except Exception as e:
+                print("Failed to save weights")
+                pass
             
+        logger.info("=== Partial Training Completed ===")
+        logger.info(f"Final Training Loss: {loss_history_train[-1]:.6f}")
+        logger.info(f"Final Test Loss: {loss_history_test[-1]:.6f}")
+        
+        return loss_history_train,loss_history_test
+        
         
     def train_step(self, batch: tuple[tf.Tensor, tf.Tensor, tf.Tensor]) -> tf.Tensor:
-        """
-        Étape d'entraînement simplifiée - minimum de code
-        """
+    
         inputs, sol = batch
         with tf.GradientTape() as tape:
             y_pred = self.predict(inputs)   
@@ -323,6 +498,10 @@ class DeepONet(tf.keras.Model):
             
             
             
+            
+            
+            
+    
     ## managing model saving methods        
     def save(self,save_path:str):  # error handling because it's also critical out there, we save a tensorflow model as a keras file
         if not os.path.exists(save_path):
