@@ -88,8 +88,10 @@ find . -name "*.ipynb" -type f -exec jupytext --to py {} \;
 Many fourier layers lead to a very unstable and low training
 Try to infer time after time with a pipeline
 Use a NACA dataset
+add an rb and pod comparison for deeponet
 for fno heat, we can try to infer on a completely different solutions to see
 dependency to number of fourier layers
 for neuraloperator, don't forget torch_harmonics and wandb
 we can compare the fourier weights for every layers
-make a computationnal graph
+make a computationnal 
+faire attention au casting et aux coefficients, et à la phase en multipliiant chaque coefficient, donc on fait bien ce qu'il faut

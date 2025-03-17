@@ -117,7 +117,6 @@ class FourierLayer(tf.keras.layers.Layer): # just a simple fourier layer with po
             # keep in mind fourier_weights is a tensor of shape [n_modes,dim_coords]
 
             fourier_casted = tf.cast(self.fourier_weights,tf.complex64)
-            
             # print("fourier_weights shape",fourier_casted.shape)
             try:
                 function_fft = function_fft * fourier_casted  # with broadcasting
@@ -233,7 +232,7 @@ class FNO(tf.keras.Model):
     
         self.model_output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
         self.alpha = hyper_params["alpha"] if "alpha" in hyper_params else 0.01
-        
+        self.best_loss = hyper_params["best_loss"] if "best_loss" in hyper_params else 0.0002
         self.build() # most important to build the model
         
         
@@ -354,11 +353,11 @@ class FNO(tf.keras.Model):
             return inputs, sol
             
         except Exception as e:
-            raise ValueError(f"Failed to load data: {str(e)}")
+            pass
         
         except Exception as e:
             logger.error(f"Erreur lors du chargement des données: {str(e)}")
-            raise ValueError(f"Échec du chargement des données: {str(e)}")
+            pass
 
     
     # mandatory, we have an inference point of view
@@ -485,21 +484,26 @@ class FNO(tf.keras.Model):
                 logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
                 logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
                 logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
-                if max(loss_history_train[-1],loss_history_test[-1]) < 0.0002:
+                if max(loss_history_train[-1],loss_history_test[-1]) < self.best_loss:
                     break
                 
-        with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
-            json.dump(loss_history_train,f)
-            json.dump(self.hyper_params,f)
-            json.dump(self.fourier_params,f)
-            network_shapes = {"first_network":self.regular_params["first_network"].get_config(),"last_network":self.regular_params["last_network"].get_config()}
-            json.dump(network_shapes,f)
-        with open(os.path.join("data/weights/fno",f"loss_history_test_{date}.json"),"w") as f:
-            json.dump(loss_history_test,f)
-            json.dump(self.hyper_params,f)
-            json.dump(self.fourier_params,f)
-            network_shapes = {"fourier_network":self.fourier_network.get_config()}
-            json.dump(network_shapes,f)
+        try:       
+            with open(os.path.join("data/weights/fno",f"loss_history_train_{date}.json"),"w") as f:
+                json.dump(loss_history_train,f)
+                json.dump(self.hyper_params,f)
+                json.dump(self.fourier_params,f)
+                network_shapes = {"first_network":self.regular_params["first_network"].get_config(),"last_network":self.regular_params["last_network"].get_config()}
+                json.dump(network_shapes,f)
+            with open(os.path.join("data/weights/fno",f"loss_history_test_{date}.json"),"w") as f:
+                json.dump(loss_history_test,f)
+                json.dump(self.hyper_params,f)
+                json.dump(self.fourier_params,f)
+                network_shapes = {"fourier_network":self.fourier_network.get_config()}
+                json.dump(network_shapes,f)
+        except Exception as e:
+            logger.error(f"Failed to save weights: {str(e)}")
+            pass
+        
         if save_weights:
             try:
                 self.save_weights(os.path.join("data/weights/fno",f"weights_{date}.keras"))
@@ -515,9 +519,7 @@ class FNO(tf.keras.Model):
         
         
     def train_step(self, batch: tuple[tf.Tensor, tf.Tensor, tf.Tensor]) -> tf.Tensor:
-        """
-        Étape d'entraînement simplifiée - minimum de code
-        """
+    
         inputs, sol = batch
         with tf.GradientTape() as tape:
             y_pred = self.predict(inputs)   
@@ -528,12 +530,12 @@ class FNO(tf.keras.Model):
         return loss
     
             
+            
+            
+            
+            
     
     ## managing model saving methods        
-    
-    
-    
-    
     def save(self,save_path:str):  # error handling because it's also critical out there, we save a tensorflow model as a keras file
         if not os.path.exists(save_path):
             os.makedirs(save_path,exist_ok=True)
