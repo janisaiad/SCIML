@@ -1,18 +1,55 @@
 import numpy as np
 import tensorflow as tf
-from typing import Tuple
+from typing import Tuple, Dict, Any
 from tqdm import tqdm
-import logging # janis sauce to debug
+import logging
 import os
 import dotenv
+import json
+from sklearn.model_selection import train_test_split
+from datetime import datetime
 
 dotenv.load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
+PROJECT_ROOT = os.getenv("PROJECT_ROOT")
+if not PROJECT_ROOT:
+    logging.warning("PROJECT_ROOT not found in environment variables. Using current directory.")
+    PROJECT_ROOT = os.getcwd()
+
+VERBOSE_LOGGING = True   
+
+log_dir = os.path.join(PROJECT_ROOT, "logs")
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
+
+current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+log_file = os.path.join(log_dir, f"fno_training_{current_time}.log")
+
+logging.basicConfig(
+    level=logging.INFO if VERBOSE_LOGGING else logging.ERROR,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler() if VERBOSE_LOGGING else logging.NullHandler()
+    ]
+)
 logger = logging.getLogger(__name__)
 
+def make_json_serializable(obj):
+    if isinstance(obj, (tf.keras.Model, tf.keras.Sequential, tf.keras.layers.Layer)):
+        return f"{obj.__class__.__name__}"
+    elif isinstance(obj, tf.keras.optimizers.Optimizer):
+        return f"{obj.__class__.__name__}(lr={obj.learning_rate.numpy() if hasattr(obj.learning_rate, 'numpy') else obj.learning_rate})"
+    elif isinstance(obj, tf.keras.losses.Loss):
+        return f"{obj.__class__.__name__}"
+    elif isinstance(obj, dict):
+        return {k: make_json_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [make_json_serializable(item) for item in obj]
+    else:
+        return obj
 
-PROJECT_ROOT = os.getenv("PROJECT_ROOT")
+
 
 
 class DeepONet(tf.keras.Model):
@@ -74,7 +111,7 @@ class DeepONet(tf.keras.Model):
         self.device = hyper_params["device"] if "device" in hyper_params else 'cpu'
         self.folder_path = None  
     
-        self.output_shape = hyper_params["output_shape"] if "output_shape" in hyper_params else None
+        self.output_dim = hyper_params["output_dim"] if "output_dim" in hyper_params else None
         
         
         logger.info(f"Model initialized with {self.n_epochs} epochs, {self.batch_size} batch size, {self.learning_rate} learning rate")
@@ -85,28 +122,19 @@ class DeepONet(tf.keras.Model):
         return self.internal_model.trainable_variables + self.external_model.trainable_variables
         
     def predict(self, mu: tf.Tensor, x: tf.Tensor):
-        """
-        Prédit la solution à partir des vecteurs d'entrée, sans supposer de structure particulière.
-        """
         with tf.device(self.device):
             #  branch network
             coefficients = self.internal_model(mu)  # [batch, d_V]
-            
-            #  trunk network,  [batch, n_points, dim_coords]
             batch_size = tf.shape(x)[0]
-            
+            # trunk network, basis evaluation
             # if x is already in the format [batch, n_points, dim_coords], treat it directly
             if len(x.shape) == 3:
-                # flatten to treat each point individually
+                # flatten to treat each point as a separate input, batch differenciation is unuseful
                 n_points = tf.shape(x)[1]
                 x_flat = tf.reshape(x, [-1, x.shape[-1]])  # [batch*n_points, dim_coords]
-                
-                basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V]
-                
+                basis_flat = self.external_model(x_flat)  # [batch*n_points, d_V], to be fed to the external               
                 basis_evaluation = tf.reshape(basis_flat, [batch_size, n_points, -1])  # [batch, n_points, d_V]
-                
-                output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # [batch, n_points]
-                
+                output = tf.einsum('bi,bji->bj', coefficients, basis_evaluation)  # tensor contraction [batch, n_points]
                 return output
             else:
                 raise ValueError(f"Format de x incorrect. Attendu [batch, n_points, dim_coords], reçu {x.shape}")
@@ -132,9 +160,9 @@ class DeepONet(tf.keras.Model):
         
         try: # error handling because it's critical
             
-            mu_files = [np.load(os.path.join(true_path,f"mu_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading mu data")]
-            x_files = [np.load(os.path.join(true_path,f"xs_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading x data")]
-            sol_files = [np.load(os.path.join(true_path,f"sol_{i}.npy")) for i in tqdm(range(len(os.listdir(os.path.join(true_path)))//3), desc="Loading y data")]
+            mu_files = [np.load(os.path.join(true_path,f"mu/mu_{i}.npy")) for i in tqdm(range(min(len(os.listdir(os.path.join(true_path,"mu"))),100)), desc="Loading mu data")]
+            x_files = [np.load(os.path.join(true_path,f"xs/xs_{i}.npy")) for i in tqdm(range(min(len(os.listdir(os.path.join(true_path,"xs"))),100)), desc="Loading x data")]
+            sol_files = [np.load(os.path.join(true_path,f"sol/sol_{i}.npy")) for i in tqdm(range(min(len(os.listdir(os.path.join(true_path,"sol"))),100)), desc="Loading y data")]
             
             
             mus = tf.convert_to_tensor(mu_files, dtype=tf.float32)
@@ -171,23 +199,51 @@ class DeepONet(tf.keras.Model):
     
     
     ### managing model training methods ###
-    def fit(self,device:str='cpu',mus=None,xs=None,sol=None,folder_path=None)->np.ndarray:
+    def fit(self,device:str='GPU',inputs=None,sol=None)->np.ndarray:
         
-        mus, xs, sol = self.get_data(self.folder_path)
-        loss_history = []
+        mus,xs, sol = self.get_data(self.folder_path)
+        loss_history_train = []
+        loss_history_test = []
+        
+
+        
         with tf.device(device):
             dataset = tf.data.Dataset.from_tensor_slices((mus,xs,sol)) # batching the data with batch size
-        
-            dataset = dataset.batch(self.batch_size) # batching method from tensorflow
+            train_dataset,test_dataset = tf.keras.utils.split_dataset(dataset,left_size=0.8,right_size=0.2,seed=42)
+            train_dataset = train_dataset.batch(self.batch_size) # batching method from tensorflow
+            test_dataset = test_dataset.batch(self.batch_size) # batching method from tensorflow
        
-            for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
-                for batch in dataset:
-                    loss = self.train_step(batch)
-                    loss_history.append(loss)
-                logger.info(f"Epoch {epoch} completed")
             
-        return loss_history
-        
+            for epoch in tqdm(range(self.n_epochs),desc="Training progress"):
+                mean_loss = 0
+                for batch in train_dataset:
+                    loss = self.train_step(batch)
+                    mean_loss += loss
+                loss_history_train.append(float(mean_loss/len(train_dataset)))
+                    
+                mean_loss = 0
+                for batch in test_dataset:
+                    batchloss = self.test_step(batch)
+                    mean_loss += batchloss
+                loss_history_test.append(float(mean_loss/len(test_dataset)))
+                
+                date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                
+                
+                
+                logger.info(f"Epoch {epoch+1}/{self.n_epochs}")
+                logger.info(f"Training Loss: {loss_history_train[-1]:.6f}")
+                logger.info(f"Test Loss: {loss_history_test[-1]:.6f}")
+                if max(loss_history_train[-1],loss_history_test[-1]) < 0.001:
+                    break
+                
+        return loss_history_train,loss_history_test
+    
+    def test_step(self,batch:tuple[tf.Tensor,tf.Tensor,tf.Tensor])->tf.Tensor:
+        mu,x,sol = batch
+        y_pred = self.predict(mu,x)
+        loss = self.loss_function(y_pred,sol)
+        return loss
             
         
     def train_step(self, batch: tuple[tf.Tensor, tf.Tensor, tf.Tensor]) -> tf.Tensor:
