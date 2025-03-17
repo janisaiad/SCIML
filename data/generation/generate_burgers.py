@@ -67,7 +67,7 @@ def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int)->tuple[np.ndarray,np.n
         
         # Create 2D Gaussian centered in the domain
         x0, y0 = np.pi, np.pi  # Center of the domain
-        sigma = 0.5  # Width of Gaussian
+        sigma = 3  # Width of Gaussian
         gaussian = np.exp(-((X-x0)**2 + (Y-y0)**2)/(2*sigma**2))
         
         # Initial conditions: Gaussian shape
@@ -96,4 +96,4 @@ def create_burgers_data(n_mu:int, nt:int, nx:int, ny:int)->tuple[np.ndarray,np.n
             }, f)
 
 if __name__ == "__main__":
-    create_burgers_data(n_mu=40, nt=20, nx=32, ny=32)
+    create_burgers_data(n_mu=40, nt=20, nx=15, ny=15)
