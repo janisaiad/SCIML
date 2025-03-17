@@ -43,13 +43,13 @@ def plot_heat_solution(sol:np.ndarray, x:np.ndarray, y:np.ndarray, t_interior:fl
 
 if __name__ == "__main__":
     for index in range(40):
-        sol = np.load(f"data/test_data/example_data/{type_of_problem}/sol_{index}.npy")
-        matrix = np.load(f"data/test_data/example_data/{type_of_problem}/mu_{index}.npy")
-        xs = np.load(f"data/test_data/example_data/{type_of_problem}/xs_{index}.npy")
+        sol = np.load(f"data/test_data/example_data/{type_of_problem}/sol/sol_{index}.npy")
+        matrix = np.load(f"data/test_data/example_data/{type_of_problem}/mu/mu_{index}.npy")
+        xs = np.load(f"data/test_data/example_data/{type_of_problem}/xs/xs_{index}.npy")
         X = np.unique(xs[:,0])
         Y = np.unique(xs[:,1])
         
-        with open(f"data/test_data/example_data/{type_of_problem}/params.json", "r") as f:
+        with open(f"data/test_data/example_data/{type_of_problem}/params/params_{index}.json", "r") as f:
             params = json.load(f)
         nt = params["nt"]
         

@@ -1,0 +1,177 @@
+2025-03-17 01:39:38,482 - sciml.model.fno.fno - INFO - Model initialized with 50 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 01:39:50,689 - sciml.model.fno.fno - INFO - === Partial Training Started ===
+2025-03-17 01:39:50,696 - sciml.model.fno.fno - INFO - Model Configuration:
+2025-03-17 01:39:50,698 - sciml.model.fno.fno - INFO - Hyperparameters: {
+  "p_1": 30,
+  "p_2": 30,
+  "p_3": 30,
+  "device": "GPU",
+  "n_epochs": 50,
+  "index": 450,
+  "alpha": 0.5,
+  "folder_path": "data/test_data/big_dataset_fno/heat2d/",
+  "best_loss": 5e-05
+}
+2025-03-17 01:39:50,699 - sciml.model.fno.fno - INFO - Fourier Parameters: {
+  "n_layers": 4,
+  "dim_coords": 2,
+  "n_modes": 30,
+  "activation": "relu",
+  "kernel_initializer": "he_normal"
+}
+2025-03-17 01:39:50,700 - sciml.model.fno.fno - INFO - Data Shape - Inputs: (500, 30, 30), Solutions: (500, 30, 30)
+2025-03-17 01:39:50,700 - sciml.model.fno.fno - INFO - Alpha (partial training fraction): 0.5
+2025-03-17 01:39:50,700 - sciml.model.fno.fno - INFO - Device: GPU
+2025-03-17 01:39:52,959 - sciml.model.fno.fno - INFO - Epoch 1/50
+2025-03-17 01:39:52,959 - sciml.model.fno.fno - INFO - Training Loss: 0.086126
+2025-03-17 01:39:52,960 - sciml.model.fno.fno - INFO - Test Loss: 0.070066
+2025-03-17 01:39:54,490 - sciml.model.fno.fno - INFO - Epoch 2/50
+2025-03-17 01:39:54,490 - sciml.model.fno.fno - INFO - Training Loss: 0.076022
+2025-03-17 01:39:54,490 - sciml.model.fno.fno - INFO - Test Loss: 0.058474
+2025-03-17 01:39:55,768 - sciml.model.fno.fno - INFO - Epoch 3/50
+2025-03-17 01:39:55,768 - sciml.model.fno.fno - INFO - Training Loss: 0.059599
+2025-03-17 01:39:55,769 - sciml.model.fno.fno - INFO - Test Loss: 0.038871
+2025-03-17 01:39:57,016 - sciml.model.fno.fno - INFO - Epoch 4/50
+2025-03-17 01:39:57,017 - sciml.model.fno.fno - INFO - Training Loss: 0.024494
+2025-03-17 01:39:57,017 - sciml.model.fno.fno - INFO - Test Loss: 0.007363
+2025-03-17 01:39:58,210 - sciml.model.fno.fno - INFO - Epoch 5/50
+2025-03-17 01:39:58,210 - sciml.model.fno.fno - INFO - Training Loss: 0.005422
+2025-03-17 01:39:58,210 - sciml.model.fno.fno - INFO - Test Loss: 0.005301
+2025-03-17 01:39:59,392 - sciml.model.fno.fno - INFO - Epoch 6/50
+2025-03-17 01:39:59,393 - sciml.model.fno.fno - INFO - Training Loss: 0.003100
+2025-03-17 01:39:59,393 - sciml.model.fno.fno - INFO - Test Loss: 0.002950
+2025-03-17 01:40:00,613 - sciml.model.fno.fno - INFO - Epoch 7/50
+2025-03-17 01:40:00,614 - sciml.model.fno.fno - INFO - Training Loss: 0.001632
+2025-03-17 01:40:00,614 - sciml.model.fno.fno - INFO - Test Loss: 0.001241
+2025-03-17 01:40:01,923 - sciml.model.fno.fno - INFO - Epoch 8/50
+2025-03-17 01:40:01,923 - sciml.model.fno.fno - INFO - Training Loss: 0.000884
+2025-03-17 01:40:01,923 - sciml.model.fno.fno - INFO - Test Loss: 0.000861
+2025-03-17 01:40:03,387 - sciml.model.fno.fno - INFO - Epoch 9/50
+2025-03-17 01:40:03,387 - sciml.model.fno.fno - INFO - Training Loss: 0.000692
+2025-03-17 01:40:03,387 - sciml.model.fno.fno - INFO - Test Loss: 0.000726
+2025-03-17 01:40:04,777 - sciml.model.fno.fno - INFO - Epoch 10/50
+2025-03-17 01:40:04,777 - sciml.model.fno.fno - INFO - Training Loss: 0.000589
+2025-03-17 01:40:04,777 - sciml.model.fno.fno - INFO - Test Loss: 0.000625
+2025-03-17 01:40:06,194 - sciml.model.fno.fno - INFO - Epoch 11/50
+2025-03-17 01:40:06,195 - sciml.model.fno.fno - INFO - Training Loss: 0.000528
+2025-03-17 01:40:06,195 - sciml.model.fno.fno - INFO - Test Loss: 0.000558
+2025-03-17 01:40:05,094 - sciml.model.fno.fno - INFO - Epoch 12/50
+2025-03-17 01:40:05,095 - sciml.model.fno.fno - INFO - Training Loss: 0.000482
+2025-03-17 01:40:05,095 - sciml.model.fno.fno - INFO - Test Loss: 0.000505
+2025-03-17 01:40:06,370 - sciml.model.fno.fno - INFO - Epoch 13/50
+2025-03-17 01:40:06,370 - sciml.model.fno.fno - INFO - Training Loss: 0.000444
+2025-03-17 01:40:06,370 - sciml.model.fno.fno - INFO - Test Loss: 0.000463
+2025-03-17 01:40:07,630 - sciml.model.fno.fno - INFO - Epoch 14/50
+2025-03-17 01:40:07,630 - sciml.model.fno.fno - INFO - Training Loss: 0.000410
+2025-03-17 01:40:07,630 - sciml.model.fno.fno - INFO - Test Loss: 0.000429
+2025-03-17 01:40:09,074 - sciml.model.fno.fno - INFO - Epoch 15/50
+2025-03-17 01:40:09,074 - sciml.model.fno.fno - INFO - Training Loss: 0.000381
+2025-03-17 01:40:09,074 - sciml.model.fno.fno - INFO - Test Loss: 0.000399
+2025-03-17 01:40:10,466 - sciml.model.fno.fno - INFO - Epoch 16/50
+2025-03-17 01:40:10,466 - sciml.model.fno.fno - INFO - Training Loss: 0.000354
+2025-03-17 01:40:10,466 - sciml.model.fno.fno - INFO - Test Loss: 0.000372
+2025-03-17 01:40:11,709 - sciml.model.fno.fno - INFO - Epoch 17/50
+2025-03-17 01:40:11,710 - sciml.model.fno.fno - INFO - Training Loss: 0.000330
+2025-03-17 01:40:11,710 - sciml.model.fno.fno - INFO - Test Loss: 0.000348
+2025-03-17 01:40:12,933 - sciml.model.fno.fno - INFO - Epoch 18/50
+2025-03-17 01:40:12,935 - sciml.model.fno.fno - INFO - Training Loss: 0.000306
+2025-03-17 01:40:12,936 - sciml.model.fno.fno - INFO - Test Loss: 0.000324
+2025-03-17 01:40:14,202 - sciml.model.fno.fno - INFO - Epoch 19/50
+2025-03-17 01:40:14,203 - sciml.model.fno.fno - INFO - Training Loss: 0.000285
+2025-03-17 01:40:14,203 - sciml.model.fno.fno - INFO - Test Loss: 0.000303
+2025-03-17 01:40:15,477 - sciml.model.fno.fno - INFO - Epoch 20/50
+2025-03-17 01:40:15,478 - sciml.model.fno.fno - INFO - Training Loss: 0.000265
+2025-03-17 01:40:15,478 - sciml.model.fno.fno - INFO - Test Loss: 0.000283
+2025-03-17 01:40:16,751 - sciml.model.fno.fno - INFO - Epoch 21/50
+2025-03-17 01:40:16,751 - sciml.model.fno.fno - INFO - Training Loss: 0.000245
+2025-03-17 01:40:16,751 - sciml.model.fno.fno - INFO - Test Loss: 0.000264
+2025-03-17 01:40:18,072 - sciml.model.fno.fno - INFO - Epoch 22/50
+2025-03-17 01:40:18,073 - sciml.model.fno.fno - INFO - Training Loss: 0.000229
+2025-03-17 01:40:18,073 - sciml.model.fno.fno - INFO - Test Loss: 0.000247
+2025-03-17 01:40:19,780 - sciml.model.fno.fno - INFO - Epoch 23/50
+2025-03-17 01:40:19,780 - sciml.model.fno.fno - INFO - Training Loss: 0.000214
+2025-03-17 01:40:19,780 - sciml.model.fno.fno - INFO - Test Loss: 0.000233
+2025-03-17 01:40:21,205 - sciml.model.fno.fno - INFO - Epoch 24/50
+2025-03-17 01:40:21,206 - sciml.model.fno.fno - INFO - Training Loss: 0.000202
+2025-03-17 01:40:21,206 - sciml.model.fno.fno - INFO - Test Loss: 0.000222
+2025-03-17 01:40:22,456 - sciml.model.fno.fno - INFO - Epoch 25/50
+2025-03-17 01:40:22,456 - sciml.model.fno.fno - INFO - Training Loss: 0.000192
+2025-03-17 01:40:22,457 - sciml.model.fno.fno - INFO - Test Loss: 0.000212
+2025-03-17 01:40:23,642 - sciml.model.fno.fno - INFO - Epoch 26/50
+2025-03-17 01:40:23,642 - sciml.model.fno.fno - INFO - Training Loss: 0.000184
+2025-03-17 01:40:23,642 - sciml.model.fno.fno - INFO - Test Loss: 0.000205
+2025-03-17 01:40:24,847 - sciml.model.fno.fno - INFO - Epoch 27/50
+2025-03-17 01:40:24,847 - sciml.model.fno.fno - INFO - Training Loss: 0.000177
+2025-03-17 01:40:24,847 - sciml.model.fno.fno - INFO - Test Loss: 0.000198
+2025-03-17 01:40:26,029 - sciml.model.fno.fno - INFO - Epoch 28/50
+2025-03-17 01:40:26,029 - sciml.model.fno.fno - INFO - Training Loss: 0.000171
+2025-03-17 01:40:26,029 - sciml.model.fno.fno - INFO - Test Loss: 0.000192
+2025-03-17 01:40:27,235 - sciml.model.fno.fno - INFO - Epoch 29/50
+2025-03-17 01:40:27,235 - sciml.model.fno.fno - INFO - Training Loss: 0.000165
+2025-03-17 01:40:27,236 - sciml.model.fno.fno - INFO - Test Loss: 0.000187
+2025-03-17 01:40:28,529 - sciml.model.fno.fno - INFO - Epoch 30/50
+2025-03-17 01:40:28,529 - sciml.model.fno.fno - INFO - Training Loss: 0.000162
+2025-03-17 01:40:28,529 - sciml.model.fno.fno - INFO - Test Loss: 0.000183
+2025-03-17 01:40:29,727 - sciml.model.fno.fno - INFO - Epoch 31/50
+2025-03-17 01:40:29,728 - sciml.model.fno.fno - INFO - Training Loss: 0.000158
+2025-03-17 01:40:29,728 - sciml.model.fno.fno - INFO - Test Loss: 0.000179
+2025-03-17 01:40:30,941 - sciml.model.fno.fno - INFO - Epoch 32/50
+2025-03-17 01:40:30,941 - sciml.model.fno.fno - INFO - Training Loss: 0.000155
+2025-03-17 01:40:30,941 - sciml.model.fno.fno - INFO - Test Loss: 0.000176
+2025-03-17 01:40:32,143 - sciml.model.fno.fno - INFO - Epoch 33/50
+2025-03-17 01:40:32,143 - sciml.model.fno.fno - INFO - Training Loss: 0.000154
+2025-03-17 01:40:32,144 - sciml.model.fno.fno - INFO - Test Loss: 0.000173
+2025-03-17 01:40:33,337 - sciml.model.fno.fno - INFO - Epoch 34/50
+2025-03-17 01:40:33,337 - sciml.model.fno.fno - INFO - Training Loss: 0.000154
+2025-03-17 01:40:33,337 - sciml.model.fno.fno - INFO - Test Loss: 0.000171
+2025-03-17 01:40:34,719 - sciml.model.fno.fno - INFO - Epoch 35/50
+2025-03-17 01:40:34,719 - sciml.model.fno.fno - INFO - Training Loss: 0.000154
+2025-03-17 01:40:34,719 - sciml.model.fno.fno - INFO - Test Loss: 0.000171
+2025-03-17 01:40:35,944 - sciml.model.fno.fno - INFO - Epoch 36/50
+2025-03-17 01:40:35,944 - sciml.model.fno.fno - INFO - Training Loss: 0.000153
+2025-03-17 01:40:35,944 - sciml.model.fno.fno - INFO - Test Loss: 0.000172
+2025-03-17 01:40:34,702 - sciml.model.fno.fno - INFO - Epoch 37/50
+2025-03-17 01:40:34,702 - sciml.model.fno.fno - INFO - Training Loss: 0.000151
+2025-03-17 01:40:34,702 - sciml.model.fno.fno - INFO - Test Loss: 0.000171
+2025-03-17 01:40:35,888 - sciml.model.fno.fno - INFO - Epoch 38/50
+2025-03-17 01:40:35,888 - sciml.model.fno.fno - INFO - Training Loss: 0.000148
+2025-03-17 01:40:35,888 - sciml.model.fno.fno - INFO - Test Loss: 0.000169
+2025-03-17 01:40:37,084 - sciml.model.fno.fno - INFO - Epoch 39/50
+2025-03-17 01:40:37,084 - sciml.model.fno.fno - INFO - Training Loss: 0.000145
+2025-03-17 01:40:37,084 - sciml.model.fno.fno - INFO - Test Loss: 0.000167
+2025-03-17 01:40:38,358 - sciml.model.fno.fno - INFO - Epoch 40/50
+2025-03-17 01:40:38,358 - sciml.model.fno.fno - INFO - Training Loss: 0.000140
+2025-03-17 01:40:38,358 - sciml.model.fno.fno - INFO - Test Loss: 0.000163
+2025-03-17 01:40:39,638 - sciml.model.fno.fno - INFO - Epoch 41/50
+2025-03-17 01:40:39,638 - sciml.model.fno.fno - INFO - Training Loss: 0.000137
+2025-03-17 01:40:39,638 - sciml.model.fno.fno - INFO - Test Loss: 0.000160
+2025-03-17 01:40:40,922 - sciml.model.fno.fno - INFO - Epoch 42/50
+2025-03-17 01:40:40,923 - sciml.model.fno.fno - INFO - Training Loss: 0.000134
+2025-03-17 01:40:40,923 - sciml.model.fno.fno - INFO - Test Loss: 0.000157
+2025-03-17 01:40:42,209 - sciml.model.fno.fno - INFO - Epoch 43/50
+2025-03-17 01:40:42,210 - sciml.model.fno.fno - INFO - Training Loss: 0.000131
+2025-03-17 01:40:42,210 - sciml.model.fno.fno - INFO - Test Loss: 0.000155
+2025-03-17 01:40:43,431 - sciml.model.fno.fno - INFO - Epoch 44/50
+2025-03-17 01:40:43,431 - sciml.model.fno.fno - INFO - Training Loss: 0.000129
+2025-03-17 01:40:43,431 - sciml.model.fno.fno - INFO - Test Loss: 0.000153
+2025-03-17 01:40:44,601 - sciml.model.fno.fno - INFO - Epoch 45/50
+2025-03-17 01:40:44,601 - sciml.model.fno.fno - INFO - Training Loss: 0.000128
+2025-03-17 01:40:44,602 - sciml.model.fno.fno - INFO - Test Loss: 0.000152
+2025-03-17 01:40:45,780 - sciml.model.fno.fno - INFO - Epoch 46/50
+2025-03-17 01:40:45,781 - sciml.model.fno.fno - INFO - Training Loss: 0.000126
+2025-03-17 01:40:45,781 - sciml.model.fno.fno - INFO - Test Loss: 0.000150
+2025-03-17 01:40:46,966 - sciml.model.fno.fno - INFO - Epoch 47/50
+2025-03-17 01:40:46,966 - sciml.model.fno.fno - INFO - Training Loss: 0.000125
+2025-03-17 01:40:46,966 - sciml.model.fno.fno - INFO - Test Loss: 0.000147
+2025-03-17 01:40:48,156 - sciml.model.fno.fno - INFO - Epoch 48/50
+2025-03-17 01:40:48,157 - sciml.model.fno.fno - INFO - Training Loss: 0.000123
+2025-03-17 01:40:48,157 - sciml.model.fno.fno - INFO - Test Loss: 0.000145
+2025-03-17 01:40:49,348 - sciml.model.fno.fno - INFO - Epoch 49/50
+2025-03-17 01:40:49,348 - sciml.model.fno.fno - INFO - Training Loss: 0.000122
+2025-03-17 01:40:49,348 - sciml.model.fno.fno - INFO - Test Loss: 0.000143
+2025-03-17 01:40:50,524 - sciml.model.fno.fno - INFO - Epoch 50/50
+2025-03-17 01:40:50,524 - sciml.model.fno.fno - INFO - Training Loss: 0.000121
+2025-03-17 01:40:50,524 - sciml.model.fno.fno - INFO - Test Loss: 0.000142
+2025-03-17 01:40:50,541 - sciml.model.fno.fno - INFO - === Partial Training Completed ===
+2025-03-17 01:40:50,541 - sciml.model.fno.fno - INFO - Final Training Loss: 0.000121
+2025-03-17 01:40:50,541 - sciml.model.fno.fno - INFO - Final Test Loss: 0.000142
