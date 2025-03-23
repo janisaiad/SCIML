@@ -33,4 +33,123 @@ Training data is structured in triplets (mu, x, sol) where:
 - `x` represents points in the spatial domain
 - `sol` represents expected solutions at points `x`
 
-## 📁 Project Structure
+## �� Project Structure
+
+```
+sciml/
+├── data/              # Training data and generation scripts
+├── model/             # Architecture implementations
+│   ├── deeponet/      # DeepONet implementation
+│   └── fno/           # Fourier Neural Operator implementation
+├── notebooks/         # Jupyter notebooks for experiments and visualizations
+│   ├── deeponet/      # DeepONet notebooks
+│   └── fno/          # FNO notebooks
+├── utils/             # Utility functions
+├── tests/             # Unit and integration tests
+└── logs/              # Training logs and results
+```
+
+## 🚀 Installation and Setup
+
+### Prerequisites
+
+- Python 3.9+
+- TensorFlow 2.8+
+- Virtual environment (recommended)
+
+### Installation Steps
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/janisaiad/sciml.git
+   cd sciml
+   ```
+
+2. Set up the environment and install dependencies
+   ```bash
+   chmod +x launch.sh
+   ./launch.sh
+   ```
+
+3. Activate the virtual environment
+   ```bash
+   source .venv/bin/activate  # For Linux/MacOS
+   # or
+   .\.venv\Scripts\activate   # For Windows
+   ```
+
+## 📚 Usage
+
+### Data Generation
+
+Data generation scripts are located in the `data/generation/` directory. Example usage:
+
+```bash
+python data/generation/generate_big_heat_fno.py
+```
+
+### Training Models
+
+```python
+from sciml.model.fno import FNO
+from sciml.model.deeponet import DeepONet
+
+# Configure and train FNO
+fno_model = FNO(hyper_params, regular_params, fourier_params)
+fno_model.fit()
+
+# Configure and train DeepONet
+deeponet_model = DeepONet(hyper_params, regular_params)
+deeponet_model.fit()
+```
+
+### Example Notebooks
+
+Several notebooks are available to demonstrate model usage:
+
+- For DeepONet: `notebooks/deeponet/TORUNDEEPONETCOMPARISON.ipynb`
+- For FNO: `notebooks/fno/TORUNFNO.ipynb`
+
+### Converting Notebooks with Jupytext
+
+To convert all notebooks to Python files:
+
+```bash
+find . -name "*.ipynb" -type f -exec jupytext --to py {} \;
+```
+
+## 🔍 Troubleshooting
+
+If you encounter issues with JAX/JAXlib during FNO model training, try the following commands:
+
+```bash
+# Activate virtual environment if not already done
+source .venv/bin/activate
+
+# Uninstall current versions
+uv pip uninstall jax jaxlib
+
+# Install compatible versions
+uv add jax
+uv add jaxlib==0.4.17
+```
+
+## 📝 Research Notes and Observations
+
+### FNO Performance
+- Too many Fourier layers destabilize training
+- Consider sequential temporal inference
+- Test on other data (naca)
+
+### DeepONet Improvements
+- Compare with RB and POD
+- Test alternative branch/trunk architectures
+
+### Spectral Analysis
+- Impact of Fourier layer count on generalization
+- Compare Fourier weights between layers
+- Verify cast/coeff and phase multiplication
+
+## 📄 License
+
+This project is distributed under the MIT license. See the [LICENSE](LICENSE) file for more details.
