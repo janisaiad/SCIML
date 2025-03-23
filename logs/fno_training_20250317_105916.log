@@ -1800,3 +1800,904 @@
 2025-03-17 11:02:38,127 - sciml.model.deeponet.deeponet - INFO - Epoch 300/300
 2025-03-17 11:02:38,128 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081930
 2025-03-17 11:02:38,128 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092105
+2025-03-17 11:24:30,283 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
+2025-03-17 11:24:31,020 - sciml.model.deeponet.deeponet - INFO - Epoch 1/300
+2025-03-17 11:24:31,021 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.314479
+2025-03-17 11:24:31,021 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.256506
+2025-03-17 11:24:31,206 - sciml.model.deeponet.deeponet - INFO - Epoch 2/300
+2025-03-17 11:24:31,207 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.297001
+2025-03-17 11:24:31,207 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.251200
+2025-03-17 11:24:31,391 - sciml.model.deeponet.deeponet - INFO - Epoch 3/300
+2025-03-17 11:24:31,392 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.287858
+2025-03-17 11:24:31,392 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.254100
+2025-03-17 11:24:31,583 - sciml.model.deeponet.deeponet - INFO - Epoch 4/300
+2025-03-17 11:24:31,584 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.289265
+2025-03-17 11:24:31,585 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.250073
+2025-03-17 11:24:31,778 - sciml.model.deeponet.deeponet - INFO - Epoch 5/300
+2025-03-17 11:24:31,779 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.286748
+2025-03-17 11:24:31,779 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.242367
+2025-03-17 11:24:31,969 - sciml.model.deeponet.deeponet - INFO - Epoch 6/300
+2025-03-17 11:24:31,970 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.279695
+2025-03-17 11:24:31,970 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.236632
+2025-03-17 11:24:32,161 - sciml.model.deeponet.deeponet - INFO - Epoch 7/300
+2025-03-17 11:24:32,161 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.273289
+2025-03-17 11:24:32,162 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.234228
+2025-03-17 11:24:32,354 - sciml.model.deeponet.deeponet - INFO - Epoch 8/300
+2025-03-17 11:24:32,355 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.269366
+2025-03-17 11:24:32,356 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.233307
+2025-03-17 11:24:32,552 - sciml.model.deeponet.deeponet - INFO - Epoch 9/300
+2025-03-17 11:24:32,552 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.266836
+2025-03-17 11:24:32,553 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.231816
+2025-03-17 11:24:32,739 - sciml.model.deeponet.deeponet - INFO - Epoch 10/300
+2025-03-17 11:24:32,739 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.264081
+2025-03-17 11:24:32,740 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.228877
+2025-03-17 11:24:32,926 - sciml.model.deeponet.deeponet - INFO - Epoch 11/300
+2025-03-17 11:24:32,926 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.260360
+2025-03-17 11:24:32,927 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.224777
+2025-03-17 11:24:33,137 - sciml.model.deeponet.deeponet - INFO - Epoch 12/300
+2025-03-17 11:24:33,138 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.255890
+2025-03-17 11:24:33,139 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.220342
+2025-03-17 11:24:33,402 - sciml.model.deeponet.deeponet - INFO - Epoch 13/300
+2025-03-17 11:24:33,403 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.251386
+2025-03-17 11:24:33,404 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.216383
+2025-03-17 11:24:33,628 - sciml.model.deeponet.deeponet - INFO - Epoch 14/300
+2025-03-17 11:24:33,629 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.247452
+2025-03-17 11:24:33,630 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.213291
+2025-03-17 11:24:33,829 - sciml.model.deeponet.deeponet - INFO - Epoch 15/300
+2025-03-17 11:24:33,829 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.244063
+2025-03-17 11:24:33,830 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.210938
+2025-03-17 11:24:34,019 - sciml.model.deeponet.deeponet - INFO - Epoch 16/300
+2025-03-17 11:24:34,019 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.240614
+2025-03-17 11:24:34,020 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.208977
+2025-03-17 11:24:34,210 - sciml.model.deeponet.deeponet - INFO - Epoch 17/300
+2025-03-17 11:24:34,211 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.236558
+2025-03-17 11:24:34,212 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.207320
+2025-03-17 11:24:34,407 - sciml.model.deeponet.deeponet - INFO - Epoch 18/300
+2025-03-17 11:24:34,408 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.232074
+2025-03-17 11:24:34,409 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.206091
+2025-03-17 11:24:34,613 - sciml.model.deeponet.deeponet - INFO - Epoch 19/300
+2025-03-17 11:24:34,613 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.227815
+2025-03-17 11:24:34,614 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.205282
+2025-03-17 11:24:34,799 - sciml.model.deeponet.deeponet - INFO - Epoch 20/300
+2025-03-17 11:24:34,800 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.224166
+2025-03-17 11:24:34,800 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.204547
+2025-03-17 11:24:34,978 - sciml.model.deeponet.deeponet - INFO - Epoch 21/300
+2025-03-17 11:24:34,978 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.220969
+2025-03-17 11:24:34,979 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.203443
+2025-03-17 11:24:35,163 - sciml.model.deeponet.deeponet - INFO - Epoch 22/300
+2025-03-17 11:24:35,164 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.217774
+2025-03-17 11:24:35,164 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.201969
+2025-03-17 11:24:35,352 - sciml.model.deeponet.deeponet - INFO - Epoch 23/300
+2025-03-17 11:24:35,353 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.214365
+2025-03-17 11:24:35,353 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.200435
+2025-03-17 11:24:35,536 - sciml.model.deeponet.deeponet - INFO - Epoch 24/300
+2025-03-17 11:24:35,537 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.210986
+2025-03-17 11:24:35,537 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.198956
+2025-03-17 11:24:35,732 - sciml.model.deeponet.deeponet - INFO - Epoch 25/300
+2025-03-17 11:24:35,732 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.207863
+2025-03-17 11:24:35,733 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.197180
+2025-03-17 11:24:35,918 - sciml.model.deeponet.deeponet - INFO - Epoch 26/300
+2025-03-17 11:24:35,920 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.204634
+2025-03-17 11:24:35,921 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.194801
+2025-03-17 11:24:36,100 - sciml.model.deeponet.deeponet - INFO - Epoch 27/300
+2025-03-17 11:24:36,101 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.200784
+2025-03-17 11:24:36,102 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.191966
+2025-03-17 11:24:36,300 - sciml.model.deeponet.deeponet - INFO - Epoch 28/300
+2025-03-17 11:24:36,300 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.196391
+2025-03-17 11:24:36,301 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.189055
+2025-03-17 11:24:36,497 - sciml.model.deeponet.deeponet - INFO - Epoch 29/300
+2025-03-17 11:24:36,498 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.191897
+2025-03-17 11:24:36,498 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.186224
+2025-03-17 11:24:36,679 - sciml.model.deeponet.deeponet - INFO - Epoch 30/300
+2025-03-17 11:24:36,680 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.187407
+2025-03-17 11:24:36,680 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.183311
+2025-03-17 11:24:36,869 - sciml.model.deeponet.deeponet - INFO - Epoch 31/300
+2025-03-17 11:24:36,870 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.182763
+2025-03-17 11:24:36,870 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.180166
+2025-03-17 11:24:37,061 - sciml.model.deeponet.deeponet - INFO - Epoch 32/300
+2025-03-17 11:24:37,062 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.177973
+2025-03-17 11:24:37,062 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.176937
+2025-03-17 11:24:37,254 - sciml.model.deeponet.deeponet - INFO - Epoch 33/300
+2025-03-17 11:24:37,255 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.173441
+2025-03-17 11:24:37,256 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.173902
+2025-03-17 11:24:37,441 - sciml.model.deeponet.deeponet - INFO - Epoch 34/300
+2025-03-17 11:24:37,442 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.169352
+2025-03-17 11:24:37,442 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.171266
+2025-03-17 11:24:37,617 - sciml.model.deeponet.deeponet - INFO - Epoch 35/300
+2025-03-17 11:24:37,617 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.165282
+2025-03-17 11:24:37,618 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.169138
+2025-03-17 11:24:37,797 - sciml.model.deeponet.deeponet - INFO - Epoch 36/300
+2025-03-17 11:24:37,797 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.161158
+2025-03-17 11:24:37,798 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.167367
+2025-03-17 11:24:37,976 - sciml.model.deeponet.deeponet - INFO - Epoch 37/300
+2025-03-17 11:24:37,977 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.157508
+2025-03-17 11:24:37,977 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.165224
+2025-03-17 11:24:38,150 - sciml.model.deeponet.deeponet - INFO - Epoch 38/300
+2025-03-17 11:24:38,151 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.154038
+2025-03-17 11:24:38,151 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.162429
+2025-03-17 11:24:38,327 - sciml.model.deeponet.deeponet - INFO - Epoch 39/300
+2025-03-17 11:24:38,328 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.150502
+2025-03-17 11:24:38,329 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.159843
+2025-03-17 11:24:38,502 - sciml.model.deeponet.deeponet - INFO - Epoch 40/300
+2025-03-17 11:24:38,503 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.147533
+2025-03-17 11:24:38,504 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.158103
+2025-03-17 11:24:38,681 - sciml.model.deeponet.deeponet - INFO - Epoch 41/300
+2025-03-17 11:24:38,682 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.145080
+2025-03-17 11:24:38,682 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.156836
+2025-03-17 11:24:38,857 - sciml.model.deeponet.deeponet - INFO - Epoch 42/300
+2025-03-17 11:24:38,858 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.142828
+2025-03-17 11:24:38,859 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.155692
+2025-03-17 11:24:39,032 - sciml.model.deeponet.deeponet - INFO - Epoch 43/300
+2025-03-17 11:24:39,033 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.141227
+2025-03-17 11:24:39,033 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.154019
+2025-03-17 11:24:39,208 - sciml.model.deeponet.deeponet - INFO - Epoch 44/300
+2025-03-17 11:24:39,209 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.139405
+2025-03-17 11:24:39,209 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.152461
+2025-03-17 11:24:39,383 - sciml.model.deeponet.deeponet - INFO - Epoch 45/300
+2025-03-17 11:24:39,383 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.138099
+2025-03-17 11:24:39,384 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.151053
+2025-03-17 11:24:39,561 - sciml.model.deeponet.deeponet - INFO - Epoch 46/300
+2025-03-17 11:24:39,562 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.136673
+2025-03-17 11:24:39,562 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.149874
+2025-03-17 11:24:39,735 - sciml.model.deeponet.deeponet - INFO - Epoch 47/300
+2025-03-17 11:24:39,735 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.135463
+2025-03-17 11:24:39,736 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.148394
+2025-03-17 11:24:39,908 - sciml.model.deeponet.deeponet - INFO - Epoch 48/300
+2025-03-17 11:24:39,908 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.134070
+2025-03-17 11:24:39,909 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.147094
+2025-03-17 11:24:40,082 - sciml.model.deeponet.deeponet - INFO - Epoch 49/300
+2025-03-17 11:24:40,083 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.132720
+2025-03-17 11:24:40,084 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.146019
+2025-03-17 11:24:40,259 - sciml.model.deeponet.deeponet - INFO - Epoch 50/300
+2025-03-17 11:24:40,260 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.131402
+2025-03-17 11:24:40,260 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.144699
+2025-03-17 11:24:40,431 - sciml.model.deeponet.deeponet - INFO - Epoch 51/300
+2025-03-17 11:24:40,432 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.130049
+2025-03-17 11:24:40,432 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.143484
+2025-03-17 11:24:40,605 - sciml.model.deeponet.deeponet - INFO - Epoch 52/300
+2025-03-17 11:24:40,606 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.128866
+2025-03-17 11:24:40,606 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.142589
+2025-03-17 11:24:40,790 - sciml.model.deeponet.deeponet - INFO - Epoch 53/300
+2025-03-17 11:24:40,790 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.127593
+2025-03-17 11:24:40,791 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.141771
+2025-03-17 11:24:40,967 - sciml.model.deeponet.deeponet - INFO - Epoch 54/300
+2025-03-17 11:24:40,968 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.126534
+2025-03-17 11:24:40,969 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.140279
+2025-03-17 11:24:41,144 - sciml.model.deeponet.deeponet - INFO - Epoch 55/300
+2025-03-17 11:24:41,144 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.125423
+2025-03-17 11:24:41,145 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.138914
+2025-03-17 11:24:41,318 - sciml.model.deeponet.deeponet - INFO - Epoch 56/300
+2025-03-17 11:24:41,319 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.124498
+2025-03-17 11:24:41,328 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.138069
+2025-03-17 11:24:41,506 - sciml.model.deeponet.deeponet - INFO - Epoch 57/300
+2025-03-17 11:24:41,507 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.123507
+2025-03-17 11:24:41,507 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.137423
+2025-03-17 11:24:41,681 - sciml.model.deeponet.deeponet - INFO - Epoch 58/300
+2025-03-17 11:24:41,682 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.122636
+2025-03-17 11:24:41,682 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.136424
+2025-03-17 11:24:41,854 - sciml.model.deeponet.deeponet - INFO - Epoch 59/300
+2025-03-17 11:24:41,855 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.121701
+2025-03-17 11:24:41,856 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.135535
+2025-03-17 11:24:42,029 - sciml.model.deeponet.deeponet - INFO - Epoch 60/300
+2025-03-17 11:24:42,029 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.120877
+2025-03-17 11:24:42,030 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.134895
+2025-03-17 11:24:42,209 - sciml.model.deeponet.deeponet - INFO - Epoch 61/300
+2025-03-17 11:24:42,210 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.120008
+2025-03-17 11:24:42,212 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.134143
+2025-03-17 11:24:42,403 - sciml.model.deeponet.deeponet - INFO - Epoch 62/300
+2025-03-17 11:24:42,403 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.119199
+2025-03-17 11:24:42,404 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.133059
+2025-03-17 11:24:42,579 - sciml.model.deeponet.deeponet - INFO - Epoch 63/300
+2025-03-17 11:24:42,579 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.118338
+2025-03-17 11:24:42,580 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.132051
+2025-03-17 11:24:42,758 - sciml.model.deeponet.deeponet - INFO - Epoch 64/300
+2025-03-17 11:24:42,759 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.117523
+2025-03-17 11:24:42,759 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.131158
+2025-03-17 11:24:42,937 - sciml.model.deeponet.deeponet - INFO - Epoch 65/300
+2025-03-17 11:24:42,937 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.116719
+2025-03-17 11:24:42,938 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.130160
+2025-03-17 11:24:43,126 - sciml.model.deeponet.deeponet - INFO - Epoch 66/300
+2025-03-17 11:24:43,127 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.115901
+2025-03-17 11:24:43,128 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.129220
+2025-03-17 11:24:43,312 - sciml.model.deeponet.deeponet - INFO - Epoch 67/300
+2025-03-17 11:24:43,313 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.115134
+2025-03-17 11:24:43,313 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.128449
+2025-03-17 11:24:43,485 - sciml.model.deeponet.deeponet - INFO - Epoch 68/300
+2025-03-17 11:24:43,486 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.114352
+2025-03-17 11:24:43,487 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.127648
+2025-03-17 11:24:43,662 - sciml.model.deeponet.deeponet - INFO - Epoch 69/300
+2025-03-17 11:24:43,662 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.113605
+2025-03-17 11:24:43,663 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.126802
+2025-03-17 11:24:43,837 - sciml.model.deeponet.deeponet - INFO - Epoch 70/300
+2025-03-17 11:24:43,838 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.112892
+2025-03-17 11:24:43,838 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.126039
+2025-03-17 11:24:44,012 - sciml.model.deeponet.deeponet - INFO - Epoch 71/300
+2025-03-17 11:24:44,013 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.112187
+2025-03-17 11:24:44,013 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.125336
+2025-03-17 11:24:44,185 - sciml.model.deeponet.deeponet - INFO - Epoch 72/300
+2025-03-17 11:24:44,186 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.111504
+2025-03-17 11:24:44,187 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.124668
+2025-03-17 11:24:44,361 - sciml.model.deeponet.deeponet - INFO - Epoch 73/300
+2025-03-17 11:24:44,362 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.110832
+2025-03-17 11:24:44,363 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.124063
+2025-03-17 11:24:44,536 - sciml.model.deeponet.deeponet - INFO - Epoch 74/300
+2025-03-17 11:24:44,537 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.110152
+2025-03-17 11:24:44,538 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.123518
+2025-03-17 11:24:44,706 - sciml.model.deeponet.deeponet - INFO - Epoch 75/300
+2025-03-17 11:24:44,706 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.109499
+2025-03-17 11:24:44,707 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.123020
+2025-03-17 11:24:44,878 - sciml.model.deeponet.deeponet - INFO - Epoch 76/300
+2025-03-17 11:24:44,879 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.108875
+2025-03-17 11:24:44,879 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.122429
+2025-03-17 11:24:45,055 - sciml.model.deeponet.deeponet - INFO - Epoch 77/300
+2025-03-17 11:24:45,056 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.108239
+2025-03-17 11:24:45,056 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.121952
+2025-03-17 11:24:45,223 - sciml.model.deeponet.deeponet - INFO - Epoch 78/300
+2025-03-17 11:24:45,224 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.107609
+2025-03-17 11:24:45,224 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.121350
+2025-03-17 11:24:45,396 - sciml.model.deeponet.deeponet - INFO - Epoch 79/300
+2025-03-17 11:24:45,397 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.107008
+2025-03-17 11:24:45,398 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.120981
+2025-03-17 11:24:45,573 - sciml.model.deeponet.deeponet - INFO - Epoch 80/300
+2025-03-17 11:24:45,574 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.106402
+2025-03-17 11:24:45,574 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.120324
+2025-03-17 11:24:45,747 - sciml.model.deeponet.deeponet - INFO - Epoch 81/300
+2025-03-17 11:24:45,748 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.105784
+2025-03-17 11:24:45,748 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.119813
+2025-03-17 11:24:45,919 - sciml.model.deeponet.deeponet - INFO - Epoch 82/300
+2025-03-17 11:24:45,920 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.105160
+2025-03-17 11:24:45,920 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.119058
+2025-03-17 11:24:46,094 - sciml.model.deeponet.deeponet - INFO - Epoch 83/300
+2025-03-17 11:24:46,095 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.104534
+2025-03-17 11:24:46,095 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.118399
+2025-03-17 11:24:46,268 - sciml.model.deeponet.deeponet - INFO - Epoch 84/300
+2025-03-17 11:24:46,269 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.103915
+2025-03-17 11:24:46,270 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.117660
+2025-03-17 11:24:46,442 - sciml.model.deeponet.deeponet - INFO - Epoch 85/300
+2025-03-17 11:24:46,452 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.103291
+2025-03-17 11:24:46,453 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.117007
+2025-03-17 11:24:46,624 - sciml.model.deeponet.deeponet - INFO - Epoch 86/300
+2025-03-17 11:24:46,625 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.102675
+2025-03-17 11:24:46,626 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.116280
+2025-03-17 11:24:46,798 - sciml.model.deeponet.deeponet - INFO - Epoch 87/300
+2025-03-17 11:24:46,798 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.102081
+2025-03-17 11:24:46,799 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.115619
+2025-03-17 11:24:46,971 - sciml.model.deeponet.deeponet - INFO - Epoch 88/300
+2025-03-17 11:24:46,972 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.101510
+2025-03-17 11:24:46,972 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.114699
+2025-03-17 11:24:47,150 - sciml.model.deeponet.deeponet - INFO - Epoch 89/300
+2025-03-17 11:24:47,151 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.100979
+2025-03-17 11:24:47,151 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.114761
+2025-03-17 11:24:47,321 - sciml.model.deeponet.deeponet - INFO - Epoch 90/300
+2025-03-17 11:24:47,322 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.100677
+2025-03-17 11:24:47,323 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.113782
+2025-03-17 11:24:47,494 - sciml.model.deeponet.deeponet - INFO - Epoch 91/300
+2025-03-17 11:24:47,495 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.101667
+2025-03-17 11:24:47,496 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.120384
+2025-03-17 11:24:47,667 - sciml.model.deeponet.deeponet - INFO - Epoch 92/300
+2025-03-17 11:24:47,668 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.106006
+2025-03-17 11:24:47,669 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.112752
+2025-03-17 11:24:47,842 - sciml.model.deeponet.deeponet - INFO - Epoch 93/300
+2025-03-17 11:24:47,842 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.099937
+2025-03-17 11:24:47,843 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.113315
+2025-03-17 11:24:48,014 - sciml.model.deeponet.deeponet - INFO - Epoch 94/300
+2025-03-17 11:24:48,015 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.101858
+2025-03-17 11:24:48,016 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.117403
+2025-03-17 11:24:48,189 - sciml.model.deeponet.deeponet - INFO - Epoch 95/300
+2025-03-17 11:24:48,190 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.102381
+2025-03-17 11:24:48,190 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.114434
+2025-03-17 11:24:48,365 - sciml.model.deeponet.deeponet - INFO - Epoch 96/300
+2025-03-17 11:24:48,366 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.099486
+2025-03-17 11:24:48,366 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.112818
+2025-03-17 11:24:48,537 - sciml.model.deeponet.deeponet - INFO - Epoch 97/300
+2025-03-17 11:24:48,538 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.102442
+2025-03-17 11:24:48,538 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.111633
+2025-03-17 11:24:48,709 - sciml.model.deeponet.deeponet - INFO - Epoch 98/300
+2025-03-17 11:24:48,710 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.097580
+2025-03-17 11:24:48,711 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.115444
+2025-03-17 11:24:48,882 - sciml.model.deeponet.deeponet - INFO - Epoch 99/300
+2025-03-17 11:24:48,883 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.100390
+2025-03-17 11:24:48,884 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.111653
+2025-03-17 11:24:49,055 - sciml.model.deeponet.deeponet - INFO - Epoch 100/300
+2025-03-17 11:24:49,056 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.097318
+2025-03-17 11:24:49,057 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.111322
+2025-03-17 11:24:49,234 - sciml.model.deeponet.deeponet - INFO - Epoch 101/300
+2025-03-17 11:24:49,235 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.099577
+2025-03-17 11:24:49,235 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.110498
+2025-03-17 11:24:49,409 - sciml.model.deeponet.deeponet - INFO - Epoch 102/300
+2025-03-17 11:24:49,410 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.096577
+2025-03-17 11:24:49,411 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.113328
+2025-03-17 11:24:49,583 - sciml.model.deeponet.deeponet - INFO - Epoch 103/300
+2025-03-17 11:24:49,584 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.098243
+2025-03-17 11:24:49,584 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.110764
+2025-03-17 11:24:49,758 - sciml.model.deeponet.deeponet - INFO - Epoch 104/300
+2025-03-17 11:24:49,759 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.096280
+2025-03-17 11:24:49,759 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.109454
+2025-03-17 11:24:49,930 - sciml.model.deeponet.deeponet - INFO - Epoch 105/300
+2025-03-17 11:24:49,931 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.097514
+2025-03-17 11:24:49,932 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.109125
+2025-03-17 11:24:50,104 - sciml.model.deeponet.deeponet - INFO - Epoch 106/300
+2025-03-17 11:24:50,105 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.095551
+2025-03-17 11:24:50,106 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.111010
+2025-03-17 11:24:50,276 - sciml.model.deeponet.deeponet - INFO - Epoch 107/300
+2025-03-17 11:24:50,277 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.096472
+2025-03-17 11:24:50,277 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.109164
+2025-03-17 11:24:50,451 - sciml.model.deeponet.deeponet - INFO - Epoch 108/300
+2025-03-17 11:24:50,452 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.095257
+2025-03-17 11:24:50,453 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.107898
+2025-03-17 11:24:50,624 - sciml.model.deeponet.deeponet - INFO - Epoch 109/300
+2025-03-17 11:24:50,625 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.095726
+2025-03-17 11:24:50,625 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.107536
+2025-03-17 11:24:50,797 - sciml.model.deeponet.deeponet - INFO - Epoch 110/300
+2025-03-17 11:24:50,798 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.094603
+2025-03-17 11:24:50,799 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.109090
+2025-03-17 11:24:50,972 - sciml.model.deeponet.deeponet - INFO - Epoch 111/300
+2025-03-17 11:24:50,973 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.094938
+2025-03-17 11:24:50,974 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.108012
+2025-03-17 11:24:51,140 - sciml.model.deeponet.deeponet - INFO - Epoch 112/300
+2025-03-17 11:24:51,141 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.094193
+2025-03-17 11:24:51,141 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.106575
+2025-03-17 11:24:51,316 - sciml.model.deeponet.deeponet - INFO - Epoch 113/300
+2025-03-17 11:24:51,317 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.094361
+2025-03-17 11:24:51,318 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.106533
+2025-03-17 11:24:51,493 - sciml.model.deeponet.deeponet - INFO - Epoch 114/300
+2025-03-17 11:24:51,494 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.093512
+2025-03-17 11:24:51,503 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.107684
+2025-03-17 11:24:51,671 - sciml.model.deeponet.deeponet - INFO - Epoch 115/300
+2025-03-17 11:24:51,672 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.093702
+2025-03-17 11:24:51,673 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.106647
+2025-03-17 11:24:51,849 - sciml.model.deeponet.deeponet - INFO - Epoch 116/300
+2025-03-17 11:24:51,850 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.093123
+2025-03-17 11:24:51,851 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.105535
+2025-03-17 11:24:52,021 - sciml.model.deeponet.deeponet - INFO - Epoch 117/300
+2025-03-17 11:24:52,022 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.093168
+2025-03-17 11:24:52,023 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.105614
+2025-03-17 11:24:52,202 - sciml.model.deeponet.deeponet - INFO - Epoch 118/300
+2025-03-17 11:24:52,203 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.092505
+2025-03-17 11:24:52,203 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.106639
+2025-03-17 11:24:52,376 - sciml.model.deeponet.deeponet - INFO - Epoch 119/300
+2025-03-17 11:24:52,377 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.092580
+2025-03-17 11:24:52,378 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.105684
+2025-03-17 11:24:52,552 - sciml.model.deeponet.deeponet - INFO - Epoch 120/300
+2025-03-17 11:24:52,552 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.092078
+2025-03-17 11:24:52,553 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.104703
+2025-03-17 11:24:52,725 - sciml.model.deeponet.deeponet - INFO - Epoch 121/300
+2025-03-17 11:24:52,725 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.092070
+2025-03-17 11:24:52,726 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.104859
+2025-03-17 11:24:52,902 - sciml.model.deeponet.deeponet - INFO - Epoch 122/300
+2025-03-17 11:24:52,902 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.091538
+2025-03-17 11:24:52,903 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.105337
+2025-03-17 11:24:53,079 - sciml.model.deeponet.deeponet - INFO - Epoch 123/300
+2025-03-17 11:24:53,079 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.091571
+2025-03-17 11:24:53,080 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.104256
+2025-03-17 11:24:53,254 - sciml.model.deeponet.deeponet - INFO - Epoch 124/300
+2025-03-17 11:24:53,254 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.091156
+2025-03-17 11:24:53,255 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.103628
+2025-03-17 11:24:53,431 - sciml.model.deeponet.deeponet - INFO - Epoch 125/300
+2025-03-17 11:24:53,431 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.091092
+2025-03-17 11:24:53,432 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.103900
+2025-03-17 11:24:53,603 - sciml.model.deeponet.deeponet - INFO - Epoch 126/300
+2025-03-17 11:24:53,604 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.090734
+2025-03-17 11:24:53,604 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.103788
+2025-03-17 11:24:53,779 - sciml.model.deeponet.deeponet - INFO - Epoch 127/300
+2025-03-17 11:24:53,779 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.090624
+2025-03-17 11:24:53,780 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.102776
+2025-03-17 11:24:53,955 - sciml.model.deeponet.deeponet - INFO - Epoch 128/300
+2025-03-17 11:24:53,955 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.090412
+2025-03-17 11:24:53,956 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.102686
+2025-03-17 11:24:54,131 - sciml.model.deeponet.deeponet - INFO - Epoch 129/300
+2025-03-17 11:24:54,132 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.090149
+2025-03-17 11:24:54,132 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.103122
+2025-03-17 11:24:54,333 - sciml.model.deeponet.deeponet - INFO - Epoch 130/300
+2025-03-17 11:24:54,334 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.090051
+2025-03-17 11:24:54,335 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.102389
+2025-03-17 11:24:54,509 - sciml.model.deeponet.deeponet - INFO - Epoch 131/300
+2025-03-17 11:24:54,509 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.089786
+2025-03-17 11:24:54,510 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.101644
+2025-03-17 11:24:54,679 - sciml.model.deeponet.deeponet - INFO - Epoch 132/300
+2025-03-17 11:24:54,680 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.089694
+2025-03-17 11:24:54,680 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.101691
+2025-03-17 11:24:54,855 - sciml.model.deeponet.deeponet - INFO - Epoch 133/300
+2025-03-17 11:24:54,856 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.089429
+2025-03-17 11:24:54,856 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.101535
+2025-03-17 11:24:55,028 - sciml.model.deeponet.deeponet - INFO - Epoch 134/300
+2025-03-17 11:24:55,029 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.089302
+2025-03-17 11:24:55,030 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.100876
+2025-03-17 11:24:55,200 - sciml.model.deeponet.deeponet - INFO - Epoch 135/300
+2025-03-17 11:24:55,201 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.089147
+2025-03-17 11:24:55,201 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.101008
+2025-03-17 11:24:55,372 - sciml.model.deeponet.deeponet - INFO - Epoch 136/300
+2025-03-17 11:24:55,373 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.088906
+2025-03-17 11:24:55,373 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.101192
+2025-03-17 11:24:55,552 - sciml.model.deeponet.deeponet - INFO - Epoch 137/300
+2025-03-17 11:24:55,553 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.088810
+2025-03-17 11:24:55,553 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.100512
+2025-03-17 11:24:55,725 - sciml.model.deeponet.deeponet - INFO - Epoch 138/300
+2025-03-17 11:24:55,726 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.088629
+2025-03-17 11:24:55,727 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.100184
+2025-03-17 11:24:55,901 - sciml.model.deeponet.deeponet - INFO - Epoch 139/300
+2025-03-17 11:24:55,902 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.088441
+2025-03-17 11:24:55,902 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.100148
+2025-03-17 11:24:56,074 - sciml.model.deeponet.deeponet - INFO - Epoch 140/300
+2025-03-17 11:24:56,074 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.088323
+2025-03-17 11:24:56,075 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.099578
+2025-03-17 11:24:56,247 - sciml.model.deeponet.deeponet - INFO - Epoch 141/300
+2025-03-17 11:24:56,248 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.088159
+2025-03-17 11:24:56,248 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.099513
+2025-03-17 11:24:56,443 - sciml.model.deeponet.deeponet - INFO - Epoch 142/300
+2025-03-17 11:24:56,444 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087989
+2025-03-17 11:24:56,444 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.099840
+2025-03-17 11:24:56,627 - sciml.model.deeponet.deeponet - INFO - Epoch 143/300
+2025-03-17 11:24:56,628 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087873
+2025-03-17 11:24:56,628 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.099494
+2025-03-17 11:24:56,849 - sciml.model.deeponet.deeponet - INFO - Epoch 144/300
+2025-03-17 11:24:56,850 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087723
+2025-03-17 11:24:56,850 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.099214
+2025-03-17 11:24:57,046 - sciml.model.deeponet.deeponet - INFO - Epoch 145/300
+2025-03-17 11:24:57,046 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087564
+2025-03-17 11:24:57,047 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.099195
+2025-03-17 11:24:57,221 - sciml.model.deeponet.deeponet - INFO - Epoch 146/300
+2025-03-17 11:24:57,222 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087453
+2025-03-17 11:24:57,222 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098809
+2025-03-17 11:24:57,396 - sciml.model.deeponet.deeponet - INFO - Epoch 147/300
+2025-03-17 11:24:57,397 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087311
+2025-03-17 11:24:57,398 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098838
+2025-03-17 11:24:57,571 - sciml.model.deeponet.deeponet - INFO - Epoch 148/300
+2025-03-17 11:24:57,572 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087155
+2025-03-17 11:24:57,572 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098973
+2025-03-17 11:24:57,744 - sciml.model.deeponet.deeponet - INFO - Epoch 149/300
+2025-03-17 11:24:57,745 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.087047
+2025-03-17 11:24:57,746 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098621
+2025-03-17 11:24:57,917 - sciml.model.deeponet.deeponet - INFO - Epoch 150/300
+2025-03-17 11:24:57,918 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086912
+2025-03-17 11:24:57,919 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098463
+2025-03-17 11:24:58,088 - sciml.model.deeponet.deeponet - INFO - Epoch 151/300
+2025-03-17 11:24:58,089 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086769
+2025-03-17 11:24:58,089 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098369
+2025-03-17 11:24:58,259 - sciml.model.deeponet.deeponet - INFO - Epoch 152/300
+2025-03-17 11:24:58,260 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086662
+2025-03-17 11:24:58,261 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098142
+2025-03-17 11:24:58,432 - sciml.model.deeponet.deeponet - INFO - Epoch 153/300
+2025-03-17 11:24:58,432 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086525
+2025-03-17 11:24:58,433 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098245
+2025-03-17 11:24:58,602 - sciml.model.deeponet.deeponet - INFO - Epoch 154/300
+2025-03-17 11:24:58,603 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086409
+2025-03-17 11:24:58,603 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098024
+2025-03-17 11:24:58,775 - sciml.model.deeponet.deeponet - INFO - Epoch 155/300
+2025-03-17 11:24:58,776 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086289
+2025-03-17 11:24:58,777 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.097808
+2025-03-17 11:24:58,947 - sciml.model.deeponet.deeponet - INFO - Epoch 156/300
+2025-03-17 11:24:58,947 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086155
+2025-03-17 11:24:58,948 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.097728
+2025-03-17 11:24:59,121 - sciml.model.deeponet.deeponet - INFO - Epoch 157/300
+2025-03-17 11:24:59,122 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086055
+2025-03-17 11:24:59,123 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.097443
+2025-03-17 11:24:59,295 - sciml.model.deeponet.deeponet - INFO - Epoch 158/300
+2025-03-17 11:24:59,296 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085928
+2025-03-17 11:24:59,296 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.097439
+2025-03-17 11:24:59,470 - sciml.model.deeponet.deeponet - INFO - Epoch 159/300
+2025-03-17 11:24:59,470 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085817
+2025-03-17 11:24:59,471 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.097220
+2025-03-17 11:24:59,647 - sciml.model.deeponet.deeponet - INFO - Epoch 160/300
+2025-03-17 11:24:59,648 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085705
+2025-03-17 11:24:59,649 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096991
+2025-03-17 11:24:57,339 - sciml.model.deeponet.deeponet - INFO - Epoch 161/300
+2025-03-17 11:24:57,340 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085584
+2025-03-17 11:24:57,341 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096878
+2025-03-17 11:24:57,517 - sciml.model.deeponet.deeponet - INFO - Epoch 162/300
+2025-03-17 11:24:57,517 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085480
+2025-03-17 11:24:57,518 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096782
+2025-03-17 11:24:57,692 - sciml.model.deeponet.deeponet - INFO - Epoch 163/300
+2025-03-17 11:24:57,693 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085362
+2025-03-17 11:24:57,693 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096705
+2025-03-17 11:24:57,866 - sciml.model.deeponet.deeponet - INFO - Epoch 164/300
+2025-03-17 11:24:57,867 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085262
+2025-03-17 11:24:57,867 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096418
+2025-03-17 11:24:58,040 - sciml.model.deeponet.deeponet - INFO - Epoch 165/300
+2025-03-17 11:24:58,041 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085150
+2025-03-17 11:24:58,041 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096528
+2025-03-17 11:24:58,215 - sciml.model.deeponet.deeponet - INFO - Epoch 166/300
+2025-03-17 11:24:58,216 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085062
+2025-03-17 11:24:58,216 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095951
+2025-03-17 11:24:58,387 - sciml.model.deeponet.deeponet - INFO - Epoch 167/300
+2025-03-17 11:24:58,388 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085001
+2025-03-17 11:24:58,388 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096758
+2025-03-17 11:24:58,559 - sciml.model.deeponet.deeponet - INFO - Epoch 168/300
+2025-03-17 11:24:58,560 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085028
+2025-03-17 11:24:58,560 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095830
+2025-03-17 11:24:58,731 - sciml.model.deeponet.deeponet - INFO - Epoch 169/300
+2025-03-17 11:24:58,732 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085164
+2025-03-17 11:24:58,732 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.097784
+2025-03-17 11:24:58,905 - sciml.model.deeponet.deeponet - INFO - Epoch 170/300
+2025-03-17 11:24:58,906 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085692
+2025-03-17 11:24:58,907 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095884
+2025-03-17 11:24:59,082 - sciml.model.deeponet.deeponet - INFO - Epoch 171/300
+2025-03-17 11:24:59,083 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085728
+2025-03-17 11:24:59,083 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.098261
+2025-03-17 11:24:59,259 - sciml.model.deeponet.deeponet - INFO - Epoch 172/300
+2025-03-17 11:24:59,260 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.086074
+2025-03-17 11:24:59,260 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095671
+2025-03-17 11:24:59,433 - sciml.model.deeponet.deeponet - INFO - Epoch 173/300
+2025-03-17 11:24:59,434 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085010
+2025-03-17 11:24:59,443 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095802
+2025-03-17 11:24:59,623 - sciml.model.deeponet.deeponet - INFO - Epoch 174/300
+2025-03-17 11:24:59,624 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084395
+2025-03-17 11:24:59,624 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095773
+2025-03-17 11:24:59,796 - sciml.model.deeponet.deeponet - INFO - Epoch 175/300
+2025-03-17 11:24:59,797 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084254
+2025-03-17 11:24:59,797 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095465
+2025-03-17 11:24:59,970 - sciml.model.deeponet.deeponet - INFO - Epoch 176/300
+2025-03-17 11:24:59,971 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084565
+2025-03-17 11:24:59,971 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096880
+2025-03-17 11:25:00,138 - sciml.model.deeponet.deeponet - INFO - Epoch 177/300
+2025-03-17 11:25:00,139 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.085033
+2025-03-17 11:25:00,139 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095161
+2025-03-17 11:25:00,311 - sciml.model.deeponet.deeponet - INFO - Epoch 178/300
+2025-03-17 11:25:00,311 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084702
+2025-03-17 11:25:00,312 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096287
+2025-03-17 11:25:00,486 - sciml.model.deeponet.deeponet - INFO - Epoch 179/300
+2025-03-17 11:25:00,487 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084387
+2025-03-17 11:25:00,488 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094982
+2025-03-17 11:25:00,672 - sciml.model.deeponet.deeponet - INFO - Epoch 180/300
+2025-03-17 11:25:00,672 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083866
+2025-03-17 11:25:00,673 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094544
+2025-03-17 11:25:00,850 - sciml.model.deeponet.deeponet - INFO - Epoch 181/300
+2025-03-17 11:25:00,851 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083912
+2025-03-17 11:25:00,851 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096062
+2025-03-17 11:25:01,023 - sciml.model.deeponet.deeponet - INFO - Epoch 182/300
+2025-03-17 11:25:01,024 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084134
+2025-03-17 11:25:01,024 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095243
+2025-03-17 11:25:01,195 - sciml.model.deeponet.deeponet - INFO - Epoch 183/300
+2025-03-17 11:25:01,196 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084360
+2025-03-17 11:25:01,196 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095937
+2025-03-17 11:25:01,373 - sciml.model.deeponet.deeponet - INFO - Epoch 184/300
+2025-03-17 11:25:01,374 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084491
+2025-03-17 11:25:01,374 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094361
+2025-03-17 11:25:01,547 - sciml.model.deeponet.deeponet - INFO - Epoch 185/300
+2025-03-17 11:25:01,548 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083745
+2025-03-17 11:25:01,548 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095094
+2025-03-17 11:25:01,721 - sciml.model.deeponet.deeponet - INFO - Epoch 186/300
+2025-03-17 11:25:01,722 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083517
+2025-03-17 11:25:01,722 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095379
+2025-03-17 11:25:01,891 - sciml.model.deeponet.deeponet - INFO - Epoch 187/300
+2025-03-17 11:25:01,892 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083584
+2025-03-17 11:25:01,892 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094337
+2025-03-17 11:25:02,062 - sciml.model.deeponet.deeponet - INFO - Epoch 188/300
+2025-03-17 11:25:02,063 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084057
+2025-03-17 11:25:02,063 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.096226
+2025-03-17 11:25:02,235 - sciml.model.deeponet.deeponet - INFO - Epoch 189/300
+2025-03-17 11:25:02,236 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.084249
+2025-03-17 11:25:02,237 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094697
+2025-03-17 11:25:02,408 - sciml.model.deeponet.deeponet - INFO - Epoch 190/300
+2025-03-17 11:25:02,409 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083728
+2025-03-17 11:25:02,410 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094482
+2025-03-17 11:25:02,582 - sciml.model.deeponet.deeponet - INFO - Epoch 191/300
+2025-03-17 11:25:02,583 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083172
+2025-03-17 11:25:02,583 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094280
+2025-03-17 11:25:02,758 - sciml.model.deeponet.deeponet - INFO - Epoch 192/300
+2025-03-17 11:25:02,759 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083168
+2025-03-17 11:25:02,759 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094560
+2025-03-17 11:25:02,929 - sciml.model.deeponet.deeponet - INFO - Epoch 193/300
+2025-03-17 11:25:02,930 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083357
+2025-03-17 11:25:02,931 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.095554
+2025-03-17 11:25:03,108 - sciml.model.deeponet.deeponet - INFO - Epoch 194/300
+2025-03-17 11:25:03,109 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083644
+2025-03-17 11:25:03,110 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093791
+2025-03-17 11:25:03,289 - sciml.model.deeponet.deeponet - INFO - Epoch 195/300
+2025-03-17 11:25:03,290 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083281
+2025-03-17 11:25:03,290 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093989
+2025-03-17 11:25:03,466 - sciml.model.deeponet.deeponet - INFO - Epoch 196/300
+2025-03-17 11:25:03,467 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083003
+2025-03-17 11:25:03,467 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094176
+2025-03-17 11:25:03,642 - sciml.model.deeponet.deeponet - INFO - Epoch 197/300
+2025-03-17 11:25:03,643 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082745
+2025-03-17 11:25:03,643 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094276
+2025-03-17 11:25:03,820 - sciml.model.deeponet.deeponet - INFO - Epoch 198/300
+2025-03-17 11:25:03,821 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082848
+2025-03-17 11:25:03,822 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094324
+2025-03-17 11:25:03,996 - sciml.model.deeponet.deeponet - INFO - Epoch 199/300
+2025-03-17 11:25:03,997 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082938
+2025-03-17 11:25:03,997 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093405
+2025-03-17 11:25:04,199 - sciml.model.deeponet.deeponet - INFO - Epoch 200/300
+2025-03-17 11:25:04,200 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082957
+2025-03-17 11:25:04,201 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094334
+2025-03-17 11:25:04,369 - sciml.model.deeponet.deeponet - INFO - Epoch 201/300
+2025-03-17 11:25:04,370 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082834
+2025-03-17 11:25:04,371 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093840
+2025-03-17 11:25:04,544 - sciml.model.deeponet.deeponet - INFO - Epoch 202/300
+2025-03-17 11:25:04,545 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082639
+2025-03-17 11:25:04,545 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093513
+2025-03-17 11:25:04,715 - sciml.model.deeponet.deeponet - INFO - Epoch 203/300
+2025-03-17 11:25:04,716 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082422
+2025-03-17 11:25:04,717 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093459
+2025-03-17 11:25:04,887 - sciml.model.deeponet.deeponet - INFO - Epoch 204/300
+2025-03-17 11:25:04,888 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082433
+2025-03-17 11:25:04,889 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093668
+2025-03-17 11:25:05,060 - sciml.model.deeponet.deeponet - INFO - Epoch 205/300
+2025-03-17 11:25:05,061 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082371
+2025-03-17 11:25:05,062 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094051
+2025-03-17 11:25:05,231 - sciml.model.deeponet.deeponet - INFO - Epoch 206/300
+2025-03-17 11:25:05,232 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082468
+2025-03-17 11:25:05,233 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093252
+2025-03-17 11:25:05,406 - sciml.model.deeponet.deeponet - INFO - Epoch 207/300
+2025-03-17 11:25:05,407 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082372
+2025-03-17 11:25:05,407 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093592
+2025-03-17 11:25:05,586 - sciml.model.deeponet.deeponet - INFO - Epoch 208/300
+2025-03-17 11:25:05,586 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082432
+2025-03-17 11:25:05,595 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093533
+2025-03-17 11:25:05,768 - sciml.model.deeponet.deeponet - INFO - Epoch 209/300
+2025-03-17 11:25:05,769 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082200
+2025-03-17 11:25:05,769 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093787
+2025-03-17 11:25:05,941 - sciml.model.deeponet.deeponet - INFO - Epoch 210/300
+2025-03-17 11:25:05,941 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082137
+2025-03-17 11:25:05,942 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093096
+2025-03-17 11:25:06,114 - sciml.model.deeponet.deeponet - INFO - Epoch 211/300
+2025-03-17 11:25:06,115 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081962
+2025-03-17 11:25:06,116 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092888
+2025-03-17 11:25:06,289 - sciml.model.deeponet.deeponet - INFO - Epoch 212/300
+2025-03-17 11:25:06,290 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081963
+2025-03-17 11:25:06,291 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093197
+2025-03-17 11:25:06,465 - sciml.model.deeponet.deeponet - INFO - Epoch 213/300
+2025-03-17 11:25:06,466 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081838
+2025-03-17 11:25:06,466 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093468
+2025-03-17 11:25:06,640 - sciml.model.deeponet.deeponet - INFO - Epoch 214/300
+2025-03-17 11:25:06,640 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081877
+2025-03-17 11:25:06,641 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093335
+2025-03-17 11:25:06,811 - sciml.model.deeponet.deeponet - INFO - Epoch 215/300
+2025-03-17 11:25:06,811 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081855
+2025-03-17 11:25:06,812 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092997
+2025-03-17 11:25:06,990 - sciml.model.deeponet.deeponet - INFO - Epoch 216/300
+2025-03-17 11:25:06,991 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081963
+2025-03-17 11:25:06,992 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093517
+2025-03-17 11:25:07,162 - sciml.model.deeponet.deeponet - INFO - Epoch 217/300
+2025-03-17 11:25:07,163 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082120
+2025-03-17 11:25:07,163 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093721
+2025-03-17 11:25:07,336 - sciml.model.deeponet.deeponet - INFO - Epoch 218/300
+2025-03-17 11:25:07,337 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082346
+2025-03-17 11:25:07,338 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094372
+2025-03-17 11:25:07,514 - sciml.model.deeponet.deeponet - INFO - Epoch 219/300
+2025-03-17 11:25:07,514 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082958
+2025-03-17 11:25:07,515 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093977
+2025-03-17 11:25:07,693 - sciml.model.deeponet.deeponet - INFO - Epoch 220/300
+2025-03-17 11:25:07,693 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082892
+2025-03-17 11:25:07,694 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.094438
+2025-03-17 11:25:07,871 - sciml.model.deeponet.deeponet - INFO - Epoch 221/300
+2025-03-17 11:25:07,872 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.083115
+2025-03-17 11:25:07,872 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093427
+2025-03-17 11:25:08,048 - sciml.model.deeponet.deeponet - INFO - Epoch 222/300
+2025-03-17 11:25:08,048 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082074
+2025-03-17 11:25:08,049 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092642
+2025-03-17 11:25:08,231 - sciml.model.deeponet.deeponet - INFO - Epoch 223/300
+2025-03-17 11:25:08,232 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081452
+2025-03-17 11:25:08,233 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092570
+2025-03-17 11:25:08,408 - sciml.model.deeponet.deeponet - INFO - Epoch 224/300
+2025-03-17 11:25:08,409 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081416
+2025-03-17 11:25:08,410 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092877
+2025-03-17 11:25:08,581 - sciml.model.deeponet.deeponet - INFO - Epoch 225/300
+2025-03-17 11:25:08,582 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081747
+2025-03-17 11:25:08,582 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093773
+2025-03-17 11:25:08,755 - sciml.model.deeponet.deeponet - INFO - Epoch 226/300
+2025-03-17 11:25:08,755 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082372
+2025-03-17 11:25:08,756 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092596
+2025-03-17 11:25:08,941 - sciml.model.deeponet.deeponet - INFO - Epoch 227/300
+2025-03-17 11:25:08,942 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.082094
+2025-03-17 11:25:08,943 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092941
+2025-03-17 11:25:09,126 - sciml.model.deeponet.deeponet - INFO - Epoch 228/300
+2025-03-17 11:25:09,127 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081700
+2025-03-17 11:25:09,127 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092397
+2025-03-17 11:25:09,303 - sciml.model.deeponet.deeponet - INFO - Epoch 229/300
+2025-03-17 11:25:09,303 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081181
+2025-03-17 11:25:09,304 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092222
+2025-03-17 11:25:09,475 - sciml.model.deeponet.deeponet - INFO - Epoch 230/300
+2025-03-17 11:25:09,476 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081147
+2025-03-17 11:25:09,477 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092522
+2025-03-17 11:25:09,654 - sciml.model.deeponet.deeponet - INFO - Epoch 231/300
+2025-03-17 11:25:09,654 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081497
+2025-03-17 11:25:09,655 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092007
+2025-03-17 11:25:09,830 - sciml.model.deeponet.deeponet - INFO - Epoch 232/300
+2025-03-17 11:25:09,831 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081710
+2025-03-17 11:25:09,831 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.093377
+2025-03-17 11:25:10,002 - sciml.model.deeponet.deeponet - INFO - Epoch 233/300
+2025-03-17 11:25:10,003 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081846
+2025-03-17 11:25:10,004 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092141
+2025-03-17 11:25:10,176 - sciml.model.deeponet.deeponet - INFO - Epoch 234/300
+2025-03-17 11:25:10,177 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081233
+2025-03-17 11:25:10,177 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091913
+2025-03-17 11:25:10,346 - sciml.model.deeponet.deeponet - INFO - Epoch 235/300
+2025-03-17 11:25:10,347 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080886
+2025-03-17 11:25:10,347 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091997
+2025-03-17 11:25:10,520 - sciml.model.deeponet.deeponet - INFO - Epoch 236/300
+2025-03-17 11:25:10,521 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080947
+2025-03-17 11:25:10,521 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091762
+2025-03-17 11:25:10,691 - sciml.model.deeponet.deeponet - INFO - Epoch 237/300
+2025-03-17 11:25:10,692 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081237
+2025-03-17 11:25:10,701 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092892
+2025-03-17 11:25:10,874 - sciml.model.deeponet.deeponet - INFO - Epoch 238/300
+2025-03-17 11:25:10,875 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081584
+2025-03-17 11:25:10,875 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091900
+2025-03-17 11:25:11,046 - sciml.model.deeponet.deeponet - INFO - Epoch 239/300
+2025-03-17 11:25:11,046 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081354
+2025-03-17 11:25:11,047 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092437
+2025-03-17 11:25:11,218 - sciml.model.deeponet.deeponet - INFO - Epoch 240/300
+2025-03-17 11:25:11,219 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080952
+2025-03-17 11:25:11,219 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091571
+2025-03-17 11:25:11,393 - sciml.model.deeponet.deeponet - INFO - Epoch 241/300
+2025-03-17 11:25:11,394 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080632
+2025-03-17 11:25:11,395 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091221
+2025-03-17 11:25:11,564 - sciml.model.deeponet.deeponet - INFO - Epoch 242/300
+2025-03-17 11:25:11,564 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080766
+2025-03-17 11:25:11,565 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092336
+2025-03-17 11:25:11,739 - sciml.model.deeponet.deeponet - INFO - Epoch 243/300
+2025-03-17 11:25:11,740 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081137
+2025-03-17 11:25:11,740 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091720
+2025-03-17 11:25:11,912 - sciml.model.deeponet.deeponet - INFO - Epoch 244/300
+2025-03-17 11:25:11,912 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081270
+2025-03-17 11:25:11,913 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092745
+2025-03-17 11:25:12,095 - sciml.model.deeponet.deeponet - INFO - Epoch 245/300
+2025-03-17 11:25:12,096 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081335
+2025-03-17 11:25:12,096 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091537
+2025-03-17 11:25:12,271 - sciml.model.deeponet.deeponet - INFO - Epoch 246/300
+2025-03-17 11:25:12,272 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080760
+2025-03-17 11:25:12,272 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091707
+2025-03-17 11:25:12,444 - sciml.model.deeponet.deeponet - INFO - Epoch 247/300
+2025-03-17 11:25:12,445 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080432
+2025-03-17 11:25:12,445 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091701
+2025-03-17 11:25:12,619 - sciml.model.deeponet.deeponet - INFO - Epoch 248/300
+2025-03-17 11:25:12,620 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080534
+2025-03-17 11:25:12,621 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091222
+2025-03-17 11:25:12,796 - sciml.model.deeponet.deeponet - INFO - Epoch 249/300
+2025-03-17 11:25:12,797 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080881
+2025-03-17 11:25:12,797 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092668
+2025-03-17 11:25:12,968 - sciml.model.deeponet.deeponet - INFO - Epoch 250/300
+2025-03-17 11:25:12,969 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.081257
+2025-03-17 11:25:12,969 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091565
+2025-03-17 11:25:13,144 - sciml.model.deeponet.deeponet - INFO - Epoch 251/300
+2025-03-17 11:25:13,144 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080972
+2025-03-17 11:25:13,145 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091848
+2025-03-17 11:25:13,319 - sciml.model.deeponet.deeponet - INFO - Epoch 252/300
+2025-03-17 11:25:13,320 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080530
+2025-03-17 11:25:13,320 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091312
+2025-03-17 11:25:13,496 - sciml.model.deeponet.deeponet - INFO - Epoch 253/300
+2025-03-17 11:25:13,497 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080195
+2025-03-17 11:25:13,497 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091270
+2025-03-17 11:25:13,677 - sciml.model.deeponet.deeponet - INFO - Epoch 254/300
+2025-03-17 11:25:13,678 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080357
+2025-03-17 11:25:13,678 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091968
+2025-03-17 11:25:13,865 - sciml.model.deeponet.deeponet - INFO - Epoch 255/300
+2025-03-17 11:25:13,866 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080758
+2025-03-17 11:25:13,866 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091144
+2025-03-17 11:25:14,089 - sciml.model.deeponet.deeponet - INFO - Epoch 256/300
+2025-03-17 11:25:14,090 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080809
+2025-03-17 11:25:14,091 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092363
+2025-03-17 11:25:14,268 - sciml.model.deeponet.deeponet - INFO - Epoch 257/300
+2025-03-17 11:25:14,269 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080820
+2025-03-17 11:25:14,270 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091281
+2025-03-17 11:25:14,446 - sciml.model.deeponet.deeponet - INFO - Epoch 258/300
+2025-03-17 11:25:14,447 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080291
+2025-03-17 11:25:14,448 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091195
+2025-03-17 11:25:14,628 - sciml.model.deeponet.deeponet - INFO - Epoch 259/300
+2025-03-17 11:25:14,629 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079993
+2025-03-17 11:25:14,630 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091382
+2025-03-17 11:25:14,804 - sciml.model.deeponet.deeponet - INFO - Epoch 260/300
+2025-03-17 11:25:14,805 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080087
+2025-03-17 11:25:14,806 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091059
+2025-03-17 11:25:14,985 - sciml.model.deeponet.deeponet - INFO - Epoch 261/300
+2025-03-17 11:25:14,986 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080344
+2025-03-17 11:25:14,987 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.092027
+2025-03-17 11:25:15,160 - sciml.model.deeponet.deeponet - INFO - Epoch 262/300
+2025-03-17 11:25:15,161 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080679
+2025-03-17 11:25:15,161 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091275
+2025-03-17 11:25:15,340 - sciml.model.deeponet.deeponet - INFO - Epoch 263/300
+2025-03-17 11:25:15,341 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080447
+2025-03-17 11:25:15,342 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091630
+2025-03-17 11:25:15,522 - sciml.model.deeponet.deeponet - INFO - Epoch 264/300
+2025-03-17 11:25:15,523 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080083
+2025-03-17 11:25:15,524 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090953
+2025-03-17 11:25:15,705 - sciml.model.deeponet.deeponet - INFO - Epoch 265/300
+2025-03-17 11:25:15,705 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079785
+2025-03-17 11:25:15,715 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090939
+2025-03-17 11:25:15,890 - sciml.model.deeponet.deeponet - INFO - Epoch 266/300
+2025-03-17 11:25:15,891 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079864
+2025-03-17 11:25:15,891 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091668
+2025-03-17 11:25:16,068 - sciml.model.deeponet.deeponet - INFO - Epoch 267/300
+2025-03-17 11:25:16,069 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080191
+2025-03-17 11:25:16,070 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091182
+2025-03-17 11:25:16,245 - sciml.model.deeponet.deeponet - INFO - Epoch 268/300
+2025-03-17 11:25:16,245 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080321
+2025-03-17 11:25:16,246 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091994
+2025-03-17 11:25:16,419 - sciml.model.deeponet.deeponet - INFO - Epoch 269/300
+2025-03-17 11:25:16,420 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080409
+2025-03-17 11:25:16,421 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091174
+2025-03-17 11:25:16,591 - sciml.model.deeponet.deeponet - INFO - Epoch 270/300
+2025-03-17 11:25:16,592 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079953
+2025-03-17 11:25:16,592 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091101
+2025-03-17 11:25:16,766 - sciml.model.deeponet.deeponet - INFO - Epoch 271/300
+2025-03-17 11:25:16,767 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079630
+2025-03-17 11:25:16,768 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091017
+2025-03-17 11:25:16,942 - sciml.model.deeponet.deeponet - INFO - Epoch 272/300
+2025-03-17 11:25:16,942 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079597
+2025-03-17 11:25:16,943 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091000
+2025-03-17 11:25:17,116 - sciml.model.deeponet.deeponet - INFO - Epoch 273/300
+2025-03-17 11:25:17,116 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079757
+2025-03-17 11:25:17,117 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091562
+2025-03-17 11:25:17,290 - sciml.model.deeponet.deeponet - INFO - Epoch 274/300
+2025-03-17 11:25:17,291 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.080002
+2025-03-17 11:25:17,291 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091236
+2025-03-17 11:25:17,464 - sciml.model.deeponet.deeponet - INFO - Epoch 275/300
+2025-03-17 11:25:17,464 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079973
+2025-03-17 11:25:17,465 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091570
+2025-03-17 11:25:17,639 - sciml.model.deeponet.deeponet - INFO - Epoch 276/300
+2025-03-17 11:25:17,640 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079823
+2025-03-17 11:25:17,640 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090998
+2025-03-17 11:25:17,811 - sciml.model.deeponet.deeponet - INFO - Epoch 277/300
+2025-03-17 11:25:17,812 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079510
+2025-03-17 11:25:17,812 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090924
+2025-03-17 11:25:17,986 - sciml.model.deeponet.deeponet - INFO - Epoch 278/300
+2025-03-17 11:25:17,987 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079378
+2025-03-17 11:25:17,988 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091034
+2025-03-17 11:25:18,162 - sciml.model.deeponet.deeponet - INFO - Epoch 279/300
+2025-03-17 11:25:18,162 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079394
+2025-03-17 11:25:18,163 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091005
+2025-03-17 11:25:18,365 - sciml.model.deeponet.deeponet - INFO - Epoch 280/300
+2025-03-17 11:25:18,365 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079518
+2025-03-17 11:25:18,366 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091365
+2025-03-17 11:25:18,537 - sciml.model.deeponet.deeponet - INFO - Epoch 281/300
+2025-03-17 11:25:18,538 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079691
+2025-03-17 11:25:18,539 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091152
+2025-03-17 11:25:18,713 - sciml.model.deeponet.deeponet - INFO - Epoch 282/300
+2025-03-17 11:25:18,714 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079643
+2025-03-17 11:25:18,714 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091384
+2025-03-17 11:25:18,893 - sciml.model.deeponet.deeponet - INFO - Epoch 283/300
+2025-03-17 11:25:18,894 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079581
+2025-03-17 11:25:18,895 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091007
+2025-03-17 11:25:19,067 - sciml.model.deeponet.deeponet - INFO - Epoch 284/300
+2025-03-17 11:25:19,068 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079375
+2025-03-17 11:25:19,068 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091132
+2025-03-17 11:25:19,242 - sciml.model.deeponet.deeponet - INFO - Epoch 285/300
+2025-03-17 11:25:19,243 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079224
+2025-03-17 11:25:19,243 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091040
+2025-03-17 11:25:19,417 - sciml.model.deeponet.deeponet - INFO - Epoch 286/300
+2025-03-17 11:25:19,418 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079120
+2025-03-17 11:25:19,419 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091051
+2025-03-17 11:25:19,589 - sciml.model.deeponet.deeponet - INFO - Epoch 287/300
+2025-03-17 11:25:19,590 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079090
+2025-03-17 11:25:19,591 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091146
+2025-03-17 11:25:19,764 - sciml.model.deeponet.deeponet - INFO - Epoch 288/300
+2025-03-17 11:25:19,765 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079103
+2025-03-17 11:25:19,765 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091112
+2025-03-17 11:25:19,939 - sciml.model.deeponet.deeponet - INFO - Epoch 289/300
+2025-03-17 11:25:19,940 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079143
+2025-03-17 11:25:19,941 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091293
+2025-03-17 11:25:20,113 - sciml.model.deeponet.deeponet - INFO - Epoch 290/300
+2025-03-17 11:25:20,114 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079240
+2025-03-17 11:25:20,114 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091207
+2025-03-17 11:25:20,286 - sciml.model.deeponet.deeponet - INFO - Epoch 291/300
+2025-03-17 11:25:20,287 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079280
+2025-03-17 11:25:20,287 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091418
+2025-03-17 11:25:20,467 - sciml.model.deeponet.deeponet - INFO - Epoch 292/300
+2025-03-17 11:25:20,467 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079437
+2025-03-17 11:25:20,468 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090866
+2025-03-17 11:25:20,640 - sciml.model.deeponet.deeponet - INFO - Epoch 293/300
+2025-03-17 11:25:20,641 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079464
+2025-03-17 11:25:20,641 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091392
+2025-03-17 11:25:20,813 - sciml.model.deeponet.deeponet - INFO - Epoch 294/300
+2025-03-17 11:25:20,814 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079640
+2025-03-17 11:25:20,814 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090621
+2025-03-17 11:25:20,991 - sciml.model.deeponet.deeponet - INFO - Epoch 295/300
+2025-03-17 11:25:20,992 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079538
+2025-03-17 11:25:20,992 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.091233
+2025-03-17 11:25:21,169 - sciml.model.deeponet.deeponet - INFO - Epoch 296/300
+2025-03-17 11:25:21,169 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079655
+2025-03-17 11:25:21,170 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090627
+2025-03-17 11:25:21,338 - sciml.model.deeponet.deeponet - INFO - Epoch 297/300
+2025-03-17 11:25:21,338 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079414
+2025-03-17 11:25:21,339 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090973
+2025-03-17 11:25:21,511 - sciml.model.deeponet.deeponet - INFO - Epoch 298/300
+2025-03-17 11:25:21,512 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079350
+2025-03-17 11:25:21,513 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090325
+2025-03-17 11:25:21,686 - sciml.model.deeponet.deeponet - INFO - Epoch 299/300
+2025-03-17 11:25:21,686 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.079037
+2025-03-17 11:25:21,687 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090581
+2025-03-17 11:25:21,866 - sciml.model.deeponet.deeponet - INFO - Epoch 300/300
+2025-03-17 11:25:21,867 - sciml.model.deeponet.deeponet - INFO - Training Loss: 0.078846
+2025-03-17 11:25:21,867 - sciml.model.deeponet.deeponet - INFO - Test Loss: 0.090113
