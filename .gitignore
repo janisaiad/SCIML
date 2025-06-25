@@ -33,7 +33,7 @@ pip-wheel-metadata/
 *.py[cod]
 # End of Selection
 *.pyc
-
+*.log
 *.gif
 *.npy
 data/test_data/big_dataset_fno/heat2d/sol.npy

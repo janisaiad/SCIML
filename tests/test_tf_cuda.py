@@ -1,7 +1,12 @@
 import pytest
-import tensorflow as tf
 
 
 def test_tf_cuda():
+    import tensorflow as tf
+    print(tf.config.list_physical_devices())
+    gpus = tf.config.list_physical_devices('GPU')
+    assert len(gpus) > 0
 
-    assert tf.test.is_gpu_available()
+
+if __name__ == "__main__":
+    test_tf_cuda()
