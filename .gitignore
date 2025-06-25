@@ -42,3 +42,10 @@ data/test_data/big_dataset_fno/heat2d/mu.npy
 *.npy
 *.gif
 *.keras
+__pycache__/
+.ruff_cache/
+.tach/
+.vscode/
+.idea/
+.DS_Store
+.env
