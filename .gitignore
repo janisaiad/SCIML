@@ -33,7 +33,7 @@ pip-wheel-metadata/
 *.py[cod]
 # End of Selection
 *.pyc
-
+*.log
 *.gif
 *.npy
 data/test_data/big_dataset_fno/heat2d/sol.npy
@@ -42,3 +42,11 @@ data/test_data/big_dataset_fno/heat2d/mu.npy
 *.npy
 *.gif
 *.keras
+__pycache__/
+.ruff_cache/
+.tach/
+.vscode/
+.idea/
+.DS_Store
+.env
+.vscode/
