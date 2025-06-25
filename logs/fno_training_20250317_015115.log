@@ -1,6 +1,0 @@
-2025-03-17 01:51:34,695 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
-2025-03-17 01:51:34,809 - sciml.model.deeponet.deeponet - ERROR - Data not found in /home/janis/SCIML/sciml/data/test_data/example_data/burgers2d/
-2025-03-17 01:52:33,984 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
-2025-03-17 01:52:44,521 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
-2025-03-17 01:53:23,911 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
-2025-03-17 01:53:43,232 - sciml.model.deeponet.deeponet - INFO - Model initialized with 300 epochs, 32 batch size, 0.001 learning rate
