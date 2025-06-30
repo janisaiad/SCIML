@@ -12,7 +12,7 @@
 #     name: python3
 # ---
 
-from sciml.model.fno import FNO
+from sciml.model.fno import FNO2d
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -68,7 +68,7 @@ last_network = tf.keras.Sequential([
 # -
 
 folder_path = "data/test_data/example_data/heat2d/"
-model = FNO(regular_params={"first_network": first_network, "last_network": last_network},fourier_params={"n_layers": n_layers, "dim_coords":2, "n_modes": n_modes, "activation": activation, "kernel_initializer": kernel_initializer}, hyper_params={"p_1": p_1, "p_2": p_2,'p_3':p_3,"device": device,"n_epochs":n_epochs,"index":index,"alpha":alpha,"folder_path":folder_path,"best_loss":best_loss})
+model = FNO2d(regular_params={"first_network": first_network, "last_network": last_network},fourier_params={"n_layers": n_layers, "dim_coords":2, "n_modes": n_modes, "activation": activation, "kernel_initializer": kernel_initializer}, hyper_params={"p_1": p_1, "p_2": p_2,'p_3':p_3,"device": device,"n_epochs":n_epochs,"index":index,"alpha":alpha,"folder_path":folder_path,"best_loss":best_loss})
 
 os.makedirs('results/fnograph', exist_ok=True)
 
