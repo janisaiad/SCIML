@@ -1,3 +1,5 @@
-from . import deeponet, fno, fno2d
+from . import deeponet, fno
 
-__all__ = ["deeponet", "fno", "fno2d"]
+from .fno import FNO
+from .fno import FNO2d
+__all__ = ["deeponet", "fno"]
