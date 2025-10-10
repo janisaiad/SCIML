@@ -34,8 +34,6 @@ uv.lock
 *.gif
 *.log
 *.keras
-# secrets
-.env
 
 # secrets
 .env
