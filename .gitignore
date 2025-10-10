@@ -37,6 +37,3 @@ uv.lock
 
 # secrets
 .env
-
-# datasets lourds
-*.npy
