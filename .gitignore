@@ -36,3 +36,6 @@ uv.lock
 *.keras
 # secrets
 .env
+
+# secrets
+.env
