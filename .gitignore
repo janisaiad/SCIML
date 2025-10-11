@@ -39,3 +39,6 @@ uv.lock
 .env
 # editor
 .cursorindexingignore
+
+# editor
+.cursorindexingignore
