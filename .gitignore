@@ -37,12 +37,5 @@ uv.lock
 
 # secrets
 .env
-
-# editor
-.cursorindexingignore
-
-# editor
-.cursorindexingignore
-
 # editor
 .cursorindexingignore
