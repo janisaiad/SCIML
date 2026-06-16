@@ -150,6 +150,12 @@ uv add jaxlib==0.4.17
 - Compare Fourier weights between layers
 - Verify cast/coeff and phase multiplication
 
+## 🔗 References and Related Projects
+
+- **JINNS** - Physics-Informed Neural Networks library: [https://gitlab.com/mia_jinns/jinns](https://gitlab.com/mia_jinns/jinns)
+- **Research Paper** - Relevant theoretical background: [https://arxiv.org/html/2412.14132v1](https://arxiv.org/html/2412.14132v1)
+- **PINA** - Physics-Informed Neural networks for Advanced modeling: [https://github.com/mathLab/PINA](https://github.com/mathLab/PINA)
+
 ## 📄 License
 
 This project is distributed under the MIT license. See the [LICENSE](LICENSE) file for more details.
